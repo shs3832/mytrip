@@ -1,247 +1,101 @@
-"use client";
-import { useState } from "react";
+import Image from "next/image";
 
 export default function Home() {
-  const [writer, setWriter] = useState("");
-  const [password, setPassword] = useState("");
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-
-  const [isWriter, setIsWriter] = useState<boolean>(true);
-  const [isPassword, setIsPassword] = useState<boolean>(true);
-  const [isTitle, setIsTitle] = useState<boolean>(true);
-  const [isContent, setIsContent] = useState<boolean>(true);
-
-  const handleFormWriter = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setWriter(event.target.value);
-  };
-
-  const handleFormPassword = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value);
-  };
-
-  const handleFormTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value);
-  };
-
-  const handleFormContents = (
-    event: React.ChangeEvent<HTMLTextAreaElement>,
-  ) => {
-    setContent(event.target.value);
-  };
-
-  const handleSubmit = () => {
-    if (writer) {
-      setIsWriter(true);
-    } else {
-      setIsWriter(false);
-    }
-    if (password) {
-      setIsPassword(true);
-    } else {
-      setIsPassword(false);
-    }
-    if (title) {
-      setIsTitle(true);
-    } else {
-      setIsTitle(false);
-    }
-    if (content) {
-      setIsContent(true);
-    } else {
-      setIsContent(false);
-    }
-
-    if (writer && password && title && content) {
-      alert("게시글이 입력가능한 상태입니다");
-    }
-  };
-
   return (
-    <div className="relative max-w-7xl mx-auto px-10">
-      <div className="mt-10 mb-10">
-        <h1 className="font-bold text-xl mb-10">게시물 등록</h1>
+    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+        <Image
+          className="dark:invert"
+          src="https://nextjs.org/icons/next.svg"
+          alt="Next.js logo"
+          width={180}
+          height={38}
+          priority
+        />
+        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
+          <li className="mb-2">
+            Get started by editing{" "}
+            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
+              src/app/page.tsx
+            </code>
+            .
+          </li>
+          <li>Save and see your changes instantly.</li>
+        </ol>
 
-        <div className="flex border-b items-start w-full gap-10 pb-10 mb-10">
-          <div className="border-gray-400 w-1/2">
-            <label className="flex items-center gap-1 mb-1 font-medium text-base leading-6 text-gray-800">
-              작성자
-              <span className="text-red-500 text-base font-medium">*</span>
-            </label>
-            <input
-              type="text"
-              className="border rounded-lg p-3 w-full border-gray-400 leading-6 text-base placeholder:text-gray-400"
-              placeholder="작성자 명을 입력해 주세요"
-              onChange={handleFormWriter}
-            />
-            {!isWriter && (
-              <p className="text-red-500 text-base leading-6 font-medium mt-2">
-                필수입력 사항 입니다.
-              </p>
-            )}
-          </div>
-
-          <div className=" border-gray-400 w-1/2">
-            <label className="flex items-center gap-1 mb-1 font-medium text-base leading-6 text-gray-800">
-              비밀번호
-              <span className="text-red-500 text-base font-medium">*</span>
-            </label>
-            <input
-              type="password"
-              className="border rounded-lg p-3 w-full border-gray-400 leading-6 text-base placeholder:text-gray-400"
-              placeholder="비밀번호를 입력해 주세요"
-              onChange={handleFormPassword}
-            />
-            {!isPassword && (
-              <p className="text-red-500 text-base leading-6 font-medium mt-2">
-                필수입력 사항 입니다.
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="flex border-b items-center w-full gap-10 pb-10 mb-10">
-          <div className="border-gray-400 w-full">
-            <label className="flex items-center gap-1 mb-1 font-medium text-base leading-6 text-gray-800">
-              제목
-              <span className="text-red-500 text-base font-medium">*</span>
-            </label>
-            <input
-              type="text"
-              className="border rounded-lg p-3 w-full border-gray-400 leading-6 text-base placeholder:text-gray-400"
-              placeholder="제목을 입력해 주세요"
-              onChange={handleFormTitle}
-            />
-
-            {!isTitle && (
-              <p className="text-red-500 text-base leading-6 font-medium mt-2">
-                필수입력 사항 입니다.
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="flex border-b items-center w-full gap-10 pb-10 mb-10">
-          <div className="border-gray-400 w-full">
-            <label className="flex items-center gap-1 mb-1 font-medium text-base leading-6 text-gray-800">
-              내용
-              <span className="text-red-500 text-base font-medium">*</span>
-            </label>
-            <textarea
-              className="border rounded-lg p-3 w-full min-h-80 border-gray-400 leading-6 text-base placeholder:text-gray-400"
-              placeholder="내용을 입력해 주세요"
-              onChange={handleFormContents}
-            />
-            {!isContent && (
-              <p className="text-red-500 text-base leading-6 font-medium mt-2">
-                필수입력 사항 입니다.
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="flex border-b items-center w-full gap-10 pb-10 mb-10">
-          <div className="border-gray-400 w-full">
-            <label className="flex items-center gap-1 mb-1 font-medium text-base leading-6 text-gray-800">
-              주소
-            </label>
-            <div className="flex items-center gap-2">
-              <div>
-                <input
-                  type="text"
-                  className="border rounded-lg p-3 w-20 border-gray-400 leading-6 text-base placeholder:text-gray-400"
-                  placeholder="12345"
-                />
-              </div>
-              <div>
-                <button
-                  type="button"
-                  className="border rounded-lg p-3 border-black font-medium text-base text-black"
-                >
-                  우편번호 검색
-                </button>
-              </div>
-            </div>
-            <div className="mt-2">
-              <input
-                type="text"
-                className="border rounded-lg p-3 w-full border-gray-400 leading-6 text-base placeholder:text-gray-400"
-                placeholder="주소를 입력해주세요"
-              />
-            </div>
-            <div className="mt-2">
-              <input
-                type="text"
-                className="border rounded-lg p-3 w-full border-gray-400 leading-6 text-base placeholder:text-gray-400"
-                placeholder="상세주소"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="flex border-b items-center w-full gap-10 pb-10 mb-10">
-          <div className="border-gray-400 w-full">
-            <label className="flex items-center gap-1 mb-1 font-medium text-base leading-6 text-gray-800">
-              유튜브 링크
-            </label>
-            <input
-              type="text"
-              className="border rounded-lg p-3 w-full border-gray-400 leading-6 text-base placeholder:text-gray-400"
-              placeholder="링크를 입력해 주세요"
-            />
-          </div>
-        </div>
-
-        <div className="flex items-center w-full gap-10 ">
-          <div className="border-gray-400 w-full">
-            <label className="flex items-center gap-1 mb-1 font-medium text-base leading-6 text-gray-800">
-              사진첨부
-            </label>
-            <div className="mt-2 flex items-center gap-3">
-              <div className="bg-gray-100 rounded-lg w-40 h-40">
-                <div className="flex items-center justify-center w-full h-full gap-2 flex-col cursor-pointer">
-                  <span className="text-3xl font-normal w-10 h-10 block flex items-center justify-center text-gray-600">
-                    +
-                  </span>
-                  <p className="text-gray-600">클릭해서 사진 업로드</p>
-                </div>
-              </div>
-              <div className="bg-gray-100 rounded-lg w-40 h-40">
-                <div className="flex items-center justify-center w-full h-full gap-2 flex-col cursor-pointer">
-                  <span className="text-3xl font-normal w-10 h-10 block flex items-center justify-center text-gray-600">
-                    +
-                  </span>
-                  <p className="text-gray-600">클릭해서 사진 업로드</p>
-                </div>
-              </div>
-              <div className="bg-gray-100 rounded-lg w-40 h-40">
-                <div className="flex items-center justify-center w-full h-full gap-2 flex-col cursor-pointer">
-                  <span className="text-3xl font-normal w-10 h-10 block flex items-center justify-center text-gray-600">
-                    +
-                  </span>
-                  <p className="text-gray-600">클릭해서 사진 업로드</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-end mt-10 gap-3">
-          <button
-            type="button"
-            className="flex items-center justify-center border rounded-lg py-3 px-4 box-border border-black font-medium text-base text-black"
+        <div className="flex gap-4 items-center flex-col sm:flex-row">
+          <a
+            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
+            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            취소
-          </button>
-          <button
-            type="button"
-            className="flex items-center justify-center border border-blue-600 rounded-lg py-3 px-4 font-medium text-base text-white bg-blue-600"
-            onClick={handleSubmit}
+            <Image
+              className="dark:invert"
+              src="https://nextjs.org/icons/vercel.svg"
+              alt="Vercel logomark"
+              width={20}
+              height={20}
+            />
+            Deploy now
+          </a>
+          <a
+            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
+            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            등록하기
-          </button>
+            Read our docs
+          </a>
         </div>
-      </div>
+      </main>
+      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
+        <a
+          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
+          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Image
+            aria-hidden
+            src="https://nextjs.org/icons/file.svg"
+            alt="File icon"
+            width={16}
+            height={16}
+          />
+          Learn
+        </a>
+        <a
+          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
+          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Image
+            aria-hidden
+            src="https://nextjs.org/icons/window.svg"
+            alt="Window icon"
+            width={16}
+            height={16}
+          />
+          Examples
+        </a>
+        <a
+          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
+          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Image
+            aria-hidden
+            src="https://nextjs.org/icons/globe.svg"
+            alt="Globe icon"
+            width={16}
+            height={16}
+          />
+          Go to nextjs.org →
+        </a>
+      </footer>
     </div>
   );
 }
