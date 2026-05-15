@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MyTrip
 
-## Getting Started
+개인 학습과 과제 수행을 위한 여행 플랫폼 연습 프로젝트입니다.
 
-First, run the development server:
+강의에서 배운 React, Next.js, TypeScript, GraphQL, 폼 처리, 상태 관리, 배포 흐름을 실제 화면과 기능으로 연결해보는 것을 목표로 합니다. 완성형 서비스라기보다, 기능을 하나씩 구현하면서 프론트엔드 개발 흐름을 익히는 실습 프로젝트입니다.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 진행 방식
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- 구현한 기능과 배운 내용은 `docs/` 폴더에 과제별로 정리합니다.
+- 현재는 마크업과 Tailwind CSS에 익숙해지는 단계부터 진행하고 있습니다.
+- 문제를 만났을 때 원인을 분석하고, AI와 함께 해결 방향을 비교하며 학습 기록을 남깁니다.
+- 처음부터 완벽한 구조를 만들기보다, 직접 구현한 뒤 필요한 시점에 리팩토링합니다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 주요 기술 스택
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Core
 
-## Learn More
+- `next`: App Router 기반의 React 프레임워크입니다. 페이지 라우팅, 서버/클라이언트 컴포넌트, 배포 구조 학습에 사용합니다.
+- `react`, `react-dom`: UI 컴포넌트 작성과 상태 기반 렌더링에 사용합니다.
+- `typescript`: 타입 안정성을 높이고, props/state/API 응답 구조를 명확하게 관리하기 위해 사용합니다.
 
-To learn more about Next.js, take a look at the following resources:
+### Styling / UI
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `tailwindcss`: 유틸리티 클래스 기반 스타일링에 사용합니다.
+- `antd`, `@ant-design/icons`: 모달, 버튼, 아이콘 등 빠른 UI 구현과 실습에 사용합니다.
+- `@codecamp2/ui`, `codecamp-ui`: 강의에서 제공하는 공통 UI 패키지 실습에 사용합니다.
+- `swiper`: 이미지 배너나 슬라이더 UI 구현에 사용할 수 있습니다.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Form / Validation
 
-## Deploy on Vercel
+- `react-hook-form`: 폼 입력값 관리와 submit 처리에 사용합니다.
+- `zod`: 입력값 검증 schema 작성에 사용합니다.
+- `@hookform/resolvers`: `react-hook-form`과 `zod`를 연결하는 데 사용합니다.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Data / API
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `@apollo/client`: GraphQL query/mutation, Apollo cache, 인증 헤더 처리 실습에 사용합니다.
+- `graphql`: GraphQL 문법과 Apollo Client 동작에 필요한 기본 패키지입니다.
+- `graphql-request`: 가벼운 GraphQL 요청이 필요할 때 사용할 수 있습니다.
+- `apollo-upload-client`: GraphQL 파일 업로드 실습에 사용합니다.
+- `zen-observable`: Apollo 관련 Observable 의존성 대응에 사용합니다.
+
+### State / Utility
+
+- `zustand`: 전역 상태 관리 실습에 사용합니다.
+- `lodash`: 데이터 가공과 유틸 함수가 필요할 때 사용할 수 있습니다.
+- `uuid`: 고유 ID 생성이 필요한 기능에서 사용할 수 있습니다.
+
+### Feature Libraries
+
+- `react-daum-postcode`: 주소 검색 기능 구현에 사용합니다.
+- `react-quill`: 웹 에디터 구현에 사용합니다.
+- `dompurify`: 에디터 HTML 출력 시 XSS 방어를 위해 사용합니다.
+- `react-infinite-scroll-component`: 무한 스크롤 UI 구현에 사용합니다.
+- `@portone/browser-sdk`: 결제 기능 실습에 사용합니다.
+- `firebase`: 파일 저장, 인증, 실시간 기능 등 Firebase 연동 실습에 사용할 수 있습니다.
+
+## 문서 기록
+
+과제별 구현 내용, 시행착오, 리팩토링 후보는 `docs/` 폴더에 정리합니다.
+
+- `docs/homework2.md`: 과제 진행 기록
+
+## 목표
+
+- 강의에서 배운 개념을 여행 플랫폼 과제에 적용합니다.
+- Tailwind CSS와 컴포넌트 기반 마크업에 익숙해집니다.
+- 기능 구현 후 반복되는 코드를 리팩토링합니다.
+- AI와 함께 오류 원인, 구현 방향, 리팩토링 기준을 점검하며 학습합니다.
