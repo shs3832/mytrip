@@ -1,8 +1,7 @@
 "use client";
 
-import useBoardDetail from "@/commons/board-detail/hook";
-import styles from "@/commons/board-detail/styles.module.css";
-import BoardListComponent from "@/commons/board-detail";
+import useBoardDetail from "@/commons/boards-detail/hook";
+import BoardListComponent from "@/commons/boards-detail";
 
 export default function BoardsDetailPage() {
   const { data, handleBackToList, handleEditPage } = useBoardDetail();

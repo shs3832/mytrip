@@ -32,8 +32,6 @@ export default function BoardsDetailPage() {
     router.push("../boards/new");
   };
 
-  console.log(data?.fetchBoard);
-
   return (
     <>
       <h1 className="font-bold text-[24px] leading-8">

@@ -73,7 +73,6 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
     }
 
     if (writer && password && title && contents) {
-      console.log("게시글이 입력가능한 상태입니다");
       try {
         const result = await create_post({
           variables: {
@@ -83,11 +82,8 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
             contents,
           },
         });
-        console.log(result);
         router.push(`../boards/${result.data?.createBoard._id}`);
       } catch (error) {
-        console.log(error);
-
         alert("에러가 발생하였습니다. 다시 시도해 주세요.");
       }
     }
@@ -101,7 +97,6 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
       updateBoardInput.contents = contents;
     }
 
-    console.log(updateBoardInput);
     const getPassword = prompt(
       "글을 입력할때 입력하셨던 비밀번호를 입력해주세요",
     );
@@ -109,7 +104,7 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
       return;
     }
     try {
-      const result = await update_post({
+      await update_post({
         variables: {
           boardId: String(params.boardId),
           updateBoardInput: {
@@ -118,7 +113,6 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
           password: getPassword,
         },
       });
-      console.log(result);
     } catch (error) {
       if (error instanceof ApolloError) {
         const message = error.graphQLErrors[0]?.message;
@@ -130,7 +124,6 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
   const isChanged =
     title !== data?.fetchBoard?.title ||
     contents !== data?.fetchBoard?.contents;
-  console.log(isChanged);
 
   useEffect(() => {
     if (data?.fetchBoard) {
@@ -138,7 +131,6 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
       setTitle(data.fetchBoard.title ?? "");
       setContents(data.fetchBoard.contents ?? "");
     }
-    console.log(data);
   }, [data]);
 
   return {

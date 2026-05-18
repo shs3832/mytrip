@@ -23,16 +23,15 @@ export default function BoardListComponent({
               <div
                 key={`el` + index}
                 className="group flex items-center w-full my-2 rounded-md border border-gray-100 hover:bg-gray-50 cursor-pointer"
+                onClick={(event) => {
+                  event.preventDefault();
+                  handleViewDetail(el._id);
+                }}
               >
                 <span className="px-6 py-3 text-gray-500 font-light w-[100px] shrink-0">
                   {index + 1}
                 </span>
-                <span
-                  className="px-6 py-3 grow text-left font-medium text-gray-900"
-                  onClick={() => {
-                    handleViewDetail(el._id);
-                  }}
-                >
+                <span className="px-6 py-3 grow text-left font-medium text-gray-900">
                   {el.title}
                 </span>
                 <span className="px-6 py-3 w-1/6">{el.writer}</span>
@@ -41,7 +40,8 @@ export default function BoardListComponent({
                 </span>
                 <span className="px-6 py-3 w-20">
                   <span
-                    onClick={() => {
+                    onClick={(event) => {
+                      event.stopPropagation();
                       handleDelete(el._id);
                     }}
                     className="invisible inline-block group-hover:visible"

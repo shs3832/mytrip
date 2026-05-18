@@ -83,7 +83,6 @@ export default function Home() {
     }
 
     if (writer && password && title && contents) {
-      console.log("게시글이 입력가능한 상태입니다");
       try {
         const result = await create_post({
           variables: {
@@ -93,11 +92,8 @@ export default function Home() {
             contents,
           },
         });
-        console.log(result);
         router.push(`../boards/${result.data?.createBoard._id}`);
       } catch (error) {
-        console.log(error);
-
         alert("에러가 발생하였습니다. 다시 시도해 주세요.");
       }
     }

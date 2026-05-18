@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { useParams, useRouter } from "next/navigation";
 
-import { FetchBoardDocument } from "../graphql/graphql";
+import { FetchBoardDocument } from "@/commons/graphql/graphql";
 
 export default function useBoardDetail() {
   const params = useParams();
@@ -19,7 +19,6 @@ export default function useBoardDetail() {
   const handleEditPage = () => {
     router.push(`../boards/${params.boardId}/edit`);
   };
-  console.log(data?.fetchBoard);
   return {
     data,
     handleBackToList,

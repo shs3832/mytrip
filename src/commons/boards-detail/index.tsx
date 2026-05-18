@@ -1,10 +1,9 @@
-import { IBoardDetailProps } from "@/commons/board-detail/types";
-import styles from "@/commons/board-detail/styles.module.css
+import { IBoardDetailProps } from "@/commons/boards-detail/types";
 export default function BoardListComponent({
   data,
   handleBackToList,
   handleEditPage,
-}:IBoardDetailProps) {
+}: IBoardDetailProps) {
   return (
     <>
       <h1 className="font-bold text-[24px] leading-8">

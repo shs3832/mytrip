@@ -1,7 +1,7 @@
 "use client";
 import { useBoardWrite } from "@/commons/boards-write/hook";
 
-export default function BoardWriteComponent({ isEdit }) {
+export default function BoardWriteComponent({ isEdit }: { isEdit: boolean }) {
   const {
     handleFormWriter,
     handleFormPassword,

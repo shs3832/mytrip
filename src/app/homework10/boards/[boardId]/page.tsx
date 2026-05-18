@@ -36,8 +36,6 @@ export default function BoardsDetailPage() {
     router.push(`../boards/${params.boardId}/edit`);
   };
 
-  console.log(data?.fetchBoard);
-
   return (
     <>
       <h1 className="font-bold text-[24px] leading-8">

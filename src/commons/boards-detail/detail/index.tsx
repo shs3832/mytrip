@@ -1,37 +1,11 @@
-"use client";
-import { useParams, useRouter } from "next/navigation";
-import styles from "./styles.module.css";
-import { gql, useQuery } from "@apollo/client";
-
-const FETCH_BOARD = gql`
-  query fetchBoard($boardId: ID!) {
-    fetchBoard(boardId: $boardId) {
-      _id
-      writer
-      title
-      contents
-      createdAt
-      likeCount
-      dislikeCount
-      images
-      youtubeUrl
-    }
-  }
-`;
-
-export default function BoardsDetailPage() {
-  const params = useParams();
-  const router = useRouter();
-  const { data } = useQuery(FETCH_BOARD, {
-    variables: {
-      boardId: params.boardId,
-    },
-  });
-
-  const handleBackToList = () => {
-    router.push("../boards/new");
-  };
-
+import { IBoardDetailProps } from "@/commons/boards-detail/types";
+import BoardCommentWrite from "../comment-write";
+import BoardCommentList from "../comment-list";
+export default function BoardListComponent({
+  data,
+  handleBackToList,
+  handleEditPage,
+}: IBoardDetailProps) {
   return (
     <>
       <h1 className="font-bold text-[24px] leading-8">
@@ -65,7 +39,7 @@ export default function BoardsDetailPage() {
 
         <div className="date-container ml-auto">
           <span className="text-sm text-gray-700">
-            {data?.fetchBoard?.createdAt}
+            {String(data?.fetchBoard?.createdAt)}
           </span>
         </div>
       </div>
@@ -180,6 +154,7 @@ export default function BoardsDetailPage() {
             <button
               type="button"
               className="border rounded-lg py-2 px-4 border-black font-medium text-sm text-black"
+              onClick={handleEditPage}
             >
               수정하기
             </button>

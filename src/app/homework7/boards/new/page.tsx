@@ -81,9 +81,8 @@ export default function Home() {
     }
 
     if (writer && password && title && contents) {
-      console.log("게시글이 입력가능한 상태입니다");
       try {
-        const result = await create_post({
+        await create_post({
           variables: {
             writer,
             password,
@@ -91,9 +90,7 @@ export default function Home() {
             contents,
           },
         });
-        console.log(result);
-      } catch (error) {
-        console.log(error);
+      } catch {
       }
     }
   };

@@ -10,7 +10,6 @@ export default function useBoardList() {
       page: 1,
     },
   });
-  console.log(data);
   const handleViewDetail = (id: String) => {
     router.push(`boards/${id}`);
   };
@@ -18,13 +17,12 @@ export default function useBoardList() {
   const [delete_board] = useMutation(DeleteBoardDocument);
 
   const handleDelete = async (id: String) => {
-    const result = await delete_board({
+    await delete_board({
       variables: {
         boardId: String(id),
       },
       refetchQueries: [FetchBoardsDocument],
     });
-    console.log(result);
     alert("삭제되었습니다");
   };
 
