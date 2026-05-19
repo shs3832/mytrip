@@ -13,13 +13,19 @@ export default function useBoardCommentWrite() {
   const [writer, setWriter] = useState("");
   const [password, setPassword] = useState("");
   const [contents, setContents] = useState("");
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(3);
 
   const [isWriterEmpty, setIsWriterEmpty] = useState<boolean>(false);
   const [isPasswordEmpty, setIsPasswordEmpty] = useState<boolean>(false);
   const [isContentsEmpty, setIsContentsEmpty] = useState<boolean>(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const handleRate = (value: number) => {
+    setRating(value);
+  };
 
   const handleWriteComment = async () => {
+    setIsSubmitted(true);
     if (!isWriterEmpty || !isPasswordEmpty || !isContentsEmpty) return;
     try {
       await comment_write({
@@ -46,9 +52,10 @@ export default function useBoardCommentWrite() {
       setContents("");
       setPassword("");
       setWriter("");
-    } catch {
-    }
+      setIsSubmitted(false);
+    } catch {}
   };
+
   return {
     writer,
     password,
@@ -59,9 +66,11 @@ export default function useBoardCommentWrite() {
     isContentsEmpty,
     isWriterEmpty,
     isPasswordEmpty,
+    isSubmitted,
     setIsContentsEmpty,
     setIsPasswordEmpty,
     setIsWriterEmpty,
     handleWriteComment,
+    handleRate,
   };
 }

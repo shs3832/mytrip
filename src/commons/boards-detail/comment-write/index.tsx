@@ -1,3 +1,4 @@
+import { Rate } from "antd";
 import useBoardCommentWrite from "./hook";
 
 export default function BoardCommentWrite() {
@@ -11,80 +12,19 @@ export default function BoardCommentWrite() {
     isContentsEmpty,
     isWriterEmpty,
     isPasswordEmpty,
+    isSubmitted,
     setIsContentsEmpty,
     setIsPasswordEmpty,
     setIsWriterEmpty,
     handleWriteComment,
+    handleRate,
   } = useBoardCommentWrite();
   return (
     <>
       <div className="mt-6 pt-6 border-t border-gray-200">
         <h2 className="font-bold text-base text-black">댓글</h2>
         <div className="flex items-center gap-1 mt-6">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="size-6 fill-gray-300"
-          >
-            <path
-              fillRule="evenodd"
-              d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
-              clipRule="evenodd"
-            />
-          </svg>
-
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="size-6 fill-gray-300"
-          >
-            <path
-              fillRule="evenodd"
-              d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
-              clipRule="evenodd"
-            />
-          </svg>
-
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="size-6 fill-gray-300"
-          >
-            <path
-              fillRule="evenodd"
-              d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
-              clipRule="evenodd"
-            />
-          </svg>
-
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="size-6 fill-gray-300"
-          >
-            <path
-              fillRule="evenodd"
-              d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
-              clipRule="evenodd"
-            />
-          </svg>
-
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="size-6 fill-gray-300"
-          >
-            <path
-              fillRule="evenodd"
-              d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <Rate onChange={handleRate} defaultValue={3} />
         </div>
 
         <div className="flex items-start w-1/2 gap-5 mt-6 pb-10">
@@ -108,7 +48,7 @@ export default function BoardCommentWrite() {
               }}
               value={writer}
             />
-            {!isWriterEmpty && (
+            {isSubmitted && !isWriterEmpty && (
               <p className="text-red-500 text-base leading-6 font-medium mt-2">
                 필수입력 사항 입니다.
               </p>
@@ -135,7 +75,7 @@ export default function BoardCommentWrite() {
               }}
               value={password}
             />
-            {!isPasswordEmpty && (
+            {isSubmitted && !isPasswordEmpty && (
               <p className="text-red-500 text-base leading-6 font-medium mt-2">
                 필수입력 사항 입니다.
               </p>
@@ -169,7 +109,7 @@ export default function BoardCommentWrite() {
               </p>
             </div>
 
-            {!isContentsEmpty && (
+            {isSubmitted && !isContentsEmpty && (
               <p className="text-red-500 text-base leading-6 font-medium mt-2">
                 필수입력 사항 입니다.
               </p>
