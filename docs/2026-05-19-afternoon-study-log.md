@@ -74,6 +74,130 @@
 - `totalPages`처럼 의미가 헷갈리는 이름을 `totalCount`로 바꾸며 값의 의미를 더 분명히 했다.
 - 선택된 페이지와 페이지 묶음 시작값을 분리해 페이지네이션 상태를 더 명확히 다뤘다.
 
+## 페이지네이션 상태 설계 샘플
+
+페이지네이션에서 헷갈리기 쉬운 값은 아래 네 가지다.
+
+```txt
+totalCount = 전체 게시글 수
+lastPage = 마지막 페이지 번호
+currentPage = 실제 보고 있는 페이지
+startPage = 현재 화면에 보이는 페이지 버튼 묶음의 시작 번호
+```
+
+예를 들어 전체 게시글 수가 123개이고, 한 페이지에 10개씩 보여준다면 마지막 페이지는 13이다.
+
+```ts
+const totalCount = count?.fetchBoardsCount ?? 0;
+const lastPage = Math.ceil(totalCount / 10);
+```
+
+`currentPage`는 사용자가 실제로 보고 있는 페이지다. 1페이지를 보고 있으면 1, 7페이지를 보고 있으면 7, 12페이지를 보고 있으면 12다.
+
+```ts
+const [currentPage, setCurrentPage] = useState(1);
+```
+
+`startPage`는 페이지 버튼 묶음의 시작 번호다. 페이지 버튼을 10개씩 보여준다면 1~10 묶음에서는 1, 11~20 묶음에서는 11이 된다.
+
+```ts
+const startPage = Math.floor((currentPage - 1) / 10) * 10 + 1;
+```
+
+계산 예시는 아래와 같다.
+
+```txt
+currentPage = 1  -> startPage = 1
+currentPage = 7  -> startPage = 1
+currentPage = 10 -> startPage = 1
+currentPage = 11 -> startPage = 11
+currentPage = 18 -> startPage = 11
+```
+
+페이지 번호 버튼은 `startPage`를 기준으로 만든다.
+
+```tsx
+const paginationArray = new Array(10).fill(0);
+
+{paginationArray.map((_, index) => {
+  const pageNumber = startPage + index;
+
+  return (
+    pageNumber <= lastPage && (
+      <button
+        key={pageNumber}
+        className={currentPage === pageNumber ? "text-blue-500" : ""}
+        onClick={() => {
+          setCurrentPage(pageNumber);
+          refetch({ page: pageNumber });
+        }}
+      >
+        {pageNumber}
+      </button>
+    )
+  );
+})}
+```
+
+여기서 `pageNumber <= lastPage` 조건은 마지막 페이지 이후의 버튼을 숨기기 위한 조건이다. 예를 들어 마지막 페이지가 13이면 11, 12, 13까지만 보이고 14~20은 렌더링하지 않는다.
+
+이전/다음 묶음 버튼은 `currentPage`를 10개 단위로 이동시키면 된다.
+
+```ts
+const handlePrevBtn = () => {
+  if (startPage === 1) return;
+
+  const prevPage = startPage - 10;
+  setCurrentPage(prevPage);
+  refetch({ page: prevPage });
+};
+
+const handleNextBtn = () => {
+  if (startPage + 10 > lastPage) return;
+
+  const nextPage = startPage + 10;
+  setCurrentPage(nextPage);
+  refetch({ page: nextPage });
+};
+```
+
+버튼 비활성화 조건은 아래처럼 볼 수 있다.
+
+```tsx
+<button disabled={startPage === 1}>이전</button>
+<button disabled={startPage + 10 > lastPage}>다음</button>
+```
+
+게시글 번호를 전체 게시글 수 기준으로 역순 표시하려면 `totalCount`, `currentPage`, 현재 줄의 `index`를 사용한다.
+
+```tsx
+const boardNumber = totalCount - (currentPage - 1) * 10 - index;
+```
+
+공식의 의미는 아래와 같다.
+
+```txt
+전체 게시글 수
+- 이전 페이지들에서 이미 보여준 게시글 수
+- 현재 페이지 안에서 몇 번째 줄인지
+```
+
+예를 들어 전체 게시글이 123개라면:
+
+```txt
+1페이지 첫 번째 줄 = 123 - (1 - 1) * 10 - 0 = 123
+1페이지 두 번째 줄 = 123 - (1 - 1) * 10 - 1 = 122
+2페이지 첫 번째 줄 = 123 - (2 - 1) * 10 - 0 = 113
+3페이지 첫 번째 줄 = 123 - (3 - 1) * 10 - 0 = 103
+```
+
+현재 코드처럼 `page`를 페이지 버튼 묶음 시작 번호로 두고, `currentPage`를 실제 선택 페이지로 두는 방식도 가능하다. 다만 장기적으로는 `currentPage`만 state로 두고 `startPage`는 계산값으로 만드는 방식이 더 단순하다.
+
+```txt
+state로 관리할 값 = currentPage
+계산해서 얻을 값 = startPage, lastPage, boardNumber
+```
+
 ## 남은 점검 포인트
 
 - 과거 homework 폴더들은 공통 컴포넌트 변경의 영향을 계속 받을 수 있으므로, 실제 과제 진행 기준과 타입 체크 범위를 분리해서 볼 필요가 있다.
