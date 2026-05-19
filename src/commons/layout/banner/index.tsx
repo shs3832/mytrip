@@ -29,7 +29,7 @@ export default function BoardListBannerComponent() {
           loop={true}
           className="h-full"
         >
-          {bannerImages.map((el, index) => {
+          {bannerImages.map((el) => {
             return (
               <SwiperSlide key={el} className="relative h-full">
                 <Image

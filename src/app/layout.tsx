@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 
 import "./globals.css";
 import ApolloSetting from "@/commons/settings/apollo-setting";
+import LayoutComponent from "@/commons/layout";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,7 +32,8 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ApolloSetting>
-          <div className="mt-10 mb-10 max-w-7xl mx-auto px-10">{children}</div>
+          <LayoutComponent>{children}</LayoutComponent>
+          {/* <div className="mt-10 mb-10 max-w-7xl mx-auto px-10">{children}</div> */}
         </ApolloSetting>
       </body>
     </html>
