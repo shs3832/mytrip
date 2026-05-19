@@ -3,8 +3,8 @@ import { useParams, useRouter } from "next/navigation";
 import styles from "./styles.module.css";
 import { gql, useQuery } from "@apollo/client";
 
-const FETCH_BOARD = gql`
-  query fetchBoard($boardId: ID!) {
+const FETCH_BOARD4 = gql`
+  query fetchBoardHomework9Detail($boardId: ID!) {
     fetchBoard(boardId: $boardId) {
       _id
       writer
@@ -22,7 +22,7 @@ const FETCH_BOARD = gql`
 export default function BoardsDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { data } = useQuery(FETCH_BOARD, {
+  const { data } = useQuery(FETCH_BOARD4, {
     variables: {
       boardId: params.boardId,
     },

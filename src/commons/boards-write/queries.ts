@@ -6,6 +6,8 @@ export const CREATE_POST = gql`
     $password: String
     $title: String!
     $contents: String!
+    $youtubeUrl: String
+    $boardAddress: BoardAddressInput
   ) {
     createBoard(
       createBoardInput: {
@@ -13,18 +15,27 @@ export const CREATE_POST = gql`
         password: $password
         title: $title
         contents: $contents
+        youtubeUrl: $youtubeUrl
+        boardAddress: $boardAddress
       }
     ) {
       _id
       writer
       title
       contents
+      boardAddress {
+        _id
+        zipcode
+        address
+        addressDetail
+      }
+      youtubeUrl
     }
   }
 `;
 
 export const FETCH_BOARD = gql`
-  query fetchBoard($boardId: ID!) {
+  query fetchBoardWrite($boardId: ID!) {
     fetchBoard(boardId: $boardId) {
       _id
       writer
@@ -35,6 +46,12 @@ export const FETCH_BOARD = gql`
       dislikeCount
       images
       youtubeUrl
+      boardAddress {
+        _id
+        zipcode
+        address
+        addressDetail
+      }
     }
   }
 `;

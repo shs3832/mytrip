@@ -5,8 +5,8 @@ import styles from "./styles.module.css";
 import { gql, useMutation } from "@apollo/client";
 import { useRouter } from "next/navigation";
 
-const CREATE_POST = gql`
-  mutation createBoard(
+const CREATE_POST8 = gql`
+  mutation createBoard8(
     $writer: String
     $password: String
     $title: String!
@@ -39,7 +39,7 @@ export default function Home() {
   const [isTitle, setIsTitle] = useState<boolean>(true);
   const [isContents, setIsContents] = useState<boolean>(true);
 
-  const [create_post] = useMutation(CREATE_POST);
+  const [create_post] = useMutation(CREATE_POST8);
   const router = useRouter();
 
   const handleFormWriter = (event: React.ChangeEvent<HTMLInputElement>) => {

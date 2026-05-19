@@ -4,7 +4,7 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import { useRouter } from "next/navigation";
 
 const FETCH_BOARDS = gql`
-  query fetchBoards($page: Int) {
+  query fetchBoardsHomework9($page: Int) {
     fetchBoards(page: $page) {
       _id
       writer
@@ -15,7 +15,7 @@ const FETCH_BOARDS = gql`
 `;
 
 const DELETE_BOARD = gql`
-  mutation deleteBoard($boardId: ID!) {
+  mutation deleteBoardHomework9($boardId: ID!) {
     deleteBoard(boardId: $boardId)
   }
 `;

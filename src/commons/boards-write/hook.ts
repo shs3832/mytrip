@@ -7,6 +7,8 @@ import {
   UpdateBoardDocument,
 } from "../graphql/graphql";
 import { IUpdateBoardInput } from "@/commons/boards-write/types";
+import { type Address } from "react-daum-postcode";
+import { Modal } from "antd";
 
 export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
   const router = useRouter();
@@ -32,6 +34,45 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
   const [isTitle, setIsTitle] = useState<boolean>(true);
   const [isContents, setIsContents] = useState<boolean>(true);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [address, setAddress] = useState("");
+  const [zoneCode, setZoneCode] = useState("");
+  const [addressDetail, setAddressDetail] = useState("");
+  const [youtubeUrl, setYoutubeUrl] = useState("");
+
+  const handleGetPostCode = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleComplete = (data: Address) => {
+    let fullAddress = data.address;
+    let extraAddress = "";
+    let zoneCode = data.zonecode;
+
+    if (data.addressType === "R") {
+      if (data.bname !== "") {
+        extraAddress += data.bname;
+      }
+      if (data.buildingName !== "") {
+        extraAddress +=
+          extraAddress !== "" ? `, ${data.buildingName}` : data.buildingName;
+      }
+      fullAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
+    }
+
+    setAddress(fullAddress);
+    setZoneCode(zoneCode);
+    setIsModalOpen(false);
+  };
+
   const handleFormWriter = (event: React.ChangeEvent<HTMLInputElement>) => {
     setWriter(event.target.value);
   };
@@ -42,6 +83,16 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
 
   const handleFormTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
+  };
+
+  const handleFormAddressDetail = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setAddressDetail(event.target.value);
+  };
+
+  const handleFormYoutube = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setYoutubeUrl(event.target.value);
   };
 
   const handleFormContents = (
@@ -80,6 +131,12 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
             password,
             title,
             contents,
+            boardAddress: {
+              zipcode: zoneCode,
+              address,
+              addressDetail,
+            },
+            youtubeUrl,
           },
         });
         router.push(`../boards/${result.data?.createBoard._id}`);
@@ -88,13 +145,36 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
       }
     }
   };
+
+  const handleCancelEdit = () => {
+    router.push(`../${params.boardId}`);
+  };
+
   const updateBoardInput: IUpdateBoardInput = {};
+  const updateBoardAddress: NonNullable<IUpdateBoardInput["boardAddress"]> = {};
   const handleEdit = async () => {
     if (title !== data?.fetchBoard?.title) {
       updateBoardInput.title = title;
     }
     if (contents !== data?.fetchBoard?.contents) {
       updateBoardInput.contents = contents;
+    }
+
+    if (zoneCode !== data?.fetchBoard?.boardAddress?.zipcode) {
+      updateBoardAddress.zipcode = zoneCode;
+      updateBoardAddress.address = address;
+    }
+
+    if (addressDetail !== data?.fetchBoard?.boardAddress?.addressDetail) {
+      updateBoardAddress.addressDetail = addressDetail;
+    }
+
+    if (youtubeUrl !== data?.fetchBoard?.youtubeUrl) {
+      updateBoardInput.youtubeUrl = youtubeUrl;
+    }
+
+    if (Object.keys(updateBoardAddress).length > 0) {
+      updateBoardInput.boardAddress = updateBoardAddress;
     }
 
     const getPassword = prompt(
@@ -112,24 +192,40 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
           },
           password: getPassword,
         },
+        refetchQueries: [FetchBoardDocument],
+      });
+      Modal.success({
+        content: isEdit ? "수정이 완료되었습니다." : "작성이 완료되었습니다.",
+        onOk: () => {
+          router.push(`../${params.boardId}`);
+        },
       });
     } catch (error) {
       if (error instanceof ApolloError) {
         const message = error.graphQLErrors[0]?.message;
-        alert(message ?? "에러가 발생했습니다.");
+        Modal.warning({
+          content: message ?? "에러가 발생했습니다.",
+        });
       }
     }
   };
 
   const isChanged =
     title !== data?.fetchBoard?.title ||
-    contents !== data?.fetchBoard?.contents;
+    contents !== data?.fetchBoard?.contents ||
+    zoneCode !== (data?.fetchBoard?.boardAddress?.zipcode ?? "") ||
+    addressDetail !== (data?.fetchBoard?.boardAddress?.addressDetail ?? "") ||
+    youtubeUrl !== (data?.fetchBoard?.youtubeUrl ?? "");
 
   useEffect(() => {
     if (data?.fetchBoard) {
       setWriter(data.fetchBoard.writer ?? "");
       setTitle(data.fetchBoard.title ?? "");
       setContents(data.fetchBoard.contents ?? "");
+      setZoneCode(data.fetchBoard.boardAddress?.zipcode ?? "");
+      setAddress(data.fetchBoard.boardAddress?.address ?? "");
+      setAddressDetail(data.fetchBoard.boardAddress?.addressDetail ?? "");
+      setYoutubeUrl(data.fetchBoard.youtubeUrl ?? "");
     }
   }, [data]);
 
@@ -140,6 +236,18 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
     handleFormContents,
     handleSubmit,
     handleEdit,
+    isModalOpen,
+    handleGetPostCode,
+    handleOk,
+    handleCancel,
+    handleComplete,
+    handleCancelEdit,
+    address,
+    zoneCode,
+    addressDetail,
+    handleFormAddressDetail,
+    handleFormYoutube,
+    youtubeUrl,
     isChanged,
     isWriter,
     isPassword,

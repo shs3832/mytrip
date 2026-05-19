@@ -4,8 +4,8 @@ import styles from "./styles.module.css";
 
 import { gql, useMutation } from "@apollo/client";
 
-const CREATE_POST = gql`
-  mutation createBoard(
+const CREATE_POST7 = gql`
+  mutation createBoard7(
     $writer: String
     $password: String
     $title: String!
@@ -38,7 +38,7 @@ export default function Home() {
   const [isTitle, setIsTitle] = useState<boolean>(true);
   const [isContents, setIsContents] = useState<boolean>(true);
 
-  const [create_post] = useMutation(CREATE_POST);
+  const [create_post] = useMutation(CREATE_POST7);
 
   const handleFormWriter = (event: React.ChangeEvent<HTMLInputElement>) => {
     setWriter(event.target.value);
@@ -90,8 +90,7 @@ export default function Home() {
             contents,
           },
         });
-      } catch {
-      }
+      } catch {}
     }
   };
 

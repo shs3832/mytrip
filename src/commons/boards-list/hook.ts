@@ -4,6 +4,7 @@ import {
   DeleteBoardDocument,
   FetchBoardsDocument,
 } from "@/commons/graphql/graphql";
+import { Modal } from "antd";
 
 export default function useBoardList() {
   const router = useRouter();
@@ -26,7 +27,9 @@ export default function useBoardList() {
       },
       refetchQueries: [FetchBoardsDocument],
     });
-    alert("삭제되었습니다");
+    Modal.success({
+      content: "삭제되었습니다.",
+    });
   };
 
   return {

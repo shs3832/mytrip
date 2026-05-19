@@ -4,4 +4,5 @@ export interface IBoardDetailProps {
   data?: FetchBoardQuery;
   handleBackToList: () => void;
   handleEditPage: () => void;
+  getYoutubeID: (value: string) => string | null;
 }

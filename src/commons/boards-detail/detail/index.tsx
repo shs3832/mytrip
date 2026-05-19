@@ -1,13 +1,22 @@
 import { IBoardDetailProps } from "@/commons/boards-detail/types";
 import BoardCommentWrite from "../comment-write";
 import BoardCommentList from "../comment-list";
-import { LikeOutlined, DislikeOutlined } from "@ant-design/icons";
+import {
+  LikeOutlined,
+  DislikeOutlined,
+  YoutubeOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
+import { Tooltip } from "antd";
+import YouTube from "react-youtube";
 
 export default function BoardListComponent({
   data,
   handleBackToList,
   handleEditPage,
+  getYoutubeID,
 }: IBoardDetailProps) {
+  const youtubeId = getYoutubeID(data?.fetchBoard.youtubeUrl ?? "");
   return (
     <>
       <h1 className="font-bold text-[24px] leading-8">
@@ -50,30 +59,14 @@ export default function BoardListComponent({
         <div className="flex justify-end gap-2">
           <button>
             <span className="text-[20px] text-gray-800 flex items-center justify-center">
-              <LikeOutlined />
+              <YoutubeOutlined />
             </span>
           </button>
           <button>
-            <span className="text-[24px] text-gray-800 flex items-center justify-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="size-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
-                />
-              </svg>
+            <span className="text-[20px] text-gray-800 flex items-center justify-center">
+              <Tooltip title={data?.fetchBoard.boardAddress?.address}>
+                <ExclamationCircleOutlined />
+              </Tooltip>
             </span>
           </button>
         </div>
@@ -84,9 +77,11 @@ export default function BoardListComponent({
           <p className="text-block text-base text-black">
             {data?.fetchBoard?.contents}
           </p>
-          <div className="video-block pt-6 pb-6 bg-gray-50">
-            <video>123</video>
-          </div>
+          {data?.fetchBoard.youtubeUrl && (
+            <div className="video-block pt-6 pb-6 bg-gray-50">
+              <YouTube videoId={youtubeId} />
+            </div>
+          )}
           <div className="like-block flex items-center justify-center gap-6">
             <div className="text-center text-base flex items-center flex-col">
               <LikeOutlined />

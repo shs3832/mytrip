@@ -1,6 +1,9 @@
 "use client";
 import { useBoardWrite } from "@/commons/boards-write/hook";
 
+import { Modal } from "antd";
+import KakaoPostcodeEmbed from "react-daum-postcode";
+
 export default function BoardWriteComponent({ isEdit }: { isEdit: boolean }) {
   const {
     handleFormWriter,
@@ -9,6 +12,18 @@ export default function BoardWriteComponent({ isEdit }: { isEdit: boolean }) {
     handleFormContents,
     handleSubmit,
     handleEdit,
+    isModalOpen,
+    handleGetPostCode,
+    handleOk,
+    handleCancel,
+    handleComplete,
+    address,
+    zoneCode,
+    addressDetail,
+    handleFormAddressDetail,
+    handleFormYoutube,
+    handleCancelEdit,
+    youtubeUrl,
     isChanged,
     isWriter,
     isPassword,
@@ -22,6 +37,16 @@ export default function BoardWriteComponent({ isEdit }: { isEdit: boolean }) {
 
   return (
     <div className="relative">
+      <Modal
+        title="주소검색"
+        closable={{ "aria-label": "Custom Close Button" }}
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        destroyOnHidden
+      >
+        {isModalOpen && <KakaoPostcodeEmbed onComplete={handleComplete} />}
+      </Modal>
       <div>
         <h1 className="font-bold text-xl mb-10">
           게시물 {isEdit ? "수정" : "등록"}
@@ -124,12 +149,15 @@ export default function BoardWriteComponent({ isEdit }: { isEdit: boolean }) {
                   type="text"
                   className="border rounded-lg p-3 w-20 border-gray-400 leading-6 text-base placeholder:text-gray-400"
                   placeholder="12345"
+                  value={zoneCode}
+                  readOnly
                 />
               </div>
               <div>
                 <button
                   type="button"
                   className="border rounded-lg p-3 border-black font-medium text-base text-black"
+                  onClick={handleGetPostCode}
                 >
                   우편번호 검색
                 </button>
@@ -140,6 +168,8 @@ export default function BoardWriteComponent({ isEdit }: { isEdit: boolean }) {
                 type="text"
                 className="border rounded-lg p-3 w-full border-gray-400 leading-6 text-base placeholder:text-gray-400"
                 placeholder="주소를 입력해주세요"
+                value={address}
+                readOnly
               />
             </div>
             <div className="mt-2">
@@ -147,6 +177,8 @@ export default function BoardWriteComponent({ isEdit }: { isEdit: boolean }) {
                 type="text"
                 className="border rounded-lg p-3 w-full border-gray-400 leading-6 text-base placeholder:text-gray-400"
                 placeholder="상세주소"
+                onChange={handleFormAddressDetail}
+                value={addressDetail}
               />
             </div>
           </div>
@@ -161,6 +193,8 @@ export default function BoardWriteComponent({ isEdit }: { isEdit: boolean }) {
               type="text"
               className="border rounded-lg p-3 w-full border-gray-400 leading-6 text-base placeholder:text-gray-400"
               placeholder="링크를 입력해 주세요"
+              onChange={handleFormYoutube}
+              value={youtubeUrl}
             />
           </div>
         </div>
@@ -203,6 +237,7 @@ export default function BoardWriteComponent({ isEdit }: { isEdit: boolean }) {
           <button
             type="button"
             className="flex items-center justify-center border rounded-lg py-3 px-4 box-border border-black font-medium text-base text-black"
+            onClick={handleCancelEdit}
           >
             취소
           </button>
