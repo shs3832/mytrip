@@ -1,9 +1,20 @@
-import { IBoardListProps } from "./types";
+import PaginationComponent from "@/commons/boards-list/pagination";
+import { IBoardListProps } from "@/commons/boards-list/list/types";
 
 export default function BoardListComponent({
   data,
   handleViewDetail,
   handleDelete,
+  handleGoPage,
+  handleNextBtn,
+  handlePrevBtn,
+  lastPage,
+  page,
+  setPage,
+  currentPage,
+  setCurrentPage,
+  paginationArray,
+  totalCount,
 }: IBoardListProps) {
   return (
     <div className="shadow-md rounded-3xl py-6 px-12 ">
@@ -29,7 +40,7 @@ export default function BoardListComponent({
                 }}
               >
                 <span className="px-6 py-3 text-gray-500 font-light w-[100px] shrink-0">
-                  {index + 1}
+                  {totalCount - (currentPage - 1) * 10 - index}
                 </span>
                 <span className="px-6 py-3 grow text-left font-medium text-gray-900">
                   {el.title}
@@ -54,6 +65,16 @@ export default function BoardListComponent({
           })}
         </div>
       </div>
+      <PaginationComponent
+        handleNextBtn={handleNextBtn}
+        handlePrevBtn={handlePrevBtn}
+        lastPage={lastPage}
+        handleGoPage={handleGoPage}
+        page={page}
+        paginationArray={paginationArray}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+      />
     </div>
   );
 }

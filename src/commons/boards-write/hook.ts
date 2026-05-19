@@ -147,7 +147,7 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
   };
 
   const handleCancelEdit = () => {
-    router.push(`../${params.boardId}`);
+    router.push(isEdit ? `../${params.boardId}` : "../boards");
   };
 
   const updateBoardInput: IUpdateBoardInput = {};

@@ -30,6 +30,7 @@ type Documents = {
     "\n  query fetchBoardLegacyDetail($boardId: ID!) {\n    fetchBoard(boardId: $boardId) {\n      _id\n      writer\n      title\n      contents\n      createdAt\n      likeCount\n      dislikeCount\n      images\n      youtubeUrl\n      boardAddress {\n        _id\n        zipcode\n        address\n        addressDetail\n      }\n    }\n  }\n": typeof types.FetchBoardLegacyDetailDocument,
     "\n  query fetchBoards($page: Int) {\n    fetchBoards(page: $page) {\n      _id\n      writer\n      title\n      createdAt\n    }\n  }\n": typeof types.FetchBoardsDocument,
     "\n  mutation deleteBoard($boardId: ID!) {\n    deleteBoard(boardId: $boardId)\n  }\n": typeof types.DeleteBoardDocument,
+    "\n  query fetchBoardsCount {\n    fetchBoardsCount\n  }\n": typeof types.FetchBoardsCountDocument,
     "\n  query fetchBoardsLegacyList($page: Int) {\n    fetchBoards(page: $page) {\n      _id\n      writer\n      title\n      createdAt\n    }\n  }\n": typeof types.FetchBoardsLegacyListDocument,
     "\n  mutation deleteBoardLegacyList($boardId: ID!) {\n    deleteBoard(boardId: $boardId)\n  }\n": typeof types.DeleteBoardLegacyListDocument,
     "\n  mutation createBoard(\n    $writer: String\n    $password: String\n    $title: String!\n    $contents: String!\n    $youtubeUrl: String\n    $boardAddress: BoardAddressInput\n  ) {\n    createBoard(\n      createBoardInput: {\n        writer: $writer\n        password: $password\n        title: $title\n        contents: $contents\n        youtubeUrl: $youtubeUrl\n        boardAddress: $boardAddress\n      }\n    ) {\n      _id\n      writer\n      title\n      contents\n      boardAddress {\n        _id\n        zipcode\n        address\n        addressDetail\n      }\n      youtubeUrl\n    }\n  }\n": typeof types.CreateBoardDocument,
@@ -53,6 +54,7 @@ const documents: Documents = {
     "\n  query fetchBoardLegacyDetail($boardId: ID!) {\n    fetchBoard(boardId: $boardId) {\n      _id\n      writer\n      title\n      contents\n      createdAt\n      likeCount\n      dislikeCount\n      images\n      youtubeUrl\n      boardAddress {\n        _id\n        zipcode\n        address\n        addressDetail\n      }\n    }\n  }\n": types.FetchBoardLegacyDetailDocument,
     "\n  query fetchBoards($page: Int) {\n    fetchBoards(page: $page) {\n      _id\n      writer\n      title\n      createdAt\n    }\n  }\n": types.FetchBoardsDocument,
     "\n  mutation deleteBoard($boardId: ID!) {\n    deleteBoard(boardId: $boardId)\n  }\n": types.DeleteBoardDocument,
+    "\n  query fetchBoardsCount {\n    fetchBoardsCount\n  }\n": types.FetchBoardsCountDocument,
     "\n  query fetchBoardsLegacyList($page: Int) {\n    fetchBoards(page: $page) {\n      _id\n      writer\n      title\n      createdAt\n    }\n  }\n": types.FetchBoardsLegacyListDocument,
     "\n  mutation deleteBoardLegacyList($boardId: ID!) {\n    deleteBoard(boardId: $boardId)\n  }\n": types.DeleteBoardLegacyListDocument,
     "\n  mutation createBoard(\n    $writer: String\n    $password: String\n    $title: String!\n    $contents: String!\n    $youtubeUrl: String\n    $boardAddress: BoardAddressInput\n  ) {\n    createBoard(\n      createBoardInput: {\n        writer: $writer\n        password: $password\n        title: $title\n        contents: $contents\n        youtubeUrl: $youtubeUrl\n        boardAddress: $boardAddress\n      }\n    ) {\n      _id\n      writer\n      title\n      contents\n      boardAddress {\n        _id\n        zipcode\n        address\n        addressDetail\n      }\n      youtubeUrl\n    }\n  }\n": types.CreateBoardDocument,
@@ -138,6 +140,10 @@ export function graphql(source: "\n  query fetchBoards($page: Int) {\n    fetchB
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation deleteBoard($boardId: ID!) {\n    deleteBoard(boardId: $boardId)\n  }\n"): (typeof documents)["\n  mutation deleteBoard($boardId: ID!) {\n    deleteBoard(boardId: $boardId)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query fetchBoardsCount {\n    fetchBoardsCount\n  }\n"): (typeof documents)["\n  query fetchBoardsCount {\n    fetchBoardsCount\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
