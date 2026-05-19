@@ -48,79 +48,195 @@
 - 게시글 번호는 전체 게시글 수 기준 역순으로 보이도록 `totalCount - (currentPage - 1) * 10 - index` 공식을 적용했다.
 - pagination props 타입은 `Pick`을 사용해 목록 컴포넌트 props 중 필요한 값만 고르는 방식으로 분리했다.
 
-## 확인한 개념
+## 오늘 마무리 개념 정리
 
-- `gql` 문서는 codegen의 원본이므로 함부로 지우면 generated document가 사라질 수 있다.
-- codegen이 보는 이름은 JavaScript 변수명이 아니라 GraphQL operation 이름이다.
-- `boardAddress: {}`처럼 빈 객체도 서버에는 값으로 전달되므로, 수정된 필드가 있을 때만 객체를 붙이는 편이 안전하다.
-- `??`는 `null` 또는 `undefined`일 때만 기본값을 적용한다.
-- `||`는 하나라도 참이면 전체 조건이 참이 되는 OR 조건에 사용된다.
-- `&&`는 앞 조건이 참일 때만 뒤 JSX나 함수를 실행할 때 자주 쓴다.
-- `children`은 현재 라우트의 페이지 본문이고, 공통 레이아웃은 그 본문을 감싸는 구조다.
-- `usePathname()`은 도메인을 제외한 pathname만 반환한다.
-- 문자열 `includes`는 부분 문자열 포함 여부를 보고, 배열 `includes`는 배열 안에 정확히 같은 요소가 있는지 본다.
-- `some`은 배열 요소 중 하나라도 조건을 만족하는지 검사할 때 쓴다.
-- 페이지네이션에서는 `totalCount`, `lastPage`, `currentPage`, 페이지 묶음 시작값을 구분해야 한다.
-- 게시글 역순 번호는 "전체 게시글 수 - 이전 페이지에서 이미 보여준 글 수 - 현재 줄 index"로 계산할 수 있다.
-- `Pick`은 기존 props 타입 중 일부만 골라 자식 컴포넌트의 props 타입을 만들 때 유용하다.
-- `interface`는 객체 모양을 직접 설명할 때, `type`은 `Pick`, `Omit`, union 같은 타입 조합에 자주 사용된다.
+오늘 커밋 흐름을 보면 하루 안에 꽤 큰 축을 세 개 밟았다.
 
-## 정리한 코드 품질
+```txt
+homework14: 주소/유튜브/GraphQL 확장
+homework15: 공통 레이아웃/children/usePathname
+homework16: 페이지네이션/state/type 분리
+```
 
-- 주소, 유튜브, 게시글 상세 조회 필드를 GraphQL 문서와 generated document 흐름에 맞춰 확장했다.
-- 공통 레이아웃을 `commons/layout`으로 분리해 `app/layout.tsx`가 더 간결해졌다.
-- 등록/수정 페이지에서 배너를 숨기는 책임을 레이아웃 hook으로 분리했다.
-- 페이지네이션을 목록 컴포넌트에서 분리하고, 필요한 props만 전달하는 구조로 정리했다.
-- `totalPages`처럼 의미가 헷갈리는 이름을 `totalCount`로 바꾸며 값의 의미를 더 분명히 했다.
-- 선택된 페이지와 페이지 묶음 시작값을 분리해 페이지네이션 상태를 더 명확히 다뤘다.
+오늘 기억하고 가면 좋은 개념을 나중에 다시 봤을 때 떠오르게 정리하면 아래와 같다.
 
-## 페이지네이션 상태 설계 샘플
+### 1. GraphQL Codegen
 
-페이지네이션에서 헷갈리기 쉬운 값은 아래 네 가지다.
+`gql` 문서는 그냥 실행 코드가 아니라 codegen의 원본이다.
+
+```txt
+queries.ts의 gql 문서
+→ codegen 실행
+→ graphql.ts에 XxxDocument 생성
+→ useQuery/useMutation에서 사용
+```
+
+그래서 `gql`을 지우면 generated document도 사라질 수 있고, Apollo에 `undefined`가 들어가면 이런 에러가 난다.
+
+```txt
+Argument of <undefined> passed to parser
+```
+
+그리고 codegen이 보는 이름은 JavaScript 변수명이 아니라 GraphQL operation 이름이다.
+
+```ts
+const FETCH_BOARD3 = gql`
+  query fetchBoard {
+    // ...
+  }
+`;
+```
+
+여기서 중요한 이름은 `FETCH_BOARD3`이 아니라 `query fetchBoard`다.
+
+### 2. 수정 요청은 바뀐 값만 보내기
+
+수정 API에서는 무조건 전체 객체를 보내기보다, 변경된 필드만 보내는 흐름을 연습했다.
+
+```ts
+if (title !== data?.fetchBoard?.title) {
+  updateBoardInput.title = title;
+}
+```
+
+주소처럼 객체인 값은 특히 조심해야 한다.
+
+```ts
+boardAddress: {};
+```
+
+빈 객체도 서버에는 주소를 수정하겠다는 값으로 전달될 수 있다. 그래서 주소용 임시 객체를 만들고, 실제 변경된 값이 있을 때만 붙이는 방식이 좋다.
+
+```ts
+if (Object.keys(updateBoardAddress).length > 0) {
+  updateBoardInput.boardAddress = updateBoardAddress;
+}
+```
+
+### 3. `??`, `||`, `&&`
+
+오늘 자주 나온 비교 연산자다.
+
+```ts
+value ?? "";
+```
+
+`null` 또는 `undefined`일 때만 기본값을 쓴다.
+
+```ts
+a || b;
+```
+
+둘 중 하나라도 truthy면 참으로 본다.
+
+```tsx
+condition && <Component />;
+```
+
+조건이 참일 때만 렌더링한다.
+
+특히 수정 여부 비교에서는 `?? ""`가 중요했다.
+
+```ts
+zoneCode !== (data?.fetchBoard?.boardAddress?.zipcode ?? "");
+```
+
+서버 값이 `undefined`이고 input 값이 `""`일 때, 괜히 수정됨으로 판단하지 않게 맞춰주는 장치다.
+
+### 4. `children`과 공통 레이아웃
+
+`children`은 현재 라우트의 페이지 본문이다.
+
+```txt
+/homework15/boards      → 게시글 목록 페이지가 children
+/homework15/boards/new  → 게시글 등록 페이지가 children
+```
+
+공통 레이아웃은 이 `children`을 감싸는 틀이다.
+
+```tsx
+<LayoutComponent>{children}</LayoutComponent>
+```
+
+그리고 `LayoutComponent` 안에서 아래처럼 조립했다.
+
+```tsx
+<NavigationComponent />
+{!isHideBanner && <BannerComponent />}
+<main>{children}</main>
+```
+
+### 5. `usePathname`, `includes`, `some`
+
+경로에 따라 배너를 숨기는 흐름을 잡았다.
+
+```ts
+const hideComponentURL = ["/new", "/edit"];
+
+const isHideBanner = hideComponentURL.some((el) => {
+  return pathname.includes(el);
+});
+```
+
+여기서 핵심은 아래 차이다.
+
+```txt
+문자열.includes = 문자열 안에 일부가 포함되어 있나
+배열.includes = 배열 안에 정확히 같은 값이 있나
+some = 배열 요소 중 하나라도 조건을 만족하나
+```
+
+### 6. Props 흐름
+
+`is not a function`은 대부분 함수가 없는 게 아니라, props 전달 중간에서 이름이 바뀌거나 누락된 경우였다.
+
+```txt
+hook에서 함수 생성
+→ page에서 꺼냄
+→ component에 props로 넘김
+→ child에서 받음
+→ 호출
+```
+
+이 중 하나라도 빠지면 아래 같은 에러가 난다.
+
+```txt
+getYoutubeID is not a function
+handleGoPage is not a function
+```
+
+### 7. 페이지네이션
+
+오늘 제일 어려웠던 부분이다. 핵심은 상태 이름을 분리해서 생각하는 것이다.
 
 ```txt
 totalCount = 전체 게시글 수
 lastPage = 마지막 페이지 번호
 currentPage = 실제 보고 있는 페이지
-startPage = 현재 화면에 보이는 페이지 버튼 묶음의 시작 번호
+page = 현재 페이지 버튼 묶음의 시작 번호
 ```
 
-예를 들어 전체 게시글 수가 123개이고, 한 페이지에 10개씩 보여준다면 마지막 페이지는 13이다.
+현재 코드에서는 `page`를 페이지 버튼 묶음의 시작 번호처럼 사용했다. 더 명확한 이름으로 쓰면 `startPage`에 가깝다.
+
+```ts
+const [page, setPage] = useState(1);
+const [currentPage, setCurrentPage] = useState(1);
+```
+
+전체 게시글 수와 마지막 페이지는 아래처럼 계산했다.
 
 ```ts
 const totalCount = count?.fetchBoardsCount ?? 0;
 const lastPage = Math.ceil(totalCount / 10);
 ```
 
-`currentPage`는 사용자가 실제로 보고 있는 페이지다. 1페이지를 보고 있으면 1, 7페이지를 보고 있으면 7, 12페이지를 보고 있으면 12다.
-
-```ts
-const [currentPage, setCurrentPage] = useState(1);
-```
-
-`startPage`는 페이지 버튼 묶음의 시작 번호다. 페이지 버튼을 10개씩 보여준다면 1~10 묶음에서는 1, 11~20 묶음에서는 11이 된다.
-
-```ts
-const startPage = Math.floor((currentPage - 1) / 10) * 10 + 1;
-```
-
-계산 예시는 아래와 같다.
-
-```txt
-currentPage = 1  -> startPage = 1
-currentPage = 7  -> startPage = 1
-currentPage = 10 -> startPage = 1
-currentPage = 11 -> startPage = 11
-currentPage = 18 -> startPage = 11
-```
-
-페이지 번호 버튼은 `startPage`를 기준으로 만든다.
+페이지 번호 버튼은 `page`를 시작 번호로 삼아 만든다.
 
 ```tsx
 const paginationArray = new Array(10).fill(0);
 
 {paginationArray.map((_, index) => {
-  const pageNumber = startPage + index;
+  const pageNumber = page + index;
 
   return (
     pageNumber <= lastPage && (
@@ -128,8 +244,8 @@ const paginationArray = new Array(10).fill(0);
         key={pageNumber}
         className={currentPage === pageNumber ? "text-blue-500" : ""}
         onClick={() => {
+          handleGoPage(pageNumber);
           setCurrentPage(pageNumber);
-          refetch({ page: pageNumber });
         }}
       >
         {pageNumber}
@@ -139,23 +255,25 @@ const paginationArray = new Array(10).fill(0);
 })}
 ```
 
-여기서 `pageNumber <= lastPage` 조건은 마지막 페이지 이후의 버튼을 숨기기 위한 조건이다. 예를 들어 마지막 페이지가 13이면 11, 12, 13까지만 보이고 14~20은 렌더링하지 않는다.
+여기서 `pageNumber <= lastPage`는 마지막 페이지 이후의 버튼을 숨기기 위한 조건이다. 예를 들어 마지막 페이지가 13이면 11, 12, 13까지만 보이고 14~20은 렌더링하지 않는다.
 
-이전/다음 묶음 버튼은 `currentPage`를 10개 단위로 이동시키면 된다.
+이전/다음 버튼은 현재 페이지 버튼 묶음을 10개 단위로 이동시킨다.
 
 ```ts
 const handlePrevBtn = () => {
-  if (startPage === 1) return;
+  if (page === 1) return;
 
-  const prevPage = startPage - 10;
+  const prevPage = page - 10;
+  setPage(prevPage);
   setCurrentPage(prevPage);
   refetch({ page: prevPage });
 };
 
 const handleNextBtn = () => {
-  if (startPage + 10 > lastPage) return;
+  if (page + 10 > lastPage) return;
 
-  const nextPage = startPage + 10;
+  const nextPage = page + 10;
+  setPage(nextPage);
   setCurrentPage(nextPage);
   refetch({ page: nextPage });
 };
@@ -164,21 +282,21 @@ const handleNextBtn = () => {
 버튼 비활성화 조건은 아래처럼 볼 수 있다.
 
 ```tsx
-<button disabled={startPage === 1}>이전</button>
-<button disabled={startPage + 10 > lastPage}>다음</button>
+<button disabled={page === 1}>이전</button>
+<button disabled={page + 10 > lastPage}>다음</button>
 ```
 
-게시글 번호를 전체 게시글 수 기준으로 역순 표시하려면 `totalCount`, `currentPage`, 현재 줄의 `index`를 사용한다.
+게시글 번호 역순 공식은 아래와 같다.
 
-```tsx
-const boardNumber = totalCount - (currentPage - 1) * 10 - index;
+```ts
+totalCount - (currentPage - 1) * 10 - index;
 ```
 
-공식의 의미는 아래와 같다.
+뜻은 아래와 같다.
 
 ```txt
 전체 게시글 수
-- 이전 페이지들에서 이미 보여준 게시글 수
+- 이전 페이지에서 이미 보여준 게시글 수
 - 현재 페이지 안에서 몇 번째 줄인지
 ```
 
@@ -191,12 +309,57 @@ const boardNumber = totalCount - (currentPage - 1) * 10 - index;
 3페이지 첫 번째 줄 = 123 - (3 - 1) * 10 - 0 = 103
 ```
 
-현재 코드처럼 `page`를 페이지 버튼 묶음 시작 번호로 두고, `currentPage`를 실제 선택 페이지로 두는 방식도 가능하다. 다만 장기적으로는 `currentPage`만 state로 두고 `startPage`는 계산값으로 만드는 방식이 더 단순하다.
+장기적으로는 `currentPage` 하나만 state로 두고, 페이지 버튼 묶음의 시작 번호는 계산값으로 만드는 방식이 더 단순할 수 있다.
+
+```ts
+const [currentPage, setCurrentPage] = useState(1);
+const startPage = Math.floor((currentPage - 1) / 10) * 10 + 1;
+```
+
+정리하면 아래처럼 나눠 생각하면 된다.
 
 ```txt
 state로 관리할 값 = currentPage
 계산해서 얻을 값 = startPage, lastPage, boardNumber
 ```
+
+### 8. TypeScript의 `Pick`
+
+자식 컴포넌트가 부모 props 전체를 받을 필요는 없다.
+
+```ts
+export type IBoardListPaginationProps = Pick<
+  IBoardListProps,
+  "handleGoPage" | "handleNextBtn" | "handlePrevBtn" | "lastPage"
+>;
+```
+
+뜻은 아래와 같다.
+
+```txt
+IBoardListProps 중 pagination에 필요한 것만 골라 새 타입 만들기
+```
+
+이건 오늘 꽤 좋은 감각이었다. 타입을 에러 제거용이 아니라 컴포넌트 계약서로 보기 시작한 것이다.
+
+### 오늘의 핵심 문장
+
+오늘 배운 걸 한 줄로 줄이면 이렇다.
+
+```txt
+화면은 컴포넌트로 나누고, 동작은 props로 흐르고, 데이터는 query/mutation으로 오가며, 상태 이름을 잘못 잡으면 코드가 꼬인다.
+```
+
+오늘은 UI 라이브러리, GraphQL, codegen, 레이아웃, URL 조건 처리, 페이지네이션, 타입 분리까지 여러 층을 밟았다. 다음에 비슷한 문제를 만나면 "props 흐름을 봐야겠다", "currentPage와 startPage를 나눠야겠다" 같은 감각이 먼저 떠오르면 된다.
+
+## 정리한 코드 품질
+
+- 주소, 유튜브, 게시글 상세 조회 필드를 GraphQL 문서와 generated document 흐름에 맞춰 확장했다.
+- 공통 레이아웃을 `commons/layout`으로 분리해 `app/layout.tsx`가 더 간결해졌다.
+- 등록/수정 페이지에서 배너를 숨기는 책임을 레이아웃 hook으로 분리했다.
+- 페이지네이션을 목록 컴포넌트에서 분리하고, 필요한 props만 전달하는 구조로 정리했다.
+- `totalPages`처럼 의미가 헷갈리는 이름을 `totalCount`로 바꾸며 값의 의미를 더 분명히 했다.
+- 선택된 페이지와 페이지 묶음 시작값을 분리해 페이지네이션 상태를 더 명확히 다뤘다.
 
 ## 남은 점검 포인트
 
