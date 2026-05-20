@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import useOpenApiComponent from "@/components/openapis-list/hook";
 

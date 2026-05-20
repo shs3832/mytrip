@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { IDogs } from "@/components/openapis-list/types";
 export default function useOpenApiComponent() {
   const [dogs, setDogs] = useState<string[]>([]);
   const [hasMore, setHasMore] = useState(true);
@@ -7,16 +8,19 @@ export default function useOpenApiComponent() {
     const data = await fetch(
       `https://dog.ceo/api/breed/hound/images/random/${getImages}`,
     );
-    const result = await data.json();
+    const result: IDogs = await data.json();
     setDogs(result.message);
   };
   const onNext = async () => {
     const data = await fetch(
       `https://dog.ceo/api/breed/hound/images/random/${getImages}`,
     );
-    const result = await data.json();
-    setDogs((prev) => [...prev, ...result.message]);
-    if (dogs?.length >= 100) setHasMore(false);
+    const result: IDogs = await data.json();
+    setDogs((prev) => {
+      const nextDogs = [...prev, ...result.message];
+      if (nextDogs.length >= 100) setHasMore(false);
+      return nextDogs;
+    });
   };
   useEffect(() => {
     getDogs();
