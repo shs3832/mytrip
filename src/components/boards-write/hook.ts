@@ -5,8 +5,8 @@ import {
   CreateBoardDocument,
   FetchBoardDocument,
   UpdateBoardDocument,
-} from "../graphql/graphql";
-import { IUpdateBoardInput } from "@/commons/boards-write/types";
+} from "@/commons/graphql/graphql";
+import { IUpdateBoardInput } from "@/components/boards-write/types";
 import { type Address } from "react-daum-postcode";
 import { Modal } from "antd";
 

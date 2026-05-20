@@ -1,4 +1,4 @@
-import { IBoardDetailProps } from "@/commons/boards-detail/types";
+import { IBoardDetailProps } from "@/components/boards-detail/types";
 export default function BoardListComponent({
   data,
   handleBackToList,

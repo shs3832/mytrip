@@ -1,6 +1,5 @@
-import { IBoardDetailProps } from "@/commons/boards-detail/types";
-import BoardCommentWrite from "../comment-write";
-import BoardCommentList from "../comment-list";
+import { IBoardDetailProps } from "@/components/boards-detail/types";
+
 import {
   LikeOutlined,
   DislikeOutlined,

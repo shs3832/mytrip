@@ -1,11 +1,25 @@
 "use client";
 
-import useBoardList from "@/commons/boards-list/list/hook";
-import BoardListComponent from "@/commons/boards-list/list";
-import BoardListBannerComponent from "@/commons/boards-list/banner";
+import useBoardList from "@/components/boards-list/list/hook";
+import BoardListComponent from "@/components/boards-list/list";
+import BoardListBannerComponent from "@/commons/layout/banner";
 
 export default function BoardListPage() {
-  const { data, handleViewDetail, handleDelete } = useBoardList();
+  const {
+    data,
+    handleViewDetail,
+    handleDelete,
+    handleGoPage,
+    handleNextBtn,
+    handlePrevBtn,
+    lastPage,
+    page,
+    setPage,
+    currentPage,
+    setCurrentPage,
+    paginationArray,
+    totalCount,
+  } = useBoardList();
 
   return (
     <>
@@ -14,6 +28,16 @@ export default function BoardListPage() {
         data={data}
         handleViewDetail={handleViewDetail}
         handleDelete={handleDelete}
+        handleGoPage={handleGoPage}
+        handleNextBtn={handleNextBtn}
+        handlePrevBtn={handlePrevBtn}
+        lastPage={lastPage}
+        page={page}
+        setPage={setPage}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        paginationArray={paginationArray}
+        totalCount={totalCount}
       />
     </>
   );

@@ -20,6 +20,13 @@ const DELETE_BOARD = gql`
   }
 `;
 
+type BoardSummary = {
+  _id: string;
+  writer: string | null;
+  title: string;
+  createdAt: string;
+};
+
 export default function BoardListPage() {
   const router = useRouter();
 
@@ -28,13 +35,13 @@ export default function BoardListPage() {
       page: 1,
     },
   });
-  const handleViewDetail = (id) => {
+  const handleViewDetail = (id: string) => {
     router.push(`boards/${id}`);
   };
 
   const [delete_board] = useMutation(DELETE_BOARD);
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: string) => {
     await delete_board({
       variables: {
         boardId: id,
@@ -58,7 +65,7 @@ export default function BoardListPage() {
             </div>
           </div>
           <div>
-            {data?.fetchBoards?.map((el, index) => {
+            {data?.fetchBoards?.map((el: BoardSummary, index: number) => {
               return (
                 <div
                   key={`el` + index}

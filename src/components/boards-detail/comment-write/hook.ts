@@ -61,6 +61,8 @@ export default function useBoardCommentWrite() {
     password,
     contents,
     setWriter,
+    rating,
+    setRating,
     setPassword,
     setContents,
     isContentsEmpty,

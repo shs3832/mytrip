@@ -1,5 +1,5 @@
 "use client";
-import { useBoardWrite } from "@/commons/boards-write/hook";
+import { useBoardWrite } from "@/components/boards-write/hook";
 
 import { Modal } from "antd";
 import KakaoPostcodeEmbed from "react-daum-postcode";

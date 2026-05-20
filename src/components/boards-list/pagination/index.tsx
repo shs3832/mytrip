@@ -1,5 +1,5 @@
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
-import { IBoardListPaginationProps } from "@/commons/boards-list/pagination/types";
+import { IBoardListPaginationProps } from "@/components/boards-list/pagination/types";
 
 export default function PaginationComponent({
   handleGoPage,

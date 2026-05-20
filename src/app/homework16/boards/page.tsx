@@ -1,7 +1,7 @@
 "use client";
 
-import useBoardList from "@/commons/boards-list/list/hook";
-import BoardListComponent from "@/commons/boards-list/list";
+import useBoardList from "@/components/boards-list/list/hook";
+import BoardListComponent from "@/components/boards-list/list";
 
 export default function BoardListPage() {
   const {

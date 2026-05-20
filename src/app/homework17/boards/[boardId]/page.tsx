@@ -8,6 +8,7 @@ import BoardCommentList from "@/components/boards-detail/comment-list";
 export default function BoardsDetailPage() {
   const { data, handleBackToList, handleEditPage, getYoutubeID } =
     useBoardDetail();
+
   return (
     <>
       <BoardListComponent

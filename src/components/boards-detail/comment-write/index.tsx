@@ -1,14 +1,28 @@
-import { Rate } from "antd";
-import useBoardCommentWrite from "./hook";
+import { Modal, Rate } from "antd";
+import useBoardCommentWrite from "@/components/boards-detail/comment-write/hook";
+import { ApolloError, useMutation } from "@apollo/client";
+import { useEffect } from "react";
+import {
+  FetchBoardCommentsDocument,
+  UpdateBoardCommentDocument,
+} from "./queries";
+import { IBoardCommentWriteProps } from "@/components/boards-detail/comment-write/types";
+import { useParams } from "next/navigation";
 
-export default function BoardCommentWrite() {
+export default function BoardCommentWrite({
+  isCommentEdit = false,
+  setIsCommentEdit,
+  el,
+}: IBoardCommentWriteProps) {
   const {
     writer,
     password,
     contents,
+    rating,
     setWriter,
     setPassword,
     setContents,
+    setRating,
     isContentsEmpty,
     isWriterEmpty,
     isPasswordEmpty,
@@ -19,12 +33,65 @@ export default function BoardCommentWrite() {
     handleWriteComment,
     handleRate,
   } = useBoardCommentWrite();
+  const params = useParams();
+  const [comment_update] = useMutation(UpdateBoardCommentDocument);
+  const handleCommentEdit = async () => {
+    if (el === undefined) return;
+
+    try {
+      await comment_update({
+        variables: {
+          updateBoardCommentInput: {
+            contents: contents,
+            rating: rating,
+          },
+          password: password,
+          boardCommentId: el._id,
+        },
+        refetchQueries: [
+          {
+            query: FetchBoardCommentsDocument,
+            variables: {
+              page: 1,
+              boardId: String(params.boardId),
+            },
+          },
+        ],
+      });
+      Modal.success({
+        content: "댓글이 수정되었습니다.",
+      });
+      setIsCommentEdit?.(false);
+    } catch (error) {
+      if (error instanceof ApolloError) {
+        const message = error.graphQLErrors[0]?.message;
+        Modal.error({
+          content: message ?? "에러가 발생했습니다.",
+        });
+      }
+    }
+  };
+
+  const handleEditCommentCancel = () => {
+    setIsCommentEdit?.(false);
+  };
+
+  useEffect(() => {
+    if (isCommentEdit && el !== undefined) {
+      setContents(el.contents);
+      setWriter(el.writer ?? "");
+      setRating(el.rating);
+    }
+  }, [el, isCommentEdit]);
+
   return (
     <>
-      <div className="mt-6 pt-6 border-t border-gray-200">
+      <div
+        className={!isCommentEdit ? "mt-6 pt-6 border-t border-gray-200" : ""}
+      >
         <h2 className="font-bold text-base text-black">댓글</h2>
         <div className="flex items-center gap-1 mt-6">
-          <Rate onChange={handleRate} defaultValue={3} />
+          <Rate onChange={handleRate} defaultValue={3} value={rating} />
         </div>
 
         <div className="flex items-start w-1/2 gap-5 mt-6 pb-10">
@@ -46,6 +113,7 @@ export default function BoardCommentWrite() {
                   setIsWriterEmpty(true);
                 }
               }}
+              disabled={isCommentEdit}
               value={writer}
             />
             {isSubmitted && !isWriterEmpty && (
@@ -115,14 +183,24 @@ export default function BoardCommentWrite() {
               </p>
             )}
           </div>
-
-          <button
-            type="button"
-            className="self-end flex items-center justify-center border border-blue-600 mt-6 rounded-lg py-3 px-4 font-medium text-base text-white bg-blue-600 disabled:bg-gray-200 disabled:border-gray-200"
-            onClick={handleWriteComment}
-          >
-            댓글 등록
-          </button>
+          <div className="self-end flex items-center items-center gap-4 mt-6">
+            {isCommentEdit && (
+              <button
+                type="button"
+                className="border rounded-lg py-3 px-4 border-black font-medium text-base text-black"
+                onClick={handleEditCommentCancel}
+              >
+                취소
+              </button>
+            )}
+            <button
+              type="button"
+              className="border border-blue-600 rounded-lg py-3 px-4 font-medium text-base text-white bg-blue-600 disabled:bg-gray-200 disabled:border-gray-200"
+              onClick={isCommentEdit ? handleCommentEdit : handleWriteComment}
+            >
+              {isCommentEdit ? "댓글 수정" : "댓글 등록"}
+            </button>
+          </div>
         </div>
       </div>
     </>

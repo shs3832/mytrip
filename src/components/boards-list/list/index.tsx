@@ -1,5 +1,5 @@
-import PaginationComponent from "@/commons/boards-list/pagination";
-import { IBoardListProps } from "@/commons/boards-list/list/types";
+import PaginationComponent from "@/components/boards-list/pagination";
+import { IBoardListProps } from "@/components/boards-list/list/types";
 
 export default function BoardListComponent({
   data,

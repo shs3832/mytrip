@@ -1,4 +1,4 @@
-import { IBoardListProps } from "@/commons/boards-list/list/types";
+import { IBoardListProps } from "@/components/boards-list/list/types";
 
 export type IBoardListPaginationProps = Pick<
   IBoardListProps,
