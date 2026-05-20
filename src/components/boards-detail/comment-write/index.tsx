@@ -1,13 +1,7 @@
-import { Modal, Rate } from "antd";
+import { Rate } from "antd";
 import useBoardCommentWrite from "@/components/boards-detail/comment-write/hook";
-import { ApolloError, useMutation } from "@apollo/client";
 import { useEffect } from "react";
-import {
-  FetchBoardCommentsDocument,
-  UpdateBoardCommentDocument,
-} from "./queries";
 import { IBoardCommentWriteProps } from "@/components/boards-detail/comment-write/types";
-import { useParams } from "next/navigation";
 
 export default function BoardCommentWrite({
   isCommentEdit = false,
@@ -32,49 +26,10 @@ export default function BoardCommentWrite({
     setIsWriterEmpty,
     handleWriteComment,
     handleRate,
-  } = useBoardCommentWrite();
-  const params = useParams();
-  const [comment_update] = useMutation(UpdateBoardCommentDocument);
-  const handleCommentEdit = async () => {
-    if (el === undefined) return;
-
-    try {
-      await comment_update({
-        variables: {
-          updateBoardCommentInput: {
-            contents: contents,
-            rating: rating,
-          },
-          password: password,
-          boardCommentId: el._id,
-        },
-        refetchQueries: [
-          {
-            query: FetchBoardCommentsDocument,
-            variables: {
-              page: 1,
-              boardId: String(params.boardId),
-            },
-          },
-        ],
-      });
-      Modal.success({
-        content: "댓글이 수정되었습니다.",
-      });
-      setIsCommentEdit?.(false);
-    } catch (error) {
-      if (error instanceof ApolloError) {
-        const message = error.graphQLErrors[0]?.message;
-        Modal.error({
-          content: message ?? "에러가 발생했습니다.",
-        });
-      }
-    }
-  };
-
-  const handleEditCommentCancel = () => {
-    setIsCommentEdit?.(false);
-  };
+  } = useBoardCommentWrite({
+    setIsCommentEdit,
+    el,
+  });
 
   useEffect(() => {
     if (isCommentEdit && el !== undefined) {

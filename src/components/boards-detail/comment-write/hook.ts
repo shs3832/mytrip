@@ -1,12 +1,18 @@
 import {
   CreateBoardCommentDocument,
   FetchBoardCommentsDocument,
+  UpdateBoardCommentDocument,
 } from "./queries";
-import { useMutation } from "@apollo/client";
+import { ApolloError, useMutation } from "@apollo/client";
+import { Modal } from "antd";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { IBoardCommentWriteProps } from "./types";
 
-export default function useBoardCommentWrite() {
+export default function useBoardCommentWrite({
+  setIsCommentEdit,
+  el,
+}: IBoardCommentWriteProps = {}) {
   const params = useParams();
   const [comment_write] = useMutation(CreateBoardCommentDocument);
 
@@ -56,6 +62,48 @@ export default function useBoardCommentWrite() {
     } catch {}
   };
 
+  const [comment_update] = useMutation(UpdateBoardCommentDocument);
+  const handleCommentEdit = async () => {
+    if (el === undefined) return;
+
+    try {
+      await comment_update({
+        variables: {
+          updateBoardCommentInput: {
+            contents: contents,
+            rating: rating,
+          },
+          password: password,
+          boardCommentId: el._id,
+        },
+        refetchQueries: [
+          {
+            query: FetchBoardCommentsDocument,
+            variables: {
+              page: 1,
+              boardId: String(params.boardId),
+            },
+          },
+        ],
+      });
+      Modal.success({
+        content: "댓글이 수정되었습니다.",
+      });
+      setIsCommentEdit?.(false);
+    } catch (error) {
+      if (error instanceof ApolloError) {
+        const message = error.graphQLErrors[0]?.message;
+        Modal.error({
+          content: message ?? "에러가 발생했습니다.",
+        });
+      }
+    }
+  };
+
+  const handleEditCommentCancel = () => {
+    setIsCommentEdit?.(false);
+  };
+
   return {
     writer,
     password,
@@ -74,5 +122,7 @@ export default function useBoardCommentWrite() {
     setIsWriterEmpty,
     handleWriteComment,
     handleRate,
+    handleCommentEdit,
+    handleEditCommentCancel,
   };
 }
