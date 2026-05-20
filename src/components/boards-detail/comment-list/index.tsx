@@ -49,7 +49,9 @@ export default function BoardCommentList() {
             dataLength={data?.fetchBoardComments?.length ?? 0}
             next={onNext}
             hasMore={hasMore}
-            loader={<h4>Loading...</h4>}
+            loader={
+              data?.fetchBoardComments?.length !== 0 && <h4>Loading...</h4>
+            }
             endMessage={<p className="text-center">All items loaded.</p>}
             scrollableTarget="comment-box"
           >

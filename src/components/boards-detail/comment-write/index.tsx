@@ -26,6 +26,8 @@ export default function BoardCommentWrite({
     setIsWriterEmpty,
     handleWriteComment,
     handleRate,
+    handleEditCommentCancel,
+    handleCommentEdit,
   } = useBoardCommentWrite({
     setIsCommentEdit,
     el,

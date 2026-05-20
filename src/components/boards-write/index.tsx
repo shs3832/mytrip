@@ -6,10 +6,8 @@ import KakaoPostcodeEmbed from "react-daum-postcode";
 
 export default function BoardWriteComponent({ isEdit }: { isEdit: boolean }) {
   const {
-    handleFormWriter,
-    handleFormPassword,
-    handleFormTitle,
-    handleFormContents,
+    inputStates,
+    handleChangeInput,
     handleSubmit,
     handleEdit,
     isModalOpen,
@@ -29,10 +27,6 @@ export default function BoardWriteComponent({ isEdit }: { isEdit: boolean }) {
     isPassword,
     isTitle,
     isContents,
-    writer,
-    password,
-    title,
-    contents,
   } = useBoardWrite({ isEdit });
 
   return (
@@ -62,10 +56,11 @@ export default function BoardWriteComponent({ isEdit }: { isEdit: boolean }) {
               type="text"
               className="border rounded-lg p-3 w-full border-gray-400 leading-6 text-base placeholder:text-gray-400 disabled:bg-gray-200 disabled:border-gray-200"
               placeholder="작성자 명을 입력해 주세요"
-              onChange={handleFormWriter}
-              value={writer}
+              onChange={handleChangeInput}
+              value={inputStates.writer}
               disabled={isEdit}
               autoComplete="off"
+              name="writer"
             />
             {!isWriter && (
               <p className="text-red-500 text-base leading-6 font-medium mt-2">
@@ -83,10 +78,11 @@ export default function BoardWriteComponent({ isEdit }: { isEdit: boolean }) {
               type="password"
               className="border rounded-lg p-3 w-full border-gray-400 leading-6 text-base placeholder:text-gray-400 disabled:bg-gray-200 disabled:border-gray-200"
               placeholder="비밀번호를 입력해 주세요"
-              onChange={handleFormPassword}
+              onChange={handleChangeInput}
               disabled={isEdit}
-              value={password}
+              value={inputStates.password}
               autoComplete="off"
+              name="password"
             />
             {!isPassword && (
               <p className="text-red-500 text-base leading-6 font-medium mt-2">
@@ -106,8 +102,9 @@ export default function BoardWriteComponent({ isEdit }: { isEdit: boolean }) {
               type="text"
               className="border rounded-lg p-3 w-full border-gray-400 leading-6 text-base placeholder:text-gray-400"
               placeholder="제목을 입력해 주세요"
-              onChange={handleFormTitle}
-              value={title}
+              onChange={handleChangeInput}
+              value={inputStates.title}
+              name="title"
             />
 
             {!isTitle && (
@@ -127,8 +124,9 @@ export default function BoardWriteComponent({ isEdit }: { isEdit: boolean }) {
             <textarea
               className="border rounded-lg p-3 w-full min-h-80 border-gray-400 leading-6 text-base placeholder:text-gray-400"
               placeholder="내용을 입력해 주세요"
-              onChange={handleFormContents}
-              value={contents}
+              name="contents"
+              onChange={handleChangeInput}
+              value={inputStates.contents}
             />
             {!isContents && (
               <p className="text-red-500 text-base leading-6 font-medium mt-2">

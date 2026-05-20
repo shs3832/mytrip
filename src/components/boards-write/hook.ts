@@ -24,10 +24,12 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
   const [create_post] = useMutation(CreateBoardDocument);
   const [update_post] = useMutation(UpdateBoardDocument);
 
-  const [writer, setWriter] = useState("");
-  const [password, setPassword] = useState("");
-  const [title, setTitle] = useState("");
-  const [contents, setContents] = useState("");
+  const [inputStates, setInputStates] = useState({
+    writer: "",
+    title: "",
+    password: "",
+    contents: "",
+  });
 
   const [isWriter, setIsWriter] = useState<boolean>(true);
   const [isPassword, setIsPassword] = useState<boolean>(true);
@@ -73,16 +75,15 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
     setIsModalOpen(false);
   };
 
-  const handleFormWriter = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setWriter(event.target.value);
-  };
-
-  const handleFormPassword = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value);
-  };
-
-  const handleFormTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value);
+  const handleChangeInput = (
+    event:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
+    setInputStates({
+      ...inputStates,
+      [event.target.name]: event.target.value,
+    });
   };
 
   const handleFormAddressDetail = (
@@ -95,42 +96,38 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
     setYoutubeUrl(event.target.value);
   };
 
-  const handleFormContents = (
-    event: React.ChangeEvent<HTMLTextAreaElement>,
-  ) => {
-    setContents(event.target.value);
-  };
-
   const handleSubmit = async () => {
-    if (writer) {
+    if (inputStates.writer) {
       setIsWriter(true);
     } else {
       setIsWriter(false);
     }
-    if (password) {
+    if (inputStates.password) {
       setIsPassword(true);
     } else {
       setIsPassword(false);
     }
-    if (title) {
+    if (inputStates.title) {
       setIsTitle(true);
     } else {
       setIsTitle(false);
     }
-    if (contents) {
+    if (inputStates.contents) {
       setIsContents(true);
     } else {
       setIsContents(false);
     }
 
-    if (writer && password && title && contents) {
+    if (
+      inputStates.writer &&
+      inputStates.password &&
+      inputStates.title &&
+      inputStates.contents
+    ) {
       try {
         const result = await create_post({
           variables: {
-            writer,
-            password,
-            title,
-            contents,
+            ...inputStates,
             boardAddress: {
               zipcode: zoneCode,
               address,
@@ -152,12 +149,13 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
 
   const updateBoardInput: IUpdateBoardInput = {};
   const updateBoardAddress: NonNullable<IUpdateBoardInput["boardAddress"]> = {};
+
   const handleEdit = async () => {
-    if (title !== data?.fetchBoard?.title) {
-      updateBoardInput.title = title;
+    if (inputStates.title !== data?.fetchBoard?.title) {
+      updateBoardInput.title = inputStates.title;
     }
-    if (contents !== data?.fetchBoard?.contents) {
-      updateBoardInput.contents = contents;
+    if (inputStates.contents !== data?.fetchBoard?.contents) {
+      updateBoardInput.contents = inputStates.contents;
     }
 
     if (zoneCode !== data?.fetchBoard?.boardAddress?.zipcode) {
@@ -211,17 +209,20 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
   };
 
   const isChanged =
-    title !== data?.fetchBoard?.title ||
-    contents !== data?.fetchBoard?.contents ||
+    inputStates.title !== data?.fetchBoard?.title ||
+    inputStates.contents !== data?.fetchBoard?.contents ||
     zoneCode !== (data?.fetchBoard?.boardAddress?.zipcode ?? "") ||
     addressDetail !== (data?.fetchBoard?.boardAddress?.addressDetail ?? "") ||
     youtubeUrl !== (data?.fetchBoard?.youtubeUrl ?? "");
 
   useEffect(() => {
     if (data?.fetchBoard) {
-      setWriter(data.fetchBoard.writer ?? "");
-      setTitle(data.fetchBoard.title ?? "");
-      setContents(data.fetchBoard.contents ?? "");
+      setInputStates({
+        writer: data.fetchBoard.writer ?? "",
+        title: data.fetchBoard.title ?? "",
+        password: "",
+        contents: data.fetchBoard.contents ?? "",
+      });
       setZoneCode(data.fetchBoard.boardAddress?.zipcode ?? "");
       setAddress(data.fetchBoard.boardAddress?.address ?? "");
       setAddressDetail(data.fetchBoard.boardAddress?.addressDetail ?? "");
@@ -230,10 +231,8 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
   }, [data]);
 
   return {
-    handleFormWriter,
-    handleFormPassword,
-    handleFormTitle,
-    handleFormContents,
+    inputStates,
+    handleChangeInput,
     handleSubmit,
     handleEdit,
     isModalOpen,
@@ -253,9 +252,5 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
     isPassword,
     isTitle,
     isContents,
-    writer,
-    password,
-    title,
-    contents,
   };
 };
