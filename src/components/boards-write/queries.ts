@@ -8,6 +8,7 @@ export const CREATE_POST = gql`
     $contents: String!
     $youtubeUrl: String
     $boardAddress: BoardAddressInput
+    $images: [String!]
   ) {
     createBoard(
       createBoardInput: {
@@ -17,6 +18,7 @@ export const CREATE_POST = gql`
         contents: $contents
         youtubeUrl: $youtubeUrl
         boardAddress: $boardAddress
+        images: $images
       }
     ) {
       _id
@@ -30,6 +32,7 @@ export const CREATE_POST = gql`
         addressDetail
       }
       youtubeUrl
+      images
     }
   }
 `;
@@ -71,6 +74,18 @@ export const UPDATE_BOARD = gql`
       writer
       title
       contents
+    }
+  }
+`;
+
+export const UPLOAD_FILE = gql`
+  mutation uploadFile($file: Upload!) {
+    uploadFile(file: $file) {
+      url
+      _id
+      size
+      createdAt
+      updatedAt
     }
   }
 `;

@@ -15,6 +15,10 @@ export default function BoardWriteComponent({ isEdit }: { isEdit: boolean }) {
     handleOk,
     handleCancel,
     handleComplete,
+    imageUrls,
+    handleFileUpload,
+    handleFileFileBox,
+    handleDeleteImage,
     address,
     zoneCode,
     addressDetail,
@@ -202,8 +206,55 @@ export default function BoardWriteComponent({ isEdit }: { isEdit: boolean }) {
             <label className="flex items-center gap-1 mb-1 font-medium text-base leading-6 text-gray-800">
               사진첨부
             </label>
-            <div className="mt-2 flex items-center gap-3">
-              <div className="bg-gray-100 rounded-lg w-40 h-40">
+            <div className="mt-2 flex items-center gap-3 rounded-lg">
+              {new Array(3).fill(0).map((_, index) => (
+                <div
+                  key={index}
+                  className="bg-gray-100 rounded-lg w-40 h-40"
+                  onClick={() => {
+                    handleFileFileBox(`file${index + 1}`);
+                  }}
+                >
+                  {imageUrls[index] ? (
+                    <div className="w-40 h-40 group relative border border-gray-200 rounded-lg overflow-hidden">
+                      <img
+                        src={`https://storage.googleapis.com/${imageUrls[index]}`}
+                        alt="업로드된 이미지"
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-2 right-2 bg-opacity-40 bg-black text-white rounded-full w-6 h-6 flex items-center justify-center text-xs group-hover:flex hidden"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleDeleteImage(index);
+                        }}
+                      >
+                        X
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex items-center justify-center w-full h-full gap-2 flex-col cursor-pointer">
+                        <span className="text-3xl font-normal w-10 h-10 block flex items-center justify-center text-gray-600">
+                          +
+                        </span>
+                        <input
+                          type="file"
+                          className="hidden"
+                          id={`file${index + 1}`}
+                          onChange={(event) => {
+                            handleFileUpload(event, index);
+                          }}
+                        />
+                        <p className="text-gray-600">클릭해서 사진 업로드</p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              ))}
+
+              {/* <div className="bg-gray-100 rounded-lg w-40 h-40">
                 <div className="flex items-center justify-center w-full h-full gap-2 flex-col cursor-pointer">
                   <span className="text-3xl font-normal w-10 h-10 block flex items-center justify-center text-gray-600">
                     +
@@ -218,15 +269,7 @@ export default function BoardWriteComponent({ isEdit }: { isEdit: boolean }) {
                   </span>
                   <p className="text-gray-600">클릭해서 사진 업로드</p>
                 </div>
-              </div>
-              <div className="bg-gray-100 rounded-lg w-40 h-40">
-                <div className="flex items-center justify-center w-full h-full gap-2 flex-col cursor-pointer">
-                  <span className="text-3xl font-normal w-10 h-10 block flex items-center justify-center text-gray-600">
-                    +
-                  </span>
-                  <p className="text-gray-600">클릭해서 사진 업로드</p>
-                </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

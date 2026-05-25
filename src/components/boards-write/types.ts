@@ -7,4 +7,5 @@ export interface IUpdateBoardInput {
     addressDetail?: string;
   };
   youtubeUrl?: string;
+  images?: string[];
 }

@@ -71,7 +71,15 @@ export default function BoardListComponent({
         </div>
         <div className="contents-section flex flex-col gap-6">
           <div className="image-block">
-            <img src="https://picsum.photos/200/300" />
+            {data?.fetchBoard?.images
+              ?.filter(Boolean)
+              .map((url, index) => (
+                <img
+                  key={index}
+                  src={`https://storage.googleapis.com/${url}`}
+                  className="mb-4"
+                />
+              )) ?? null}
           </div>
           <p className="text-block text-base text-black">
             {data?.fetchBoard?.contents}

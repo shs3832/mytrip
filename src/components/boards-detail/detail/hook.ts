@@ -13,6 +13,8 @@ export default function useBoardDetail() {
     },
   });
 
+  console.log(data);
+
   const handleBackToList = () => {
     router.push("../boards/new");
   };

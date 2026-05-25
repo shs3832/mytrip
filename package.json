@@ -13,6 +13,7 @@
     "@ant-design/icons": "^6.2.3",
     "@apollo/client": "^3.11.8",
     "@codecamp2/ui": "^2.8.8",
+    "@dataconnect/generated": "file:src/dataconnect-generated",
     "@graphql-codegen/cli": "^7.0.0",
     "@hookform/resolvers": "^3.9.1",
     "@portone/browser-sdk": "^0.0.10",
@@ -41,6 +42,7 @@
     "zustand": "^5.0.0"
   },
   "devDependencies": {
+    "@types/apollo-upload-client": "^18.0.1",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

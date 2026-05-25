@@ -3,7 +3,6 @@ import useBoardCommentList from "@/components/boards-detail/comment-list/hook";
 import { useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import BoardCommentItem from "@/components/boards-detail/comment-list-item";
-import BoardCommentWrite from "@/components/boards-detail/comment-write";
 
 export default function BoardCommentList() {
   const { data, fetchMore } = useBoardCommentList();
