@@ -47,7 +47,7 @@ export default function NavigationComponent() {
         </div>
 
         <div className="ml-auto flex items-center shrink-0 cursor-pointer">
-          {token !== null ? (
+          {token !== "" ? (
             <>
               <div className="rounded-full bg-gray-100 w-8 h-8 flex items-center justify-center">
                 <UserOutlined />
