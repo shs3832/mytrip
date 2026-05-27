@@ -8,13 +8,19 @@ export default function LayoutComponent({
 }: {
   children: React.ReactNode;
 }) {
-  const { isHideBanner } = useLayoutComponent();
+  const { isHideBanner, isHideNavigation } = useLayoutComponent();
 
   return (
     <>
-      <NavigationComponent />
+      {!isHideNavigation && <NavigationComponent />}
       {!isHideBanner && <BoardListBannerComponent />}
-      <div className="mt-10 mb-10 max-w-7xl mx-auto px-10">{children}</div>
+      <div
+        className={
+          !isHideNavigation ? `mt-10 mb-10 max-w-7xl mx-auto px-10` : ""
+        }
+      >
+        {children}
+      </div>
     </>
   );
 }
