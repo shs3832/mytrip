@@ -1,5 +1,5 @@
 import { Input, Button, Modal, InputNumber } from "antd";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import "react-quill/dist/quill.snow.css";
 import { Controller } from "react-hook-form";
 import KakaoPostcodeEmbed from "react-daum-postcode";
@@ -246,7 +246,7 @@ export default function ProductWriteComponent({
           </span>
           <div className="mt-2 flex items-center gap-3 rounded-lg">
             {imageFiles &&
-              imageFiles?.map((file, index) => {
+              imageFiles.map((file, index) => {
                 return (
                   <div
                     className="bg-gray-100 rounded-lg w-40 h-40 group relative overflow-hidden"

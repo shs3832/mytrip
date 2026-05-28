@@ -15,7 +15,7 @@ import {
   ImagePreview,
 } from "@/components/product-write/types";
 import { Modal } from "antd";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 declare global {
   interface Window {
     kakao: any;
@@ -45,12 +45,24 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
     },
   });
 
+  const params = useParams();
+  const router = useRouter();
   const [travelProductCreate] = useMutation(CREATE_TRAVEL_PRODUCT);
   const [updateTravelproduct] = useMutation(UPDATE_TRAVEL_PRODUCT);
   const [address, setAddress] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
+  const [imageFiles, setImageFiles] = useState<ImagePreview[]>([]);
+  const [upload_file] = useMutation(UPLOAD_FILE);
+
+  const { data } = useQuery(FETCH_TRAVEL_PRODUCTS, {
+    variables: {
+      travelproductId: String(params.productId),
+    },
+    skip: !isEdit,
+  });
+
   const handleComplete = (data: Address) => {
     let fullAddress = data.address;
     let extraAddress = "";
@@ -99,8 +111,11 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
     setIsModalOpen(false);
   };
 
-  const [imageFiles, setImageFiles] = useState<ImagePreview[]>([]);
-  const [upload_file] = useMutation(UPLOAD_FILE);
+  const handleGetTags = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const getValues = event.target.value;
+    setValue("tags", getValues);
+  };
+
   const handleFileBox = (target: string) => {
     const targetInput = document.getElementById(target) as HTMLInputElement;
     if (!targetInput) return;
@@ -155,6 +170,13 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
         })
         .filter((url): url is string => Boolean(url));
 
+      const tags = data.tags
+        ? data.tags
+            .split(",")
+            .map((tags) => tags.trim())
+            .filter(Boolean)
+        : [];
+
       const result = await travelProductCreate({
         variables: {
           createTravelproductInput: {
@@ -162,7 +184,7 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
             remarks: data.remarks,
             contents: data.contents,
             price: data.price,
-            tags: data.tags ? [data.tags] : [],
+            tags: tags,
             images: imageUrls,
             travelproductAddress: {
               zipcode: data.zipcode,
@@ -174,6 +196,10 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
           },
         },
       });
+
+      router.push(
+        `/homework26/products/${result.data?.createTravelproduct._id}`,
+      );
 
       console.log(result);
     } catch (error) {
@@ -217,6 +243,13 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
 
       const finalImageUrls = [...existingImageUrls, ...newImageUrls];
       // 기존 파일, 신규파일을 합침
+
+      const tags = data.tags
+        ? data.tags
+            .split(",")
+            .map((tags) => tags.trim())
+            .filter(Boolean)
+        : [];
       const result = await updateTravelproduct({
         variables: {
           updateTravelproductInput: {
@@ -224,7 +257,7 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
             remarks: data.remarks,
             contents: data.contents,
             price: data.price,
-            tags: data.tags ? [data.tags] : [],
+            tags: tags,
             images: finalImageUrls, // 합친 파일을 업데이트
             travelproductAddress: {
               zipcode: data.zipcode,
@@ -247,18 +280,10 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
     }
   };
 
-  const params = useParams();
-
-  const { data } = useQuery(FETCH_TRAVEL_PRODUCTS, {
-    variables: {
-      travelproductId: String(params.productId),
-    },
-    skip: !isEdit,
-  });
-
   useEffect(() => {
     if (!isEdit || !data?.fetchTravelproduct) return;
     if (isEdit) {
+      console.log(data?.fetchTravelproduct.tags);
       setValue("name", data?.fetchTravelproduct.name);
       setValue("remarks", data?.fetchTravelproduct.remarks);
       setValue("contents", data?.fetchTravelproduct.contents);
@@ -331,6 +356,7 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
     handleFileBox,
     handleFileUpload,
     handleDeleteImage,
+    handleGetTags,
     onEdit,
   };
 }
