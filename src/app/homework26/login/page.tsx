@@ -4,6 +4,7 @@ import { Button, Input, Modal } from "antd";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useAccessTokenStore } from "@/commons/stores/accessToken";
 
 const LOGIN_USER = gql`
   mutation loginUser($email: String!, $password: String!) {
@@ -16,6 +17,7 @@ const LOGIN_USER = gql`
 export default function LoginPage() {
   const router = useRouter();
   const [login_user] = useMutation(LOGIN_USER);
+  const { setAccessToken } = useAccessTokenStore();
 
   const handleSignUp = () => {
     router.push("/homework26/signup");
@@ -44,14 +46,14 @@ export default function LoginPage() {
     setIsValid(isSubmit);
     if (!isSubmit) return;
     try {
-      localStorage.removeItem("token");
       const { data } = await login_user({
         variables: {
           email: userData.email,
           password: userData.password,
         },
       });
-      localStorage.setItem("token", data.loginUser.accessToken);
+      setAccessToken(data.loginUser.accessToken);
+      // localStorage.setItem("token", data.loginUser.accessToken);
       router.push("/homework26/boards");
     } catch (error) {
       if (error instanceof ApolloError) {

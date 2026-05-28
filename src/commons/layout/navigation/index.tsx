@@ -7,6 +7,7 @@ import {
 } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useAccessTokenStore } from "@/commons/stores/accessToken";
 
 export default function NavigationComponent() {
   const router = useRouter();
@@ -14,9 +15,10 @@ export default function NavigationComponent() {
     router.push("/homework24/login");
   };
   const [token, setToken] = useState<string>("");
+  const { accessToken } = useAccessTokenStore();
 
   useEffect(() => {
-    setToken(localStorage.getItem("token") || "");
+    setToken(accessToken);
   }, []);
 
   return (
