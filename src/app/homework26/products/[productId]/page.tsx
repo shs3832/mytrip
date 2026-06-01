@@ -7,13 +7,179 @@ import {
   TagOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Input, Button } from "antd";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import { Input, Button, Modal } from "antd";
+import { useParams, useRouter } from "next/navigation";
+import DOMPurify from "dompurify";
+import { useEffect, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/pagination";
+
 const { TextArea } = Input;
+const FETCH_TRAVEL_PRODUCT = gql`
+  query fetchTravelproduct($travelproductId: ID!) {
+    fetchTravelproduct(travelproductId: $travelproductId) {
+      _id
+      name
+      remarks
+      price
+      contents
+      images
+      tags
+      travelproductAddress {
+        address
+        addressDetail
+        lat
+        lng
+      }
+      buyer {
+        _id
+        name
+        email
+      }
+      seller {
+        _id
+        name
+        email
+      }
+    }
+  }
+`;
+
+const CREATE_TRAVEL_PRODUCT_QUESTION = gql`
+  mutation createTravelproductQuestion(
+    $createTravelproductQuestionInput: CreateTravelproductQuestionInput!
+    $travelproductId: ID!
+  ) {
+    createTravelproductQuestion(
+      createTravelproductQuestionInput: $createTravelproductQuestionInput
+      travelproductId: $travelproductId
+    ) {
+      _id
+      contents
+      travelproduct {
+        _id
+      }
+      createdAt
+      updatedAt
+      user {
+        _id
+        name
+        email
+      }
+    }
+  }
+`;
+
+declare global {
+  interface Window {
+    kakao: any;
+  }
+}
+
+const formatPriceToKRW = (price?: number | null) => {
+  return new Intl.NumberFormat("ko-KR").format(price ?? 0);
+};
+
 export default function ProductDetailPage() {
+  const router = useRouter();
+  const params = useParams();
+  const [safeContents, setSafeContents] = useState("");
+  const [zipCode, setZipCode] = useState("");
+  const [address, setAddress] = useState("");
+  const [addressDetail, setAddressDetail] = useState("");
+  const [lat, setLat] = useState("");
+  const [lng, setLng] = useState("");
+  const [currentImage, setCurrentImage] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [question, setQuestion] = useState("");
+
+  const { data } = useQuery(FETCH_TRAVEL_PRODUCT, {
+    variables: {
+      travelproductId: String(params.productId),
+    },
+  });
+
+  const [createTravelproductQuestion] = useMutation(
+    CREATE_TRAVEL_PRODUCT_QUESTION,
+  );
+
+  const handleQuestionSubmit = async () => {
+    // 문의하기 버튼 클릭 시 실행되는 함수
+
+    if (question.trim() === "") {
+      // 질문 내용이 비어있는 경우, 제출하지 않고 함수 종료
+      return;
+    }
+    try {
+      const result = await createTravelproductQuestion({
+        variables: {
+          createTravelproductQuestionInput: {
+            contents: question,
+          },
+          travelproductId: String(params.productId),
+        },
+      });
+      Modal.success({
+        content: "문의가 등록되었습니다.",
+      });
+
+      setQuestion("");
+      console.log(result);
+    } catch (error) {
+      console.error("문의 등록 실패:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (data?.fetchTravelproduct?.contents) {
+      setSafeContents(DOMPurify.sanitize(data.fetchTravelproduct.contents));
+    }
+    setZipCode(data?.fetchTravelproduct.travelproductAddress.zipcode);
+    setAddress(data?.fetchTravelproduct.travelproductAddress.address);
+    setAddressDetail(
+      data?.fetchTravelproduct.travelproductAddress.addressDetail,
+    );
+    setLat(data?.fetchTravelproduct.travelproductAddress.lat);
+    setLng(data?.fetchTravelproduct.travelproductAddress.lng);
+  }, [data]);
+
+  useEffect(() => {
+    if (!address) return;
+    if (!lat || !lng) return;
+    if (!window.kakao?.maps) return;
+
+    window.kakao.maps.load(() => {
+      const container = document.getElementById("map");
+      if (!container) return;
+      const map = new window.kakao.maps.Map(container, {
+        center: new window.kakao.maps.LatLng(lat, lng),
+        level: 3,
+      });
+
+      // 마커 표시
+      const marker = new window.kakao.maps.Marker({
+        map: map,
+        position: new window.kakao.maps.LatLng(lat, lng),
+      });
+      marker.setMap(map);
+    });
+  }, [address, lat, lng]);
+
+  // useEffect(() => {
+  //   if (data?.fetchTravelproduct?.images?.length) {
+  //     currentImage = `https://storage.googleapis.com/${data.fetchTravelproduct.images[0]}`;
+  //   }
+  // }, [currentImage, data]);
+
   return (
     <>
       <div className="flex items-center w-full mb-2">
-        <div className="text-2xl font-bold">숙박권 상세페이지</div>
+        <div className="text-2xl font-bold">
+          {data?.fetchTravelproduct?.name}
+        </div>
         <div className="ml-auto flex items-center gap-2">
           <button className="flex items-center w-6 h-6 text-gray-800 text-sm">
             <DeleteOutlined />
@@ -26,56 +192,109 @@ export default function ProductDetailPage() {
           </button>
           <div className="flex items-center py-1 px-2 text-white shadow-md text-sm bg-black bg-opacity-40 rounded-lg">
             <TagOutlined />
-            <span className="ml-1">24</span>
+            <span className="ml-1">
+              {data?.fetchTravelproduct?.tags?.length}
+            </span>
           </div>
         </div>
       </div>
       <div className="flex flex-col gap-2">
         <p className="text-gray-600 text-base font-medium">
-          모던한 분위기의 감도높은 숙소
+          {data?.fetchTravelproduct?.remarks}
         </p>
-        <div className="tags">
-          <span className="text-blue-500 text-base font-medium">#6인 이하</span>
+        <div className="tags flex items-center gap-2">
+          {data?.fetchTravelproduct?.tags?.map((tag: string) => (
+            <span key={tag} className="text-blue-500 text-base font-medium">
+              #{tag}
+            </span>
+          ))}
         </div>
       </div>
       <div className="flex w-full items-start gap-10">
         <div className="flex w-full flex-col">
-          <div className="flex items-start gap-10">
-            <div className="rounded-lg">이미지</div>
+          <div className="flex items-start gap-6">
+            <div className="rounded-lg overflow-hidden w-[511px] h-[400px] relative flex-grow border border-gray-300">
+              {data ? (
+                <div className="w-full h-full bg-gray-200  rounded-lg flex items-center justify-center">
+                  <img
+                    src={
+                      currentImage ||
+                      `https://storage.googleapis.com/${data.fetchTravelproduct.images[0]}`
+                    }
+                    alt="Product Image"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+                  <span className="text-gray-500">이미지가 없습니다.</span>
+                </div>
+              )}
+            </div>
             <div className="flex flex-col">
-              <div className="w-[180px] h-[136px] rounded-lg">썸네일</div>
-              <div className="w-[180px] h-[136px] rounded-lg">썸네일</div>
+              {data && (
+                <Swiper
+                  loop={false}
+                  slidesPerView={3}
+                  spaceBetween={20}
+                  direction={"vertical"}
+                  className="w-[180px] h-[400px]"
+                >
+                  {data?.fetchTravelproduct?.images?.map(
+                    (el: string, index: number) => {
+                      return (
+                        <SwiperSlide
+                          key={el}
+                          className={`relative w-full h-full rounded-lg overflow-hidden border border-gray-300 cursor-pointer ${index !== currentIndex ? "opacity-50" : ""}`}
+                          onClick={() => {
+                            setCurrentIndex(index);
+                            setCurrentImage(
+                              `https://storage.googleapis.com/${el}`,
+                            );
+                          }}
+                        >
+                          <img
+                            src={`https://storage.googleapis.com/${el}`}
+                            alt="배너이미지"
+                            className="w-full h-full object-cover"
+                          />
+                        </SwiperSlide>
+                      );
+                    },
+                  )}
+                </Swiper>
+              )}
+              {/* {data?.fetchTravelproduct?.images?.map(
+                (el: string, index: number) => {
+                  return (
+                    <div className="w-[180px] h-[136px] rounded-lg" key={index}>
+                      <img
+                        src={`https://storage.googleapis.com/${el}`}
+                        alt="Product Image"
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                    </div>
+                  );
+                },
+              )} */}
             </div>
           </div>
           <div className="border-t border-gray-300 mt-10 pt-10">
             <h2 className="mb-5 font-bold text-2xl">상세 설명</h2>
-            <p>
-              살어리 살어리랏다 쳥산(靑山)애 살어리랏다 멀위랑 ᄃᆞ래랑 먹고
-              쳥산(靑山)애 살어리랏다 얄리얄리 얄랑셩 얄라리 얄라 우러라 우러라
-              새여 자고 니러 우러라 새여 널라와 시름 한 나도 자고 니러 우니로라
-              리얄리 얄라셩 얄라리 얄라 가던 새 가던 새 본다 믈 아래 가던 새
-              본다 잉무든 장글란 가지고 믈 아래 가던 새 본다 얄리얄리 얄라셩
-              얄라리 얄라 이링공 뎌링공 ᄒᆞ야 나즈란 디내와손뎌 오리도 가리도
-              업슨 바므란 ᄯᅩ 엇디 호리라 얄리얄리 얄라셩 얄라리 얄라 어듸라
-              더디던 돌코 누리라 마치던 돌코 믜리도 괴리도 업시 마자셔 우니노라
-              얄리얄리 얄라셩 얄라리 얄라 살어리 살어리랏다 바ᄅᆞ래 살어리랏다
-              ᄂᆞᄆᆞ자기 구조개랑 먹고 바ᄅᆞ래 살어리랏다 얄리얄리 얄라셩 얄라리
-              얄라 가다가 가다가 드로라 에졍지 가다가 드로라 사ᄉᆞ미 지ᇝ대예
-              올아셔 ᄒᆡ금(奚琴)을 혀거를 드로라 얄리얄리 얄라셩 얄라리 얄라
-              가다니 ᄇᆡ브른 도긔 설진 강수를 비조라 조롱곳 누로기 ᄆᆡ와
-              잡ᄉᆞ와니 내 엇디 ᄒᆞ리잇고 얄리얄리 얄라셩 얄라리 얄라
-            </p>
+            <p dangerouslySetInnerHTML={{ __html: safeContents }} />
           </div>
 
           <div className="border-t border-gray-300 mt-10 pt-10">
             <h2 className="mb-5 font-bold text-2xl">상세 위치</h2>
-            <div className="border rounded-lg w-full h-[280px]">123</div>
+            <div id="map" className="border rounded-lg w-full h-[280px]"></div>
           </div>
         </div>
         <div className="flex items-center gap-6 ">
           <div className="flex flex-col">
             <div className="border border-gray-300 rounded-lg p-6">
-              <strong>32500원</strong>
+              <strong>
+                {formatPriceToKRW(data?.fetchTravelproduct?.price)}원
+              </strong>
               <ul>
                 <li className="text-gray-600 text-sm mt-2">
                   숙박권은 트립트립에서 포인트 충전 후 구매하실 수 있습니다.
@@ -94,7 +313,9 @@ export default function ProductDetailPage() {
                 <div>
                   <UserOutlined />
                 </div>
-                <div className="text-gray-600 text-sm ml-1">판매자 이름</div>
+                <div className="text-gray-600 text-sm ml-1">
+                  {data?.fetchTravelproduct?.seller?.name}
+                </div>
               </div>
             </div>
           </div>
@@ -107,8 +328,16 @@ export default function ProductDetailPage() {
             placeholder="문의 내용을 입력해주세요."
             rows={4}
             className="w-full h-24 border border-gray-300 rounded-lg p-2"
+            id="question"
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
           />
-          <Button type="primary" size="large" className="ml-auto">
+          <Button
+            type="primary"
+            size="large"
+            className="ml-auto"
+            onClick={handleQuestionSubmit}
+          >
             문의하기
           </Button>
         </div>
