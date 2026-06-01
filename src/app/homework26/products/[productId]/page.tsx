@@ -1,14 +1,13 @@
 "use client";
 import {
   DeleteOutlined,
-  EnterOutlined,
   LinkOutlined,
   PushpinOutlined,
   TagOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { Input, Button, Modal } from "antd";
+import { useMutation, useQuery } from "@apollo/client";
+import { Button, Modal } from "antd";
 import { useParams, useRouter } from "next/navigation";
 import DOMPurify from "dompurify";
 import { useEffect, useState } from "react";
@@ -16,62 +15,14 @@ import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
-
-const { TextArea } = Input;
-const FETCH_TRAVEL_PRODUCT = gql`
-  query fetchTravelproduct($travelproductId: ID!) {
-    fetchTravelproduct(travelproductId: $travelproductId) {
-      _id
-      name
-      remarks
-      price
-      contents
-      images
-      tags
-      travelproductAddress {
-        address
-        addressDetail
-        lat
-        lng
-      }
-      buyer {
-        _id
-        name
-        email
-      }
-      seller {
-        _id
-        name
-        email
-      }
-    }
-  }
-`;
-
-const CREATE_TRAVEL_PRODUCT_QUESTION = gql`
-  mutation createTravelproductQuestion(
-    $createTravelproductQuestionInput: CreateTravelproductQuestionInput!
-    $travelproductId: ID!
-  ) {
-    createTravelproductQuestion(
-      createTravelproductQuestionInput: $createTravelproductQuestionInput
-      travelproductId: $travelproductId
-    ) {
-      _id
-      contents
-      travelproduct {
-        _id
-      }
-      createdAt
-      updatedAt
-      user {
-        _id
-        name
-        email
-      }
-    }
-  }
-`;
+import ProductDetailQuestionWriteComponent from "@/components/product-detail/comment-write";
+import ProductDetailQuestionListComponent from "@/components/product-detail/comment-list";
+import {
+  FETCH_TRAVEL_PRODUCT_QUESTIONS,
+  DELETE_TRAVEL_PRODUCT_QUESTION,
+  FETCH_TRAVEL_PRODUCT,
+  FETCH_USER_LOGGED_IN,
+} from "@/components/product-detail/queries";
 
 declare global {
   interface Window {
@@ -94,7 +45,6 @@ export default function ProductDetailPage() {
   const [lng, setLng] = useState("");
   const [currentImage, setCurrentImage] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [question, setQuestion] = useState("");
 
   const { data } = useQuery(FETCH_TRAVEL_PRODUCT, {
     variables: {
@@ -102,48 +52,59 @@ export default function ProductDetailPage() {
     },
   });
 
-  const [createTravelproductQuestion] = useMutation(
-    CREATE_TRAVEL_PRODUCT_QUESTION,
+  const { data: questionData } = useQuery(FETCH_TRAVEL_PRODUCT_QUESTIONS, {
+    variables: {
+      travelproductId: String(params.productId),
+      page: 1,
+    },
+  });
+
+  const { data: userData } = useQuery(FETCH_USER_LOGGED_IN);
+
+  const [deleteTravelproductQuestion] = useMutation(
+    DELETE_TRAVEL_PRODUCT_QUESTION,
   );
 
-  const handleQuestionSubmit = async () => {
-    // 문의하기 버튼 클릭 시 실행되는 함수
-
-    if (question.trim() === "") {
-      // 질문 내용이 비어있는 경우, 제출하지 않고 함수 종료
-      return;
-    }
+  const handleDeleteQuestion = async (id: string) => {
+    // 문의 삭제 버튼 클릭 시 실행되는 함수
     try {
-      const result = await createTravelproductQuestion({
+      await deleteTravelproductQuestion({
         variables: {
-          createTravelproductQuestionInput: {
-            contents: question,
-          },
-          travelproductId: String(params.productId),
+          travelproductQuestionId: id,
         },
+        refetchQueries: [
+          {
+            query: FETCH_TRAVEL_PRODUCT_QUESTIONS,
+            variables: {
+              travelproductId: String(params.productId),
+              page: 1,
+            },
+          },
+        ],
       });
       Modal.success({
-        content: "문의가 등록되었습니다.",
+        content: "문의가 삭제되었습니다.",
       });
-
-      setQuestion("");
-      console.log(result);
+      // 문의 목록을 다시 불러오거나 상태를 업데이트하여 UI를 갱신할 수 있습니다.
     } catch (error) {
-      console.error("문의 등록 실패:", error);
+      console.error("문의 삭제 실패:", error);
     }
   };
 
+  const isMine =
+    data?.fetchTravelproduct?.seller?._id === userData?.fetchUserLoggedIn?._id;
+  console.log(isMine);
   useEffect(() => {
     if (data?.fetchTravelproduct?.contents) {
-      setSafeContents(DOMPurify.sanitize(data.fetchTravelproduct.contents));
+      setSafeContents(DOMPurify.sanitize(data.fetchTravelproduct?.contents));
     }
-    setZipCode(data?.fetchTravelproduct.travelproductAddress.zipcode);
-    setAddress(data?.fetchTravelproduct.travelproductAddress.address);
+    setZipCode(data?.fetchTravelproduct?.travelproductAddress?.zipcode);
+    setAddress(data?.fetchTravelproduct?.travelproductAddress?.address);
     setAddressDetail(
-      data?.fetchTravelproduct.travelproductAddress.addressDetail,
+      data?.fetchTravelproduct?.travelproductAddress?.addressDetail,
     );
-    setLat(data?.fetchTravelproduct.travelproductAddress.lat);
-    setLng(data?.fetchTravelproduct.travelproductAddress.lng);
+    setLat(data?.fetchTravelproduct?.travelproductAddress?.lat);
+    setLng(data?.fetchTravelproduct?.travelproductAddress?.lng);
   }, [data]);
 
   useEffect(() => {
@@ -167,12 +128,6 @@ export default function ProductDetailPage() {
       marker.setMap(map);
     });
   }, [address, lat, lng]);
-
-  // useEffect(() => {
-  //   if (data?.fetchTravelproduct?.images?.length) {
-  //     currentImage = `https://storage.googleapis.com/${data.fetchTravelproduct.images[0]}`;
-  //   }
-  // }, [currentImage, data]);
 
   return (
     <>
@@ -264,19 +219,6 @@ export default function ProductDetailPage() {
                   )}
                 </Swiper>
               )}
-              {/* {data?.fetchTravelproduct?.images?.map(
-                (el: string, index: number) => {
-                  return (
-                    <div className="w-[180px] h-[136px] rounded-lg" key={index}>
-                      <img
-                        src={`https://storage.googleapis.com/${el}`}
-                        alt="Product Image"
-                        className="w-full h-full object-cover rounded-lg"
-                      />
-                    </div>
-                  );
-                },
-              )} */}
             </div>
           </div>
           <div className="border-t border-gray-300 mt-10 pt-10">
@@ -323,130 +265,29 @@ export default function ProductDetailPage() {
       </div>
       <div className="mt-10">
         <h2 className="mb-5 text-base">문의하기</h2>
-        <div className="flex flex-col gap-4">
-          <TextArea
-            placeholder="문의 내용을 입력해주세요."
-            rows={4}
-            className="w-full h-24 border border-gray-300 rounded-lg p-2"
-            id="question"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-          />
-          <Button
-            type="primary"
-            size="large"
-            className="ml-auto"
-            onClick={handleQuestionSubmit}
-          >
-            문의하기
-          </Button>
-        </div>
 
-        <div className="mt-10">
-          <div className="comment-card mb-5 pb-5 border-b border-gray-200">
-            <div>
-              <div className="comment-header flex items-center">
-                <div className="profile-info flex items-center mt-2">
-                  <span className="block w-full h-full rounded-[50%]">
-                    <UserOutlined />
-                  </span>
-                  <span className="text-sm text-gray-700 ml-1 shrink-0">
-                    asdasd
-                  </span>
-                </div>
-                <div className="comment-btns ml-auto flex items-center gap-2">
-                  <button>수정</button>
-                  <button>삭제</button>
-                </div>
-              </div>
-              <div className="comment-body text-base mt-2 text-gray-800">
-                asdasd
-              </div>
-              <p className="comment-date text-xs mt-2 text-gray-700">
-                2026.01.01
-              </p>
-            </div>
-            <div className="pl-5 mt-4">
-              <div className="flex items-start gap-4">
-                <EnterOutlined className="scale-x-[-1] text-sm self-start mt-1" />
-                <div className="w-full">
-                  <div className="comment-header flex items-center">
-                    <div className="profile-info flex items-center ">
-                      <span className="block w-full h-full rounded-[50%]">
-                        <UserOutlined />
-                      </span>
-                      <span className="text-sm text-gray-700 ml-1 shrink-0">
-                        asdasd
-                      </span>
-                    </div>
-                    <div className="comment-btns ml-auto flex items-center gap-2">
-                      <button>수정</button>
-                      <button>삭제</button>
-                    </div>
-                  </div>
-                  <div className="comment-body text-base mt-2 text-gray-800">
-                    asdasd
-                  </div>
-                  <p className="comment-date text-xs mt-2 text-gray-700">
-                    2026.01.01
-                  </p>
-
-                  <div className="flex flex-col gap-4 mt-4">
-                    <TextArea
-                      placeholder="답변내용을 입력해 주세요"
-                      rows={4}
-                      className="w-full h-24 border border-gray-300 rounded-lg p-2"
-                    />
-                    <div className="flex gap-2 mt-2 justify-end">
-                      <Button
-                        type="default"
-                        color="default"
-                        variant="outlined"
-                        size="large"
-                      >
-                        취소
-                      </Button>
-                      <Button
-                        type="default"
-                        color="default"
-                        variant="solid"
-                        size="large"
-                      >
-                        답변하기
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+        {questionData?.fetchTravelproductQuestions?.length === 0 && (
+          <div className="mt-10 w-full h-24 border border-gray-300 rounded-lg flex items-center justify-center">
+            <span className="text-gray-500">등록된 문의가 없습니다.</span>
           </div>
+        )}
 
-          <div className="flex flex-col gap-4">
-            <TextArea
-              placeholder="답변내용을 입력해 주세요"
-              rows={4}
-              className="w-full h-24 border border-gray-300 rounded-lg p-2"
+        {questionData?.fetchTravelproductQuestions?.map(
+          (question: {
+            _id: string;
+            contents: string;
+            createdAt: string;
+            user: { name: string };
+          }) => (
+            <ProductDetailQuestionListComponent
+              key={question._id}
+              question={question}
+              handleDeleteQuestion={handleDeleteQuestion}
+              isMine={isMine}
             />
-            <div className="flex gap-2 mt-2 justify-end">
-              <Button
-                type="default"
-                color="default"
-                variant="outlined"
-                size="large"
-              >
-                취소
-              </Button>
-              <Button
-                type="default"
-                color="default"
-                variant="solid"
-                size="large"
-              >
-                답변하기
-              </Button>
-            </div>
-          </div>
-        </div>
+          ),
+        )}
+        <ProductDetailQuestionWriteComponent isEdit={false} />
       </div>
     </>
   );
