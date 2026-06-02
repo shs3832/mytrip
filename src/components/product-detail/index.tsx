@@ -14,6 +14,7 @@ import "swiper/css/pagination";
 import ProductDetailQuestionWriteComponent from "@/components/product-detail/comment-write";
 import ProductDetailQuestionListComponent from "@/components/product-detail/comment-list";
 import { IProductDetail } from "./types";
+import { ProductDetailModalComponent } from "./modal";
 
 export function ProductDetailComponentPage({
   safeContents,
@@ -28,9 +29,20 @@ export function ProductDetailComponentPage({
   setCurrentImage,
   setCurrentIndex,
   formatPriceToKRW,
+  isBuyModalOpen,
+  setIsBuyModalOpen,
+  modalData,
+  handleBuyConfirm,
 }: IProductDetail) {
   return (
     <>
+      <ProductDetailModalComponent
+        isBuyModalOpen={isBuyModalOpen}
+        setIsBuyModalOpen={setIsBuyModalOpen}
+        modalData={modalData}
+        handlePurchase={handlePurchase}
+        handleBuyConfirm={handleBuyConfirm}
+      />
       <div className="flex items-center w-full mb-2">
         <div className="text-2xl font-bold">
           {data?.fetchTravelproduct?.name}
@@ -152,7 +164,7 @@ export function ProductDetailComponentPage({
                 type="primary"
                 size="large"
                 className="mt-4 w-full"
-                onClick={handlePurchase}
+                onClick={handleBuyConfirm}
               >
                 구매하기
               </Button>

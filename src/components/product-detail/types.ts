@@ -1,3 +1,5 @@
+import { Dispatch } from "react";
+
 export type IReplyQuestionElement = {
   _id: string;
   contents: string;
@@ -22,4 +24,25 @@ export type IProductDetail = {
   setCurrentImage: (image: string) => void;
   setCurrentIndex: (index: number) => void;
   formatPriceToKRW: (price: number) => string;
+  confirmData?: {
+    title: string;
+    content: string;
+    okText: string;
+    cancelText: string;
+  };
+  pointData?: {
+    title: string;
+    content: string;
+    okText: string;
+    cancelText: string;
+  };
+  isBuyModalOpen: boolean;
+  setIsBuyModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  modalData: {
+    title: string;
+    content: string;
+    okText: string;
+    cancelText: string;
+  };
+  handleBuyConfirm: () => void;
 };

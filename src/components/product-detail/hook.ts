@@ -1,8 +1,9 @@
 import { ApolloError, useMutation, useQuery } from "@apollo/client";
 import { Modal } from "antd";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import DOMPurify from "dompurify";
 import { useEffect, useState } from "react";
+import * as PortOne from "@portone/browser-sdk/v2";
 
 import {
   FETCH_TRAVEL_PRODUCT_QUESTIONS,
@@ -19,12 +20,24 @@ declare global {
   }
 }
 
+import type {
+  DeleteTravelproductQuestionMutation,
+  DeleteTravelproductQuestionMutationVariables,
+  FetchTravelproductForDetailQuery,
+  FetchTravelproductForDetailQueryVariables,
+  FetchUserLoggedInQuery,
+  FetchUserLoggedInQueryVariables,
+  ToggleTravelproductPickMutation,
+  ToggleTravelproductPickMutationVariables,
+} from "@/commons/graphql/graphql";
+
 const formatPriceToKRW = (price?: number | null) => {
   return new Intl.NumberFormat("ko-KR").format(price ?? 0);
 };
 
 export function useProductDetailHook() {
   const params = useParams();
+  const router = useRouter();
   const [safeContents, setSafeContents] = useState("");
   const [zipCode, setZipCode] = useState("");
   const [address, setAddress] = useState("");
@@ -38,17 +51,26 @@ export function useProductDetailHook() {
       travelproductId: String(params.productId),
     },
   });
-  const { data: questionData } = useQuery(FETCH_TRAVEL_PRODUCT_QUESTIONS, {
+  const { data: questionData } = useQuery<
+    FetchTravelproductForDetailQuery,
+    FetchTravelproductForDetailQueryVariables
+  >(FETCH_TRAVEL_PRODUCT_QUESTIONS, {
     variables: {
       travelproductId: String(params.productId),
-      page: 1,
     },
   });
-  const { data: userData } = useQuery(FETCH_USER_LOGGED_IN);
-  const [product_pinned] = useMutation(TOGGLE_TRAVEL_PRODUCT_PICK);
-  const [deleteTravelproductQuestion] = useMutation(
-    DELETE_TRAVEL_PRODUCT_QUESTION,
-  );
+  const { data: userData } = useQuery<
+    FetchUserLoggedInQuery,
+    FetchUserLoggedInQueryVariables
+  >(FETCH_USER_LOGGED_IN);
+  const [product_pinned] = useMutation<
+    ToggleTravelproductPickMutation,
+    ToggleTravelproductPickMutationVariables
+  >(TOGGLE_TRAVEL_PRODUCT_PICK);
+  const [deleteTravelproductQuestion] = useMutation<
+    DeleteTravelproductQuestionMutation,
+    DeleteTravelproductQuestionMutationVariables
+  >(DELETE_TRAVEL_PRODUCT_QUESTION);
   const [product_buy] = useMutation(
     CREATE_POINT_TRANSACTION_OF_BUYING_AND_SELLING,
   );
@@ -94,19 +116,70 @@ export function useProductDetailHook() {
           },
         ],
       });
-      Modal.success({ content: "관심게시물로 등록했습니다" });
     } catch (error) {
       console.log(error);
     }
   };
+
+  const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
+
+  const [modalData, setModalData] = useState({
+    title: "",
+    content: "",
+    okText: "",
+    cancelText: "",
+  });
+
+  const pointData = {
+    title: "포인트 부족",
+    content: "포인트가 부족합니다. 포인트 충전 후 구매하세요.",
+    okText: "확인",
+    cancelText: "취소",
+    onOk: () => {
+      router.push("/homework30/mypage/points");
+    },
+  };
+
   const handlePurchase = async () => {
+    setIsBuyModalOpen(false);
     try {
-      await product_buy({
-        variables: {
-          useritemId: String(params.productId),
+      // await product_buy({
+      //   variables: {
+      //     useritemId: String(params.productId),
+      //   },
+      // });
+      console.log("체크");
+      const userPoint = userData?.fetchUserLoggedIn?.userPoint?.amount || 0;
+      const productPrice = data?.fetchTravelproduct?.price;
+      if (userPoint < productPrice) {
+        setModalData(pointData);
+        setIsBuyModalOpen(true);
+        return;
+      }
+      console.log("통과");
+      return;
+
+      const rsp = await PortOne.requestPayment({
+        // 결제 요청 파라미터 입력
+        storeId: process.env.NEXT_PUBLIC_STORE_ID,
+        paymentId: `payment_${crypto.randomUUID()}`,
+        orderName: data?.fetchTravelproduct?.name,
+        totalAmount: productPrice,
+        currency: "CURRENCY_KRW",
+        channelKey: process.env.NEXT_PUBLIC_CHANNEL_KEY,
+        payMethod: "EASY_PAY",
+        customer: {
+          fullName: userData?.fetchUserLoggedIn?.name,
+          email: userData?.fetchUserLoggedIn?.email,
         },
       });
+      // 결제 성공 시 로직,
+      Modal.success({
+        content: `결제가 완료되었습니다.`,
+      });
+      router.push("/homework30/mypage/points");
     } catch (error) {
+      console.log(error);
       if (error instanceof ApolloError) {
         const message = error.graphQLErrors[0]?.message;
         Modal.error({
@@ -114,6 +187,18 @@ export function useProductDetailHook() {
         });
       }
     }
+  };
+
+  const handleBuyConfirm = () => {
+    const confirmData = {
+      title: "해당 숙박권을 구매 하시겠어요?",
+      content: "해당 숙박권은 포인트로만 구매 가능합니다.",
+      okText: "확인",
+      cancelText: "취소",
+      onOK: handlePurchase,
+    };
+    setModalData(confirmData);
+    setIsBuyModalOpen(true);
   };
 
   useEffect(() => {
@@ -165,5 +250,9 @@ export function useProductDetailHook() {
     setCurrentImage,
     setCurrentIndex,
     formatPriceToKRW,
+    isBuyModalOpen,
+    setIsBuyModalOpen,
+    modalData,
+    handleBuyConfirm,
   };
 }

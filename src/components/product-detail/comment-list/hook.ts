@@ -6,6 +6,10 @@ import {
   CREATE_TRAVEL_PRODUCT_QUESTION_ANSWER,
   FETCH_TRAVEL_PRODUCT_QUESTION_ANSWER,
 } from "./queries";
+import {
+  FetchTravelproductQuestionAnswersForListQuery,
+  FetchTravelproductQuestionAnswersForListQueryVariables,
+} from "@/commons/graphql/graphql";
 
 export function useProductDetail({ questionId }: { questionId: string }) {
   const [isEditQuestion, setIsEditQuestion] = useState(false);
@@ -16,7 +20,10 @@ export function useProductDetail({ questionId }: { questionId: string }) {
     CREATE_TRAVEL_PRODUCT_QUESTION_ANSWER,
   );
 
-  const { data: reply } = useQuery(FETCH_TRAVEL_PRODUCT_QUESTION_ANSWER, {
+  const { data: reply } = useQuery<
+    FetchTravelproductQuestionAnswersForListQuery,
+    FetchTravelproductQuestionAnswersForListQueryVariables
+  >(FETCH_TRAVEL_PRODUCT_QUESTION_ANSWER, {
     variables: {
       travelproductQuestionId: questionId,
     },
