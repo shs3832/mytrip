@@ -26,6 +26,3 @@
      1. 등록: createTravelproductQuestionAnswer
      2. 수정: updateTravelproductQuestionAnswer
      3. 삭제: deleteTravelproductQuestionAnswer
-
-테스트글 아이디 :
-6a17a27dd4299d0029cd478f

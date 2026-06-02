@@ -6,7 +6,7 @@ import {
   TagOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { useMutation, useQuery } from "@apollo/client";
+import { ApolloError, useMutation, useQuery } from "@apollo/client";
 import { Button, Modal } from "antd";
 import { useParams, useRouter } from "next/navigation";
 import DOMPurify from "dompurify";
@@ -22,6 +22,8 @@ import {
   DELETE_TRAVEL_PRODUCT_QUESTION,
   FETCH_TRAVEL_PRODUCT,
   FETCH_USER_LOGGED_IN,
+  TOGGLE_TRAVEL_PRODUCT_PICK,
+  CREATE_POINT_TRANSACTION_OF_BUYING_AND_SELLING,
 } from "@/components/product-detail/queries";
 
 declare global {
@@ -91,9 +93,53 @@ export default function ProductDetailPage() {
     }
   };
 
+  const [product_pinned] = useMutation(TOGGLE_TRAVEL_PRODUCT_PICK);
+  const handlePinned = async () => {
+    try {
+      await product_pinned({
+        variables: {
+          travelproductId: String(params.productId),
+        },
+        refetchQueries: [
+          {
+            query: FETCH_TRAVEL_PRODUCT,
+            variables: {
+              travelproductId: String(params.productId),
+            },
+          },
+        ],
+      });
+      Modal.success({ content: "관심게시물로 등록했습니다" });
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const [product_buy] = useMutation(
+    CREATE_POINT_TRANSACTION_OF_BUYING_AND_SELLING,
+  );
+
+  const handlePurchase = async () => {
+    try {
+      const result = await product_buy({
+        variables: {
+          useritemId: String(params.productId),
+        },
+      });
+    } catch (error) {
+      if (error instanceof ApolloError) {
+        const message = error.graphQLErrors[0]?.message;
+        Modal.error({
+          content: message ?? "에러가 발생했습니다.",
+        });
+      }
+    }
+  };
+
   const isMine =
     data?.fetchTravelproduct?.seller?._id === userData?.fetchUserLoggedIn?._id;
-  console.log(isMine);
+
   useEffect(() => {
     if (data?.fetchTravelproduct?.contents) {
       setSafeContents(DOMPurify.sanitize(data.fetchTravelproduct?.contents));
@@ -145,10 +191,13 @@ export default function ProductDetailPage() {
           <button className="flex items-center w-6 h-6 text-gray-800 text-sm">
             <PushpinOutlined />
           </button>
-          <div className="flex items-center py-1 px-2 text-white shadow-md text-sm bg-black bg-opacity-40 rounded-lg">
+          <div
+            onClick={handlePinned}
+            className="flex items-center py-1 px-2 text-white shadow-md text-sm bg-black bg-opacity-40 rounded-lg cursor-pointer"
+          >
             <TagOutlined />
             <span className="ml-1">
-              {data?.fetchTravelproduct?.tags?.length}
+              {data?.fetchTravelproduct?.pickedCount ?? 0}
             </span>
           </div>
         </div>
@@ -245,7 +294,12 @@ export default function ProductDetailPage() {
                   상세 설명에 숙박권 사용기한을 꼭 확인해 주세요.
                 </li>
               </ul>
-              <Button type="primary" size="large" className="mt-4 w-full">
+              <Button
+                type="primary"
+                size="large"
+                className="mt-4 w-full"
+                onClick={handlePurchase}
+              >
                 구매하기
               </Button>
             </div>

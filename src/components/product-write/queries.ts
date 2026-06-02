@@ -50,14 +50,14 @@ export const UPDATE_TRAVEL_PRODUCT = gql`
 `;
 
 export const UPLOAD_FILE = gql`
-  mutation uploadFile($file: Upload!) {
+  mutation uploadTravelproductFile($file: Upload!) {
     uploadFile(file: $file) {
       url
     }
   }
 `;
 export const FETCH_TRAVEL_PRODUCTS = gql`
-  query fetchTravelproduct($travelproductId: ID!) {
+  query fetchTravelproductForEdit($travelproductId: ID!) {
     fetchTravelproduct(travelproductId: $travelproductId) {
       _id
       name

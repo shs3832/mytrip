@@ -8,7 +8,7 @@ export default function ProductDetailQuestionWriteComponent({
   setIsEditQuestion,
   question,
 }: {
-  isEdit: boolean;
+  isEdit?: boolean;
   setIsEditQuestion?: React.Dispatch<React.SetStateAction<boolean>>;
   question?: {
     _id: string;

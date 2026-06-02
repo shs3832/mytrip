@@ -48,7 +48,7 @@ export const FETCH_TRAVEL_PRODUCT_QUESTIONS = gql`
 `;
 
 export const FETCH_TRAVEL_PRODUCT = gql`
-  query fetchTravelproduct($travelproductId: ID!) {
+  query fetchTravelproductForDetail($travelproductId: ID!) {
     fetchTravelproduct(travelproductId: $travelproductId) {
       _id
       name
@@ -57,6 +57,7 @@ export const FETCH_TRAVEL_PRODUCT = gql`
       contents
       images
       tags
+      pickedCount
       travelproductAddress {
         address
         addressDetail
@@ -83,6 +84,10 @@ export const FETCH_USER_LOGGED_IN = gql`
       _id
       email
       name
+      userPoint {
+        _id
+        amount
+      }
     }
   }
 `;
@@ -116,6 +121,20 @@ export const UPDATE_TRAVEL_PRODUCT_QUESTION = gql`
         name
         email
       }
+    }
+  }
+`;
+
+export const TOGGLE_TRAVEL_PRODUCT_PICK = gql`
+  mutation toggleTravelproductPick($travelproductId: ID!) {
+    toggleTravelproductPick(travelproductId: $travelproductId)
+  }
+`;
+
+export const CREATE_POINT_TRANSACTION_OF_BUYING_AND_SELLING = gql`
+  mutation createPointTransactionOfBuyingAndSelling($useritemId: ID!) {
+    createPointTransactionOfBuyingAndSelling(useritemId: $useritemId) {
+      _id
     }
   }
 `;

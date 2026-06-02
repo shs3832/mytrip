@@ -1,58 +1,13 @@
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 
 import { useState } from "react";
 
-const CREATE_TRAVEL_PRODUCT_QUESTION_ANSWER = gql`
-  mutation createTravelproductQuestionAnswer(
-    $createTravelproductQuestionAnswerInput: CreateTravelproductQuestionAnswerInput!
-    $travelproductQuestionId: ID!
-  ) {
-    createTravelproductQuestionAnswer(
-      createTravelproductQuestionAnswerInput: $createTravelproductQuestionAnswerInput
-      travelproductQuestionId: $travelproductQuestionId
-    ) {
-      _id
-      contents
-      travelproductQuestion {
-        _id
-      }
-      createdAt
-      updatedAt
-      user {
-        _id
-        name
-        email
-      }
-    }
-  }
-`;
+import {
+  CREATE_TRAVEL_PRODUCT_QUESTION_ANSWER,
+  FETCH_TRAVEL_PRODUCT_QUESTION_ANSWER,
+} from "./queries";
 
-const FETCH_TRAVEL_PRODUCT_QUESTION_ANSWER = gql`
-  query fetchTravelproductQuestionAnswers(
-    $page: Int
-    $travelproductQuestionId: ID!
-  ) {
-    fetchTravelproductQuestionAnswers(
-      page: $page
-      travelproductQuestionId: $travelproductQuestionId
-    ) {
-      _id
-      contents
-      travelproductQuestion {
-        _id
-      }
-      createdAt
-      updatedAt
-      user {
-        _id
-        name
-        email
-      }
-    }
-  }
-`;
-
-export function useProductDetail() {
+export function useProductDetail({ questionId }: { questionId: string }) {
   const [isEditQuestion, setIsEditQuestion] = useState(false);
   const [isWriteReply, setIsWriteReply] = useState(false);
   const [replyContents, setReplyContents] = useState("");
@@ -60,6 +15,12 @@ export function useProductDetail() {
   const [createTravelproductQuestionAnswer] = useMutation(
     CREATE_TRAVEL_PRODUCT_QUESTION_ANSWER,
   );
+
+  const { data: reply } = useQuery(FETCH_TRAVEL_PRODUCT_QUESTION_ANSWER, {
+    variables: {
+      travelproductQuestionId: questionId,
+    },
+  });
 
   const handleReplyCancel = () => {
     // 문의 취소 버튼 클릭 시 실행되는 함수
@@ -92,7 +53,6 @@ export function useProductDetail() {
             query: FETCH_TRAVEL_PRODUCT_QUESTION_ANSWER,
             variables: {
               travelproductQuestionId: id,
-              page: 1,
             },
           },
         ],
@@ -113,5 +73,6 @@ export function useProductDetail() {
     setReplyContents,
     handleWriteReply,
     handleReplyCancel,
+    reply,
   };
 }

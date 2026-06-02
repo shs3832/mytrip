@@ -4,6 +4,7 @@ import ProductDetailQuestionWriteComponent from "../comment-write";
 import { Input, Button } from "antd";
 
 import { useProductDetail } from "./hook";
+import { IReplyQuestionElement } from "../types";
 
 const { TextArea } = Input;
 export default function ProductDetailQuestionListComponent({
@@ -20,6 +21,7 @@ export default function ProductDetailQuestionListComponent({
   handleDeleteQuestion: (id: string) => void;
   isMine: boolean;
 }) {
+  const questionId = question._id;
   const {
     isEditQuestion,
     setIsEditQuestion,
@@ -30,7 +32,8 @@ export default function ProductDetailQuestionListComponent({
     setReplyContents,
     handleWriteReply,
     handleReplyCancel,
-  } = useProductDetail();
+    reply,
+  } = useProductDetail({ questionId });
   return (
     <>
       <div
@@ -89,12 +92,25 @@ export default function ProductDetailQuestionListComponent({
               )}
             </div>
             <>
-              <ProductDetailQuestionReplyComponent id={question._id} />
+              {reply?.fetchTravelproductQuestionAnswers?.map(
+                (el: IReplyQuestionElement, index: number) => {
+                  return (
+                    <ProductDetailQuestionReplyComponent
+                      el={el}
+                      index={index}
+                      key={el._id}
+                      questionId={questionId}
+                    />
+                  );
+                },
+              )}
             </>
           </div>
         </div>
         {isWriteReply && (
-          <div className="flex flex-col gap-4">
+          <div
+            className={`flex flex-col gap-4 ${reply?.fetchTravelproductQuestionAnswers?.length > 0 && "pl-[48px] mt-4"}`}
+          >
             <TextArea
               placeholder="답변내용을 입력해 주세요"
               rows={4}
@@ -118,7 +134,7 @@ export default function ProductDetailQuestionListComponent({
                 variant="solid"
                 size="large"
                 onClick={() => {
-                  handleWriteReply(question._id, replyContents);
+                  handleWriteReply(questionId, replyContents);
                   setReplyContents("");
                 }}
               >
