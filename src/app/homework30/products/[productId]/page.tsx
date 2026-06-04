@@ -21,6 +21,11 @@ export default function ProductDetailPage() {
     setIsBuyModalOpen,
     modalData,
     handleBuyConfirm,
+    isPointModalOpen,
+    setIsPointModalOpen,
+    handleAddPoints,
+    options,
+    setPointOptions,
   } = useProductDetailHook();
   return (
     <>
@@ -41,6 +46,11 @@ export default function ProductDetailPage() {
         setIsBuyModalOpen={setIsBuyModalOpen}
         modalData={modalData}
         handleBuyConfirm={handleBuyConfirm}
+        isPointModalOpen={isPointModalOpen}
+        setIsPointModalOpen={setIsPointModalOpen}
+        handleAddPoints={handleAddPoints}
+        options={options}
+        setPointOptions={setPointOptions}
       />
     </>
   );

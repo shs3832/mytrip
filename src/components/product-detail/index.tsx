@@ -14,8 +14,8 @@ import "swiper/css/pagination";
 import ProductDetailQuestionWriteComponent from "@/components/product-detail/comment-write";
 import ProductDetailQuestionListComponent from "@/components/product-detail/comment-list";
 import { IProductDetail } from "./types";
-import { ProductDetailModalComponent } from "./modal";
-
+import { ProductDetailModalComponent } from "@/components/modal/product";
+import { PointModalComponent } from "@/components/modal/point";
 export function ProductDetailComponentPage({
   safeContents,
   currentImage,
@@ -25,7 +25,6 @@ export function ProductDetailComponentPage({
   questionData,
   handleDeleteQuestion,
   handlePinned,
-  handlePurchase,
   setCurrentImage,
   setCurrentIndex,
   formatPriceToKRW,
@@ -33,6 +32,11 @@ export function ProductDetailComponentPage({
   setIsBuyModalOpen,
   modalData,
   handleBuyConfirm,
+  isPointModalOpen,
+  setIsPointModalOpen,
+  handleAddPoints,
+  options,
+  setPointOptions,
 }: IProductDetail) {
   return (
     <>
@@ -40,8 +44,13 @@ export function ProductDetailComponentPage({
         isBuyModalOpen={isBuyModalOpen}
         setIsBuyModalOpen={setIsBuyModalOpen}
         modalData={modalData}
-        handlePurchase={handlePurchase}
-        handleBuyConfirm={handleBuyConfirm}
+      />
+      <PointModalComponent
+        isPointModalOpen={isPointModalOpen}
+        setIsPointModalOpen={setIsPointModalOpen}
+        handleAddPoints={handleAddPoints}
+        options={options}
+        setPointOptions={setPointOptions}
       />
       <div className="flex items-center w-full mb-2">
         <div className="text-2xl font-bold">
@@ -187,7 +196,7 @@ export function ProductDetailComponentPage({
         <h2 className="mb-5 text-base">문의하기</h2>
 
         {questionData?.fetchTravelproductQuestions?.length === 0 && (
-          <div className="mt-10 w-full h-24 border border-gray-300 rounded-lg flex items-center justify-center">
+          <div className="mt-10 w-full h-24 rounded-lg flex items-center justify-center">
             <span className="text-gray-500">등록된 문의가 없습니다.</span>
           </div>
         )}

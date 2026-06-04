@@ -37,8 +37,7 @@ export function useProductReplyWrite({
         content: "답변이 수정되었습니다.",
       });
       setIsReplyEdit(false);
-    } catch (error) {
-      console.log(error);
+    } catch {
     }
   };
 

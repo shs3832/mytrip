@@ -45,4 +45,12 @@ export type IProductDetail = {
     cancelText: string;
   };
   handleBuyConfirm: () => void;
+  isPointModalOpen: boolean;
+  setIsPointModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  handleAddPoints: () => void;
+  options: {
+    value: number;
+    label: string;
+  }[];
+  setPointOptions: React.Dispatch<React.SetStateAction<number>>;
 };

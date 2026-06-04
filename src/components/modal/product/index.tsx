@@ -12,7 +12,7 @@ export function ProductDetailModalComponent({
     content: string;
     okText: string;
     cancelText: string;
-    onOk: () => void;
+    onOK?: () => void;
   };
 }) {
   return (
@@ -26,10 +26,10 @@ export function ProductDetailModalComponent({
         className="point-modal"
       >
         <div className="py-8 text-center">
-          <h2 className="text-2xl font-bold">{modalData.title}</h2>
+          <h2 className="text-2xl font-bold">{modalData?.title}</h2>
 
           <p className="mt-6 text-lg leading-7 text-gray-700">
-            {modalData.content}
+            {modalData?.content}
           </p>
 
           <div className="mt-10 flex justify-center gap-4">
@@ -38,16 +38,16 @@ export function ProductDetailModalComponent({
               className="w-[174px] h-[58px] rounded-lg border-black text-lg font-bold"
               onClick={() => setIsBuyModalOpen(false)}
             >
-              {modalData.cancelText}
+              {modalData?.cancelText}
             </Button>
 
             <Button
               type="primary"
               size="large"
               className="w-[174px] h-[58px] rounded-lg text-lg font-bold"
-              onClick={modalData.onOK}
+              onClick={modalData?.onOK}
             >
-              {modalData.okText}
+              {modalData?.okText}
             </Button>
           </div>
         </div>

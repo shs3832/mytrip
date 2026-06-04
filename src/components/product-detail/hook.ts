@@ -12,6 +12,7 @@ import {
   FETCH_USER_LOGGED_IN,
   TOGGLE_TRAVEL_PRODUCT_PICK,
   CREATE_POINT_TRANSACTION_OF_BUYING_AND_SELLING,
+  CREATE_POINT_TRANSACTION_OF_LOADING,
 } from "@/components/product-detail/queries";
 
 declare global {
@@ -71,9 +72,9 @@ export function useProductDetailHook() {
     DeleteTravelproductQuestionMutation,
     DeleteTravelproductQuestionMutationVariables
   >(DELETE_TRAVEL_PRODUCT_QUESTION);
-  const [product_buy] = useMutation(
-    CREATE_POINT_TRANSACTION_OF_BUYING_AND_SELLING,
-  );
+  // const [product_buy] = useMutation(
+  //   CREATE_POINT_TRANSACTION_OF_BUYING_AND_SELLING,
+  // );
   const isMine =
     data?.fetchTravelproduct?.seller?._id === userData?.fetchUserLoggedIn?._id;
   const handleDeleteQuestion = async (id: string) => {
@@ -116,13 +117,11 @@ export function useProductDetailHook() {
           },
         ],
       });
-    } catch (error) {
-      console.log(error);
-    }
+    } catch {}
   };
 
   const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
-
+  const [isPointModalOpen, setIsPointModalOpen] = useState(false);
   const [modalData, setModalData] = useState({
     title: "",
     content: "",
@@ -135,58 +134,11 @@ export function useProductDetailHook() {
     content: "포인트가 부족합니다. 포인트 충전 후 구매하세요.",
     okText: "확인",
     cancelText: "취소",
-    onOk: () => {
-      router.push("/homework30/mypage/points");
+    onOK: () => {
+      // router.push("/homework30/mypage/points");
+      setIsBuyModalOpen(false);
+      setIsPointModalOpen(true);
     },
-  };
-
-  const handlePurchase = async () => {
-    setIsBuyModalOpen(false);
-    try {
-      // await product_buy({
-      //   variables: {
-      //     useritemId: String(params.productId),
-      //   },
-      // });
-      console.log("체크");
-      const userPoint = userData?.fetchUserLoggedIn?.userPoint?.amount || 0;
-      const productPrice = data?.fetchTravelproduct?.price;
-      if (userPoint < productPrice) {
-        setModalData(pointData);
-        setIsBuyModalOpen(true);
-        return;
-      }
-      console.log("통과");
-      return;
-
-      const rsp = await PortOne.requestPayment({
-        // 결제 요청 파라미터 입력
-        storeId: process.env.NEXT_PUBLIC_STORE_ID,
-        paymentId: `payment_${crypto.randomUUID()}`,
-        orderName: data?.fetchTravelproduct?.name,
-        totalAmount: productPrice,
-        currency: "CURRENCY_KRW",
-        channelKey: process.env.NEXT_PUBLIC_CHANNEL_KEY,
-        payMethod: "EASY_PAY",
-        customer: {
-          fullName: userData?.fetchUserLoggedIn?.name,
-          email: userData?.fetchUserLoggedIn?.email,
-        },
-      });
-      // 결제 성공 시 로직,
-      Modal.success({
-        content: `결제가 완료되었습니다.`,
-      });
-      router.push("/homework30/mypage/points");
-    } catch (error) {
-      console.log(error);
-      if (error instanceof ApolloError) {
-        const message = error.graphQLErrors[0]?.message;
-        Modal.error({
-          content: message ?? "에러가 발생했습니다.",
-        });
-      }
-    }
   };
 
   const handleBuyConfirm = () => {
@@ -199,6 +151,120 @@ export function useProductDetailHook() {
     };
     setModalData(confirmData);
     setIsBuyModalOpen(true);
+  };
+
+  const [add_point] = useMutation(CREATE_POINT_TRANSACTION_OF_LOADING);
+  const [product_buy] = useMutation(
+    CREATE_POINT_TRANSACTION_OF_BUYING_AND_SELLING,
+  );
+
+  const options = [
+    {
+      value: 1000,
+      label: "1,000원",
+    },
+    {
+      value: 3000,
+      label: "3,000원",
+    },
+    {
+      value: 5000,
+      label: "5,000원",
+    },
+    {
+      value: 10000,
+      label: "10,000원",
+    },
+    {
+      value: 30000,
+      label: "30,000원",
+    },
+    {
+      value: 50000,
+      label: "50,000원",
+    },
+  ];
+  const [pointOptions, setPointOptions] = useState(0);
+  const handleAddPoints = async () => {
+    const paymentId = `payment_${crypto.randomUUID()}`;
+    try {
+      const rsp = await PortOne.requestPayment({
+        // 결제 요청 파라미터 입력
+        storeId: process.env.NEXT_PUBLIC_STORE_ID,
+        paymentId: paymentId,
+        orderName: "유저 포인트 충전",
+        totalAmount: pointOptions,
+        currency: "CURRENCY_KRW",
+        channelKey: process.env.NEXT_PUBLIC_CHANNEL_KEY,
+        payMethod: "EASY_PAY",
+      });
+
+      if (rsp?.code === "FAILURE_TYPE_PG") {
+        Modal.error({ content: rsp.message });
+        return;
+      }
+
+      if (!rsp?.paymentId) {
+        Modal.error({
+          content: "결제가 완료되지 않았습니다.",
+        });
+        return;
+      }
+
+      await add_point({
+        variables: {
+          paymentId: rsp.paymentId,
+        },
+        refetchQueries: [
+          {
+            query: FETCH_USER_LOGGED_IN,
+          },
+        ],
+      });
+
+      Modal.success({
+        content: "포인트 충전이 완료되었습니다.",
+      });
+    } catch {
+      Modal.error({
+        content: `결제가 취소되었거나 실패했습니다.`,
+      });
+    }
+
+    setIsPointModalOpen(false);
+  };
+
+  const handlePurchase = async () => {
+    setIsBuyModalOpen(false);
+    try {
+      const userPoint = userData?.fetchUserLoggedIn?.userPoint?.amount || 0;
+      const productPrice = data?.fetchTravelproduct?.price;
+
+      if (typeof productPrice !== "number") {
+        Modal.error({ content: "상품 가격 정보를 불러오지 못했습니다." });
+        return;
+      }
+      if (userPoint < productPrice) {
+        setModalData(pointData);
+        setIsBuyModalOpen(true);
+        return;
+      }
+      await product_buy({
+        variables: {
+          useritemId: String(params.productId),
+        },
+      });
+      Modal.success({
+        content: `결제가 완료되었습니다.`,
+      });
+    } catch (error) {
+      if (error instanceof ApolloError) {
+        const message = error.graphQLErrors[0]?.message;
+        Modal.error({
+          content: message ?? "에러가 발생했습니다.",
+        });
+      }
+    }
   };
 
   useEffect(() => {
@@ -254,5 +320,10 @@ export function useProductDetailHook() {
     setIsBuyModalOpen,
     modalData,
     handleBuyConfirm,
+    isPointModalOpen,
+    setIsPointModalOpen,
+    handleAddPoints,
+    options,
+    setPointOptions,
   };
 }
