@@ -9,10 +9,10 @@ import "swiper/css/pagination";
 // import required modules
 import { Pagination } from "swiper/modules";
 
-export default function BoardListBannerComponent({
-  bannerImages,
+export default function ProductListBannerComponent({
+  productBannerImages,
 }: {
-  bannerImages: string[];
+  productBannerImages: string[];
 }) {
   return (
     <>
@@ -26,14 +26,14 @@ export default function BoardListBannerComponent({
           loop={true}
           className="h-full"
         >
-          {bannerImages.map((el) => {
+          {productBannerImages.map((el) => {
             return (
               <SwiperSlide key={el} className="relative h-full">
                 <Image
                   src={el}
                   alt="배너이미지"
                   fill
-                  className="w-full h-[510px] object-cover"
+                  className="w-full h-[510px] object-cover aspect-[4/3]"
                 />
               </SwiperSlide>
             );

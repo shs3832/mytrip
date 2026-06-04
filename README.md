@@ -63,6 +63,7 @@
 - `firebase`: Firestore 기반 커스텀 API 실습에 사용했습니다.
 - `lodash`: 게시글 검색/목록 처리에서 debounce 등 유틸 흐름 학습에 사용했습니다.
 - `dayjs`: 날짜 범위 타입과 검색 조건 처리에서 사용했습니다.
+- `@portone/browser-sdk`: 포인트 충전 결제 요청과 `paymentId` 기반 충전 mutation 연결에 사용했습니다.
 
 ## 실제 스터디 기록
 
@@ -105,6 +106,15 @@
 - 수정 시 기존 이미지 URL과 신규 업로드 URL을 합쳐 최종 `images: string[]` 형태로 보냈습니다.
 - 이미지 URL 추출 과정에서 `filter((url): url is string => Boolean(url))` 타입가드 패턴을 학습했습니다.
 
+### homework31 숙박권 구매/트립토크 화면
+
+- 숙박권 구매 메인 화면의 퍼블리싱을 진행했습니다.
+- 상품 배너, 광고 배너, 상품 리스트, 필터, 최근 본 상품 UI를 구성했습니다.
+- 트립토크 게시판을 카드형 목록과 검색 UI 중심으로 다시 정리했습니다.
+- 공통 레이아웃에서 `/homework31/products` 경로에만 상품 배너가 나오도록 조건을 분리했습니다.
+- 상품 상세에서 포인트 기반 구매 확인 모달과 포인트 부족 시 충전 모달 흐름을 연결했습니다.
+- PortOne 결제 SDK를 사용해 포인트 충전 요청 후 `paymentId`를 서버 mutation으로 전달하는 흐름을 학습했습니다.
+
 ### accessToken / refreshToken 인증 흐름
 
 - 로그인 성공 후 accessToken을 Zustand에 저장했습니다.
@@ -132,6 +142,12 @@
 - `docs/2026-05-27-morning-study-log.md`
 - `docs/2026-05-27-afternoon-study-log.md`
 - `docs/2026-05-28-study-log.md`
+- `docs/2026-06-01-morning-study-log.md`
+- `docs/2026-06-01-afternoon-study-log.md`
+- `docs/2026-06-02-morning-study-log.md`
+- `docs/2026-06-02-afternoon-study-log.md`
+- `docs/2026-06-04-morning-study-log.md`
+- `docs/2026-06-04-afternoon-study-log.md`
 
 ## 현재 목표
 
@@ -139,4 +155,3 @@
 - 화면, 폼 상태, API 요청, 서버 데이터 형태, 인증 흐름을 함께 이해합니다.
 - 강의노트나 예제를 참고하더라도 각 줄이 어떤 역할을 하는지 설명할 수 있도록 기록합니다.
 - 구현 후에는 어떤 데이터가 어디에서 오고, 어디로 보내지는지 추적할 수 있게 만듭니다.
-

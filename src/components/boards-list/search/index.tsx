@@ -1,7 +1,10 @@
-import { Button, Input } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import { Button, DatePicker, Input } from "antd";
+import {
+  CalendarOutlined,
+  EditOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import { IBoardListProps } from "@/components/boards-list/list/types";
-import { DatePicker } from "antd";
 
 export default function BoardSearchComponent({
   handleChangeSearchInput,
@@ -14,24 +17,33 @@ export default function BoardSearchComponent({
   const { RangePicker } = DatePicker;
 
   return (
-    <div className="w-full flex items-center mb-3">
-      <RangePicker className="w-full" onChange={onRangeChange} />
+    <div className="mb-8 flex w-full items-center gap-4">
+      <RangePicker
+        className="h-12 w-[340px] rounded-lg bg-gray-100 px-4"
+        placeholder={["YYYY . MM . DD", "YYYY . MM . DD"]}
+        suffixIcon={<CalendarOutlined className="text-lg text-gray-500" />}
+        onChange={onRangeChange}
+      />
       <Input
-        placeholder="제목을 검색해 주세요"
+        placeholder="제목을 검색해 주세요."
         onChange={handleChangeSearchInput}
-        className="ml-3"
+        className="h-12 flex-1 rounded-lg bg-gray-100 px-4 text-base"
+        prefix={<SearchOutlined className="mr-2 text-xl text-black" />}
       />
       <Button
-        className="ml-3"
+        className="h-12 rounded-lg bg-black px-7 text-base font-semibold"
         type="primary"
-        icon={<SearchOutlined />}
         onClick={handleSearch}
       >
         검색
       </Button>
-      <div className="w-full flex items-center justify-end">
-        <Button type="primary">등록하기</Button>
-      </div>
+      <Button
+        type="primary"
+        icon={<EditOutlined />}
+        className="ml-auto h-12 rounded-lg bg-blue-500 px-7 text-base font-semibold"
+      >
+        트립토크 등록
+      </Button>
     </div>
   );
 }

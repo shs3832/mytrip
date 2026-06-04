@@ -3,14 +3,25 @@ import BoardListBannerComponent from "@/commons/layout/banner";
 import NavigationComponent from "@/commons/layout/navigation";
 import { useLayoutComponent } from "@/commons/layout/hook";
 import Script from "next/script";
+import ProductListBannerComponent from "./product-banner";
 
 export default function LayoutComponent({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { isHideBanner, isHideNavigation } = useLayoutComponent();
-
+  const { isHideBanner, isHideNavigation, isProductBanner } =
+    useLayoutComponent();
+  const bannerImages = [
+    "/images/banner-image-01.png",
+    "/images/banner-image-02.png",
+    "/images/banner-image-03.png",
+  ];
+  const productBannerImages = [
+    "/images/banner-image-03.png",
+    "/images/banner-image-02.png",
+    "/images/banner-image-01.png",
+  ];
   return (
     <>
       <Script
@@ -18,7 +29,13 @@ export default function LayoutComponent({
         strategy="afterInteractive"
       />
       {!isHideNavigation && <NavigationComponent />}
-      {!isHideBanner && <BoardListBannerComponent />}
+      {!isHideBanner && (
+        <BoardListBannerComponent bannerImages={bannerImages} />
+      )}
+      {isProductBanner && (
+        <ProductListBannerComponent productBannerImages={productBannerImages} />
+      )}
+
       <div
         className={
           !isHideNavigation ? `mt-10 mb-10 max-w-7xl mx-auto px-10` : ""

@@ -8,6 +8,7 @@ export function useLayoutComponent() {
     "/login",
     "/signup",
   ];
+  const showBannerComponent = ["/homework31/products"];
   const hideNavigationURL = ["/login", "/signup"];
   const param = usePathname();
   const isHideBanner = hideComponentURL.some((el) => {
@@ -16,8 +17,12 @@ export function useLayoutComponent() {
   const isHideNavigation = hideNavigationURL.some((el) => {
     return param.includes(el);
   });
+  const isProductBanner = showBannerComponent.some((el) => {
+    return param === el;
+  });
   return {
     isHideBanner,
     isHideNavigation,
+    isProductBanner,
   };
 }
