@@ -37,15 +37,34 @@ export function useProductCommentWrite() {
           },
           travelproductId: String(params.productId),
         },
-        refetchQueries: [
-          {
-            query: FETCH_TRAVEL_PRODUCT_QUESTIONS,
-            variables: {
-              travelproductId: String(params.productId),
-              page: 1,
+
+        update: (cache, { data }) => {
+          // cache는 Apollo 캐시, data는 mutation 응답 데이터이다.
+          const newQuestion = data?.createTravelproductQuestion;
+          // 방금 실행한 mutation 응답에서 새로 생성된 문의 데이터를 꺼낸다.
+          if (!newQuestion) {
+            return;
+          }
+          // 새 문의 데이터가 없으면 캐시를 수정하지 않는다.
+          cache.modify({
+            // Apollo 캐시에 저장된 특정 필드를 직접 수정한다.
+            fields: {
+              fetchTravelproductQuestions(prev = []) {
+                // 기존 문의 목록(prev)의 앞에 새 문의를 추가한다.
+                return [newQuestion, ...prev];
+              },
             },
-          },
-        ],
+          });
+        },
+        // refetchQueries: [
+        //   {
+        //     query: FETCH_TRAVEL_PRODUCT_QUESTIONS,
+        //     variables: {
+        //       travelproductId: String(params.productId),
+        //       page: 1,
+        //     },
+        //   },
+        // ],
       });
       Modal.success({
         content: "문의가 등록되었습니다.",

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type Address } from "react-daum-postcode";
@@ -103,44 +103,49 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
     });
   };
 
-  const handleOk = () => {
+  const handleOk = useCallback(() => {
     setIsModalOpen(false);
-  };
+  }, []);
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setIsModalOpen(false);
-  };
+  }, []);
 
   const handleGetTags = (event: React.ChangeEvent<HTMLInputElement>) => {
     const getValues = event.target.value;
     setValue("tags", getValues);
   };
 
-  const handleFileBox = (target: string) => {
+  const handleFileBox = useCallback((target: string) => {
     const targetInput = document.getElementById(target) as HTMLInputElement;
     if (!targetInput) return;
     targetInput.click();
-  };
+  }, []);
 
-  const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const files = event.target.files;
-    if (!files) return;
-    if (imageFiles.length + files.length > 5) {
-      Modal.error({ content: "5개이상 첨부 불가" });
-      return;
-    }
-    const fileArray = Array.from(files).map((file) => ({
-      file,
-      previewUrl: URL.createObjectURL(file),
-      isExisting: false,
-      name: file.name,
-    }));
-    setImageFiles((prev) => [...prev, ...fileArray]);
-  };
+  // const canUploadImages = useMemo(() => {
+  //   return imageFiles.length < 5;
+  // }, [imageFiles.length]);
 
-  const handleDeleteImage = (index: number) => {
+  const handleFileUpload = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const files = event.target.files;
+      if (!files) return;
+      if (imageFiles.length + files.length > 5) {
+        Modal.error({ content: "5개이상 첨부 불가" });
+        return;
+      }
+      const fileArray = Array.from(files).map((file) => ({
+        file,
+        previewUrl: URL.createObjectURL(file),
+        isExisting: false,
+        name: file.name,
+      }));
+      setImageFiles((prev) => [...prev, ...fileArray]);
+    },
+    [imageFiles.length],
+  );
+
+  const handleDeleteImage = useCallback((index: number) => {
     setImageFiles((prev) => {
       const revokeImage = prev[index];
       if (revokeImage) {
@@ -150,7 +155,7 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
         return i !== index;
       });
     });
-  };
+  }, []);
 
   const onSubmit = async (data: FormData) => {
     try {

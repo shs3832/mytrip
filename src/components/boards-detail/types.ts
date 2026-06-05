@@ -5,4 +5,6 @@ export interface IBoardDetailProps {
   handleBackToList: () => void;
   handleEditPage: () => void;
   getYoutubeID: (value: string) => string | null;
+  handleLike: () => void;
+  handleDislike: () => void;
 }

@@ -53,4 +53,5 @@ export type IProductDetail = {
     label: string;
   }[];
   setPointOptions: React.Dispatch<React.SetStateAction<number>>;
+  picked: boolean;
 };

@@ -13,6 +13,7 @@ import {
   TOGGLE_TRAVEL_PRODUCT_PICK,
   CREATE_POINT_TRANSACTION_OF_BUYING_AND_SELLING,
   CREATE_POINT_TRANSACTION_OF_LOADING,
+  FETCH_TRAVEL_PRODUCTS_PICKED,
 } from "@/components/product-detail/queries";
 
 declare global {
@@ -47,6 +48,8 @@ export function useProductDetailHook() {
   const [lng, setLng] = useState("");
   const [currentImage, setCurrentImage] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [picked, setPicked] = useState(false);
+
   const { data } = useQuery(FETCH_TRAVEL_PRODUCT, {
     variables: {
       travelproductId: String(params.productId),
@@ -64,6 +67,12 @@ export function useProductDetailHook() {
     FetchUserLoggedInQuery,
     FetchUserLoggedInQueryVariables
   >(FETCH_USER_LOGGED_IN);
+  const { data: userPicked } = useQuery(FETCH_TRAVEL_PRODUCTS_PICKED, {
+    variables: {
+      search: "",
+      page: 1,
+    },
+  });
   const [product_pinned] = useMutation<
     ToggleTravelproductPickMutation,
     ToggleTravelproductPickMutationVariables
@@ -84,15 +93,32 @@ export function useProductDetailHook() {
         variables: {
           travelproductQuestionId: id,
         },
-        refetchQueries: [
-          {
-            query: FETCH_TRAVEL_PRODUCT_QUESTIONS,
-            variables: {
-              travelproductId: String(params.productId),
-              page: 1,
+        update(cache, { data }) {
+          // mutation 응답에서 삭제된 문의 id를 꺼낸다.
+          const deleteId = data?.deleteTravelproductQuestion;
+          if (!deleteId) return;
+
+          cache.modify({
+            // Apollo 캐시에 저장된 문의 목록 필드를 직접 수정한다.
+            fields: {
+              fetchTravelproductQuestions(existingData = [], { readField }) {
+                // 캐시 항목은 참조값일 수 있으므로 readField로 _id를 읽어 비교한다.
+                return existingData.filter((item) => {
+                  return readField("_id", item) !== deleteId;
+                });
+              },
             },
-          },
-        ],
+          });
+        },
+        // refetchQueries: [
+        //   {
+        //     query: FETCH_TRAVEL_PRODUCT_QUESTIONS,
+        //     variables: {
+        //       travelproductId: String(params.productId),
+        //       page: 1,
+        //     },
+        //   },
+        // ],
       });
       Modal.success({
         content: "문의가 삭제되었습니다.",
@@ -108,16 +134,42 @@ export function useProductDetailHook() {
         variables: {
           travelproductId: String(params.productId),
         },
-        refetchQueries: [
-          {
-            query: FETCH_TRAVEL_PRODUCT,
-            variables: {
-              travelproductId: String(params.productId),
+
+        optimisticResponse: {
+          toggleTravelproductPick: picked ? 0 : 1,
+        },
+
+        update: (cache, { data }) => {
+          const isPinned = data?.toggleTravelproductPick;
+
+          if (isPinned === undefined) return;
+          setPicked(isPinned === 1);
+          cache.modify({
+            id: cache.identify({
+              __typename: "Travelproduct",
+              _id: String(params.productId),
+            }),
+            fields: {
+              pickedCount(existingData = 0) {
+                return isPinned === 1 ? existingData + 1 : existingData - 1;
+              },
             },
-          },
-        ],
+          });
+        },
+
+        // refetchQueries: [
+        //   {
+        //     query: FETCH_TRAVEL_PRODUCTS_PICKED,
+        //     variables: {
+        //       search: "",
+        //       page: 1,
+        //     },
+        //   },
+        // ],
       });
-    } catch {}
+    } catch (error) {
+      console.error("스크랩 삭제 실패:", error);
+    }
   };
 
   const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
@@ -303,6 +355,14 @@ export function useProductDetailHook() {
     });
   }, [address, lat, lng]);
 
+  useEffect(() => {
+    if (!userPicked?.fetchTravelproductsIPicked) return;
+    const isUserPicked = userPicked?.fetchTravelproductsIPicked.some((el) => {
+      return el._id === String(params.productId);
+    });
+    setPicked(isUserPicked);
+  }, [userPicked]);
+
   return {
     safeContents,
     currentImage,
@@ -325,5 +385,6 @@ export function useProductDetailHook() {
     handleAddPoints,
     options,
     setPointOptions,
+    picked,
   };
 }

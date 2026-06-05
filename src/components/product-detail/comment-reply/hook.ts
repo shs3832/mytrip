@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   FETCH_TRAVEL_PRODUCT_QUESTION_ANSWER_REPLY,
-  DELET_TRAVEL_PRODUCT_QUESTION_ANSWER,
+  DELETE_TRAVEL_PRODUCT_QUESTION_ANSWER,
 } from "./queries";
 import { useMutation } from "@apollo/client";
 
@@ -13,7 +13,7 @@ export function useProductCommentReply({
   questionId: string;
 }) {
   const [isReplyEdit, setIsReplyEdit] = useState(false);
-  const [deleteReply] = useMutation(DELET_TRAVEL_PRODUCT_QUESTION_ANSWER);
+  const [deleteReply] = useMutation(DELETE_TRAVEL_PRODUCT_QUESTION_ANSWER);
   const handleEditReply = () => {
     setIsReplyEdit(!isReplyEdit);
   };
@@ -21,6 +21,7 @@ export function useProductCommentReply({
   const handleDeleteReply = async (id: string) => {
     await deleteReply({
       variables: { travelproductQuestionAnswerId: id },
+
       refetchQueries: [
         {
           query: FETCH_TRAVEL_PRODUCT_QUESTION_ANSWER_REPLY,

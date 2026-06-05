@@ -24,7 +24,7 @@ export const FETCH_TRAVEL_PRODUCT_QUESTION_ANSWER_REPLY = gql`
   }
 `;
 
-export const DELET_TRAVEL_PRODUCT_QUESTION_ANSWER = gql`
+export const DELETE_TRAVEL_PRODUCT_QUESTION_ANSWER = gql`
   mutation deleteTravelproductQuestionAnswer(
     $travelproductQuestionAnswerId: ID!
   ) {

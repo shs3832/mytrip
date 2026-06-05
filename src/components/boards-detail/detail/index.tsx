@@ -14,8 +14,11 @@ export default function BoardListComponent({
   handleBackToList,
   handleEditPage,
   getYoutubeID,
+  handleLike,
+  handleDislike,
 }: IBoardDetailProps) {
   const youtubeId = getYoutubeID(data?.fetchBoard.youtubeUrl ?? "");
+
   return (
     <>
       <h1 className="font-bold text-[24px] leading-8">
@@ -91,14 +94,14 @@ export default function BoardListComponent({
           )}
           <div className="like-block flex items-center justify-center gap-6">
             <div className="text-center text-base flex items-center flex-col">
-              <LikeOutlined />
+              <LikeOutlined onClick={handleLike} />
               <span className="text-red-500 mt-1 text-sm">
                 {data?.fetchBoard?.likeCount}
               </span>
             </div>
 
             <div className="text-center text-base flex items-center flex-col">
-              <DislikeOutlined />
+              <DislikeOutlined onClick={handleDislike} />
               <span className="text-gray-700 mt-1 text-sm">
                 {data?.fetchBoard?.dislikeCount}
               </span>

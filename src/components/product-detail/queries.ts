@@ -146,3 +146,11 @@ export const CREATE_POINT_TRANSACTION_OF_LOADING = gql`
     }
   }
 `;
+
+export const FETCH_TRAVEL_PRODUCTS_PICKED = gql`
+  query fetchTravelproductsIPicked($search: String, $page: Int) {
+    fetchTravelproductsIPicked(search: $search, page: $page) {
+      _id
+    }
+  }
+`;

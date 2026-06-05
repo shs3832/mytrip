@@ -1,6 +1,7 @@
 import {
   DeleteOutlined,
   LinkOutlined,
+  PushpinFilled,
   PushpinOutlined,
   TagOutlined,
   UserOutlined,
@@ -37,6 +38,7 @@ export function ProductDetailComponentPage({
   handleAddPoints,
   options,
   setPointOptions,
+  picked,
 }: IProductDetail) {
   return (
     <>
@@ -63,16 +65,20 @@ export function ProductDetailComponentPage({
           <button className="flex items-center w-6 h-6 text-gray-800 text-sm">
             <LinkOutlined />
           </button>
-          <button className="flex items-center w-6 h-6 text-gray-800 text-sm">
-            <PushpinOutlined />
+          <button
+            className="flex items-center w-6 h-6 text-gray-800 text-sm"
+            onClick={handlePinned}
+          >
+            {picked ? <PushpinFilled /> : <PushpinOutlined />}
           </button>
           <div
-            onClick={handlePinned}
+            // onClick={handlePinned}
             className="flex items-center py-1 px-2 text-white shadow-md text-sm bg-black bg-opacity-40 rounded-lg cursor-pointer"
           >
             <TagOutlined />
             <span className="ml-1">
-              {data?.fetchTravelproduct?.pickedCount ?? 0}
+              0{/* {data?.fetchTravelproduct?.pickedCount ?? 0} */}
+              {/* 이숫자는 뭔지 파악필요 */}
             </span>
           </div>
         </div>
