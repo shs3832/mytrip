@@ -64,6 +64,7 @@
 - `lodash`: 게시글 검색/목록 처리에서 debounce 등 유틸 흐름 학습에 사용했습니다.
 - `dayjs`: 날짜 범위 타입과 검색 조건 처리에서 사용했습니다.
 - `@portone/browser-sdk`: 포인트 충전 결제 요청과 `paymentId` 기반 충전 mutation 연결에 사용했습니다.
+- `dompurify`: ReactQuill 등에서 저장된 HTML 문자열을 상품 상세 화면에 안전하게 표시하기 위해 sanitize 처리에 사용했습니다.
 
 ## 실제 스터디 기록
 
@@ -106,7 +107,7 @@
 - 수정 시 기존 이미지 URL과 신규 업로드 URL을 합쳐 최종 `images: string[]` 형태로 보냈습니다.
 - 이미지 URL 추출 과정에서 `filter((url): url is string => Boolean(url))` 타입가드 패턴을 학습했습니다.
 
-### homework31 숙박권 구매/트립토크 화면
+### homework30/31 포인트 결제와 숙박권 구매 화면
 
 - 숙박권 구매 메인 화면의 퍼블리싱을 진행했습니다.
 - 상품 배너, 광고 배너, 상품 리스트, 필터, 최근 본 상품 UI를 구성했습니다.
@@ -114,6 +115,29 @@
 - 공통 레이아웃에서 `/homework31/products` 경로에만 상품 배너가 나오도록 조건을 분리했습니다.
 - 상품 상세에서 포인트 기반 구매 확인 모달과 포인트 부족 시 충전 모달 흐름을 연결했습니다.
 - PortOne 결제 SDK를 사용해 포인트 충전 요청 후 `paymentId`를 서버 mutation으로 전달하는 흐름을 학습했습니다.
+- `fetchPointTransactions`, `fetchPointTransactionsOfLoading`, `fetchPointTransactionsOfBuying`, `fetchPointTransactionsOfSelling`로 전체/충전/구매/판매 포인트 내역을 나누어 조회했습니다.
+- 마이페이지 포인트 화면을 전체, 충전, 구매, 판매 내역 컴포넌트로 분리했습니다.
+- 포인트 충전용 `paymentId`와 상품 구매용 포인트 차감 흐름을 구분했습니다.
+- 금액과 포인트 표시는 `Intl.NumberFormat("ko-KR")` 기반 유틸로 정리했습니다.
+
+### homework33 메모이제이션
+
+- 여행상품 등록/수정 페이지에서 `useCallback`을 적용할 후보를 검토했습니다.
+- 이미지 업로드, 이미지 삭제, 모달 열기/닫기처럼 props로 전달되는 이벤트 핸들러를 중심으로 메모이제이션을 적용했습니다.
+- `useMemo`, `useCallback`, `React.memo`의 차이를 정리했습니다.
+- 상품 목록 컴포넌트에 `React.memo`를 적용해 컴포넌트 메모이제이션 과제를 진행했습니다.
+- 실제 성능 최적화는 무조건 적용하기보다 렌더 비용, props 안정성, React Profiler 측정 결과를 근거로 판단해야 한다는 점을 학습했습니다.
+
+### homework35 Apollo 캐시와 optimistic UI
+
+- 트립토크 상세 페이지의 좋아요/싫어요 기능에 `optimisticResponse`와 `cache.modify`를 적용했습니다.
+- `writeQuery`는 쿼리 결과 전체를 다시 쓰는 방식이고, `cache.modify`는 캐시의 특정 필드만 수정하는 방식이라는 차이를 정리했습니다.
+- 여행상품 문의 등록에서 `createTravelproductQuestion` mutation 응답을 `fetchTravelproductQuestions` 목록 앞에 추가하도록 변경했습니다.
+- 여행상품 문의 삭제에서 삭제된 id와 캐시 항목의 `_id`를 비교해 목록에서 제거하도록 변경했습니다.
+- Apollo 캐시 항목은 참조값일 수 있으므로 `item._id` 대신 `readField("_id", item)`로 필드를 읽는 패턴을 학습했습니다.
+- 스크랩 기능에서 `toggleTravelproductPick`의 0/1 응답값은 사용자 스크랩 상태로, `pickedCount`는 전체 스크랩 수로 구분해 처리했습니다.
+- `refetchQueries`, `cache.modify`, `optimisticResponse`를 언제 선택하면 좋을지 장단점을 비교했습니다.
+- 마이페이지 사이드 메뉴 활성 상태를 `usePathname`으로 현재 URL에서 계산하는 흐름을 실험했습니다.
 
 ### accessToken / refreshToken 인증 흐름
 
