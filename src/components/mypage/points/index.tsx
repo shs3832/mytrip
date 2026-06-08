@@ -1,10 +1,10 @@
 import { MyPointsBuyingComponents } from "./buying";
 import { MyPointsChargeComponents } from "./charge";
-import { MyPointsUserInfo } from "./myinfo";
+import { MyPointsUserInfo } from "../myinfo";
 import { MyPointsSellingComponents } from "./selling";
-import { MyPointsTabMenuComponents } from "./tab-menu";
+import { MyPointsTabMenuComponents } from "../tab-menu";
 import { MyPointsTotalComponents } from "./total";
-import { IMypagePointsComponents } from "./types";
+import { IMypagePointsComponents } from "../types";
 
 export function MypagePointsComponents({
   formatNumberWithComma,

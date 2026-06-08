@@ -138,6 +138,19 @@
 - 스크랩 기능에서 `toggleTravelproductPick`의 0/1 응답값은 사용자 스크랩 상태로, `pickedCount`는 전체 스크랩 수로 구분해 처리했습니다.
 - `refetchQueries`, `cache.modify`, `optimisticResponse`를 언제 선택하면 좋을지 장단점을 비교했습니다.
 - 마이페이지 사이드 메뉴 활성 상태를 `usePathname`으로 현재 URL에서 계산하는 흐름을 실험했습니다.
+- 마이페이지 거래내역/북마크 화면을 조립 컴포넌트, hook, 거래내역 목록, 북마크 목록, 타입 파일로 분리했습니다.
+- `fetchTravelproductsISold`, `fetchTravelproductsIPicked`의 무한 스크롤에서 `fetchMoreResult`가 배열이 아니라 쿼리 응답 객체라는 점을 확인했습니다.
+- `hasMore`처럼 원본 데이터로 계산 가능한 값은 state 대신 파생 변수로 관리하는 흐름을 정리했습니다.
+- 상품 1개 타입과 GraphQL 목록 응답 타입을 분리해 TypeScript 타입 오류를 해결했습니다.
+
+### homework36 Open Graph
+
+- Open Graph 태그가 링크 공유 미리보기에서 어떤 역할을 하는지 정리했습니다.
+- 강의노트의 `<meta property="og:...">` 예시는 OG 원리를 설명하는 자료이고, Next.js App Router에서는 `metadata`와 `generateMetadata`를 사용하는 흐름이 더 적절하다는 점을 확인했습니다.
+- 전역 static Open Graph는 `layout.tsx`의 `metadata`로, 여행상품 상세 dynamic Open Graph는 `[productId]/page.tsx`의 `generateMetadata`로 나누어 생각했습니다.
+- `generateMetadata`는 서버 컴포넌트에서만 사용할 수 있으므로, 기존 상품 상세 hook 화면은 클라이언트 컴포넌트로 분리하는 구조를 검토했습니다.
+- 서버에서 `params.productId`를 받고 Apollo `client.query()`로 상품 데이터를 조회해 `title`, `description`, `openGraph.images`로 변환하는 흐름을 정리했습니다.
+- 상품 설명의 HTML 태그 제거, 상품 이미지가 없을 때 기본 OG 이미지 사용, OG 이미지의 절대 URL 필요성을 확인했습니다.
 
 ### accessToken / refreshToken 인증 흐름
 
@@ -172,6 +185,8 @@
 - `docs/2026-06-02-afternoon-study-log.md`
 - `docs/2026-06-04-morning-study-log.md`
 - `docs/2026-06-04-afternoon-study-log.md`
+- `docs/2026-06-08-morning-study-log.md`
+- `docs/2026-06-08-afternoon-study-log.md`
 
 ## 현재 목표
 

@@ -37,7 +37,22 @@ export default function useBoardList() {
       variables: {
         boardId: String(id),
       },
-      refetchQueries: [FetchBoardsDocument],
+      update: (cache, { data }) => {
+        const deleteId = data?.deleteBoard;
+        if (!deleteId) return;
+        cache.modify({
+          fields: {
+            fetchBoards(existingData = [], { readField }) {
+              return existingData.filter((item) => {
+                return readField("_id", item) !== deleteId;
+              });
+            },
+            fetchBoardsCount(existingData = 0) {
+              return existingData - 1;
+            },
+          },
+        });
+      },
     });
     Modal.success({
       content: "삭제되었습니다.",

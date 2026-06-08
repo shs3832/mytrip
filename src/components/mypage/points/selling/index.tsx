@@ -1,4 +1,4 @@
-import { IMypagePointsComponents } from "../types";
+import { IMypagePointsComponents } from "@/components/mypage/types";
 
 export function MyPointsSellingComponents({
   tableDataSellingPoints,
