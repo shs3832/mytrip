@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import ProductDetailPageComponent from "@/components/product-detail-page";
 import { ApolloClient, InMemoryCache, HttpLink, gql } from "@apollo/client";
+import ProductDetailPageServerComponent from "@/components/product-detail-server-shell";
 
 const cache = new InMemoryCache();
 const serverApolloClient = new ApolloClient({
@@ -51,5 +51,5 @@ export async function generateMetadata({
   };
 }
 export default function ProductDetailPage() {
-  return <ProductDetailPageComponent />;
+  return <ProductDetailPageServerComponent />;
 }

@@ -54,4 +54,5 @@ export type IProductDetail = {
   }[];
   setPointOptions: React.Dispatch<React.SetStateAction<number>>;
   picked: boolean;
+  summary?: React.ReactNode;
 };

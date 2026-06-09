@@ -152,6 +152,15 @@
 - 서버에서 `params.productId`를 받고 Apollo `client.query()`로 상품 데이터를 조회해 `title`, `description`, `openGraph.images`로 변환하는 흐름을 정리했습니다.
 - 상품 설명의 HTML 태그 제거, 상품 이미지가 없을 때 기본 OG 이미지 사용, OG 이미지의 절대 URL 필요성을 확인했습니다.
 
+### homework37 서버 컴포넌트와 클라이언트 컴포넌트
+
+- 상품 상세와 보드 상세를 서버 컴포넌트 중심으로 리팩토링하며 SSR/CSR 경계를 정리했습니다.
+- `page.tsx`는 서버 데이터 조회와 route 조립을 담당하고, `metadata.ts`와 `getData.ts`로 dynamic metadata와 서버 조회 로직을 분리했습니다.
+- `ServerShell`에서 읽기 전용 서버 컴포넌트 조각을 만들고, `ClientShell`에 `summary` 또는 `header` slot으로 전달하는 composition 방식을 적용했습니다.
+- 클라이언트 컴포넌트에서는 hook, state, mutation, router 이동, 댓글, 모달 등 사용자 인터랙션을 유지했습니다.
+- 서버에서 내려준 props와 클라이언트 Apollo cache가 자동 동기화되지 않는다는 점을 확인하고, 좋아요/싫어요 수는 client state로 관리하는 흐름을 학습했습니다.
+- 서버 Apollo Client를 `createServerApolloClient()`로 요청마다 생성하고, `fetchOptions: { cache: "no-store" }`로 서버 GraphQL 요청 최신성을 확인했습니다.
+
 ### accessToken / refreshToken 인증 흐름
 
 - 로그인 성공 후 accessToken을 Zustand에 저장했습니다.
@@ -187,6 +196,7 @@
 - `docs/2026-06-04-afternoon-study-log.md`
 - `docs/2026-06-08-morning-study-log.md`
 - `docs/2026-06-08-afternoon-study-log.md`
+- `docs/2026-06-09-study-log.md`
 
 ## 현재 목표
 

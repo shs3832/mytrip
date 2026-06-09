@@ -7,4 +7,7 @@ export interface IBoardDetailProps {
   getYoutubeID: (value: string) => string | null;
   handleLike: () => void;
   handleDislike: () => void;
+  header: React.ReactNode;
+  likeCount: number;
+  disLikeCount: number;
 }

@@ -1,15 +1,20 @@
 "use client";
-
-import { ProductDetailComponentPage } from "@/components/product-detail";
+import { FetchTravelproductForDetailQuery } from "@/commons/graphql/graphql";
+import { ProductDetailView } from "@/components/product-detail";
 import { useProductDetailHook } from "@/components/product-detail/hook";
 
-export default function ProductDetailPageComponent() {
+export default function ProductDetailClientShell({
+  productData,
+  summary,
+}: {
+  productData: FetchTravelproductForDetailQuery;
+  summary: React.ReactNode;
+}) {
   const {
     safeContents,
     currentImage,
     currentIndex,
     isMine,
-    data,
     questionData,
     handleDeleteQuestion,
     handlePinned,
@@ -27,15 +32,15 @@ export default function ProductDetailPageComponent() {
     options,
     setPointOptions,
     picked,
-  } = useProductDetailHook();
+  } = useProductDetailHook({ productData });
   return (
     <>
-      <ProductDetailComponentPage
+      <ProductDetailView
         safeContents={safeContents}
         currentImage={currentImage}
         currentIndex={currentIndex}
         isMine={isMine}
-        data={data}
+        data={productData}
         questionData={questionData}
         handleDeleteQuestion={handleDeleteQuestion}
         handlePinned={handlePinned}
@@ -53,7 +58,8 @@ export default function ProductDetailPageComponent() {
         options={options}
         setPointOptions={setPointOptions}
         picked={picked}
-      />
+        summary={summary}
+      ></ProductDetailView>
     </>
   );
 }

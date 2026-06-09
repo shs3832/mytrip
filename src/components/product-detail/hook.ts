@@ -8,7 +8,6 @@ import * as PortOne from "@portone/browser-sdk/v2";
 import {
   FETCH_TRAVEL_PRODUCT_QUESTIONS,
   DELETE_TRAVEL_PRODUCT_QUESTION,
-  FETCH_TRAVEL_PRODUCT,
   FETCH_USER_LOGGED_IN,
   TOGGLE_TRAVEL_PRODUCT_PICK,
   CREATE_POINT_TRANSACTION_OF_BUYING_AND_SELLING,
@@ -27,6 +26,8 @@ import type {
   DeleteTravelproductQuestionMutationVariables,
   FetchTravelproductForDetailQuery,
   FetchTravelproductForDetailQueryVariables,
+  FetchTravelproductQuestionsQuery,
+  FetchTravelproductQuestionsQueryVariables,
   FetchUserLoggedInQuery,
   FetchUserLoggedInQueryVariables,
   ToggleTravelproductPickMutation,
@@ -37,27 +38,22 @@ const formatPriceToKRW = (price?: number | null) => {
   return new Intl.NumberFormat("ko-KR").format(price ?? 0);
 };
 
-export function useProductDetailHook() {
+export function useProductDetailHook({ productData }) {
   const params = useParams();
   const router = useRouter();
   const [safeContents, setSafeContents] = useState("");
   const [zipCode, setZipCode] = useState("");
   const [address, setAddress] = useState("");
   const [addressDetail, setAddressDetail] = useState("");
-  const [lat, setLat] = useState("");
-  const [lng, setLng] = useState("");
+  const [lat, setLat] = useState(0);
+  const [lng, setLng] = useState(0);
   const [currentImage, setCurrentImage] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [picked, setPicked] = useState(false);
 
-  const { data } = useQuery(FETCH_TRAVEL_PRODUCT, {
-    variables: {
-      travelproductId: String(params.productId),
-    },
-  });
   const { data: questionData } = useQuery<
-    FetchTravelproductForDetailQuery,
-    FetchTravelproductForDetailQueryVariables
+    FetchTravelproductQuestionsQuery,
+    FetchTravelproductQuestionsQueryVariables
   >(FETCH_TRAVEL_PRODUCT_QUESTIONS, {
     variables: {
       travelproductId: String(params.productId),
@@ -85,7 +81,8 @@ export function useProductDetailHook() {
   //   CREATE_POINT_TRANSACTION_OF_BUYING_AND_SELLING,
   // );
   const isMine =
-    data?.fetchTravelproduct?.seller?._id === userData?.fetchUserLoggedIn?._id;
+    productData?.fetchTravelproduct?.seller?._id ===
+    userData?.fetchUserLoggedIn?._id;
   const handleDeleteQuestion = async (id: string) => {
     // 문의 삭제 버튼 클릭 시 실행되는 함수
     try {
@@ -290,7 +287,7 @@ export function useProductDetailHook() {
     setIsBuyModalOpen(false);
     try {
       const userPoint = userData?.fetchUserLoggedIn?.userPoint?.amount || 0;
-      const productPrice = data?.fetchTravelproduct?.price;
+      const productPrice = productData?.fetchTravelproduct?.price;
 
       if (typeof productPrice !== "number") {
         Modal.error({ content: "상품 가격 정보를 불러오지 못했습니다." });
@@ -320,7 +317,7 @@ export function useProductDetailHook() {
   };
 
   useEffect(() => {
-    const product = data?.fetchTravelproduct;
+    const product = productData?.fetchTravelproduct;
     const addressInfo = product?.travelproductAddress;
 
     if (!product) return;
@@ -329,9 +326,9 @@ export function useProductDetailHook() {
     setZipCode(addressInfo?.zipcode ?? "");
     setAddress(addressInfo?.address ?? "");
     setAddressDetail(addressInfo?.addressDetail ?? "");
-    setLat(addressInfo?.lat ?? "");
-    setLng(addressInfo?.lng ?? "");
-  }, [data]);
+    setLat(addressInfo?.lat ?? 0);
+    setLng(addressInfo?.lng ?? 0);
+  }, [productData]);
 
   useEffect(() => {
     if (!address) return;
@@ -368,7 +365,6 @@ export function useProductDetailHook() {
     currentImage,
     currentIndex,
     isMine,
-    data,
     questionData,
     handleDeleteQuestion,
     handlePinned,

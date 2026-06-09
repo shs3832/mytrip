@@ -17,7 +17,7 @@ import ProductDetailQuestionListComponent from "@/components/product-detail/comm
 import { IProductDetail } from "./types";
 import { ProductDetailModalComponent } from "@/components/modal/product";
 import { PointModalComponent } from "@/components/modal/point";
-export function ProductDetailComponentPage({
+export function ProductDetailView({
   safeContents,
   currentImage,
   currentIndex,
@@ -39,6 +39,7 @@ export function ProductDetailComponentPage({
   options,
   setPointOptions,
   picked,
+  summary,
 }: IProductDetail) {
   return (
     <>
@@ -83,18 +84,7 @@ export function ProductDetailComponentPage({
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-2">
-        <p className="text-gray-600 text-base font-medium">
-          {data?.fetchTravelproduct?.remarks}
-        </p>
-        <div className="tags flex items-center gap-2">
-          {data?.fetchTravelproduct?.tags?.map((tag: string) => (
-            <span key={tag} className="text-blue-500 text-base font-medium">
-              #{tag}
-            </span>
-          ))}
-        </div>
-      </div>
+      {summary}
       <div className="flex w-full items-start gap-10">
         <div className="flex w-full flex-col">
           <div className="flex items-start gap-6">
@@ -227,3 +217,5 @@ export function ProductDetailComponentPage({
     </>
   );
 }
+
+export { ProductDetailView as ProductDetailComponentPage };

@@ -292,7 +292,6 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
   useEffect(() => {
     if (!isEdit || !data?.fetchTravelproduct) return;
     if (isEdit) {
-      console.log(data?.fetchTravelproduct.tags);
       setValue("name", data?.fetchTravelproduct.name);
       setValue("remarks", data?.fetchTravelproduct.remarks);
       setValue("contents", data?.fetchTravelproduct.contents);
