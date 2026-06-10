@@ -19,6 +19,7 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
   const { data } = useQuery(FetchBoardDocument, {
     variables: {
       boardId: String(params.boardId),
+      isIncludeBoardAddress: true,
     },
     skip: !isEdit,
   });

@@ -5,17 +5,23 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import { IBoardListProps } from "@/components/boards-list/list/types";
+import Link from "next/link";
+// import { useRouter } from "next/navigation";
 
 export default function BoardSearchComponent({
   handleChangeSearchInput,
   handleSearch,
   onRangeChange,
+  search,
 }: Pick<
   IBoardListProps,
-  "handleChangeSearchInput" | "handleSearch" | "onRangeChange"
+  "handleChangeSearchInput" | "handleSearch" | "onRangeChange" | "search"
 >) {
   const { RangePicker } = DatePicker;
-
+  // const router = useRouter();
+  // const handleBoardsWrite = () => {
+  //   router.push("/homework38/boards/new");
+  // };
   return (
     <div className="mb-8 flex w-full items-center gap-4">
       <RangePicker
@@ -27,6 +33,7 @@ export default function BoardSearchComponent({
       <Input
         placeholder="제목을 검색해 주세요."
         onChange={handleChangeSearchInput}
+        value={search}
         className="h-12 flex-1 rounded-lg bg-gray-100 px-4 text-base"
         prefix={<SearchOutlined className="mr-2 text-xl text-black" />}
       />
@@ -37,13 +44,20 @@ export default function BoardSearchComponent({
       >
         검색
       </Button>
-      <Button
+      {/* <Button
         type="primary"
         icon={<EditOutlined />}
         className="ml-auto h-12 rounded-lg bg-blue-500 px-7 text-base font-semibold"
+        onClick={handleBoardsWrite}
       >
         트립토크 등록
-      </Button>
+      </Button> */}
+      <Link
+        href="/homework38/boards/new"
+        className="ml-auto h-12 rounded-lg bg-blue-500 px-7 text-base font-semibold"
+      >
+        트립토크 등록
+      </Link>
     </div>
   );
 }

@@ -1,20 +1,28 @@
-import { useMutation, useQuery } from "@apollo/client";
-import { useRouter } from "next/navigation";
+import { Reference, useMutation, useQuery } from "@apollo/client";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   DeleteBoardDocument,
   FetchBoardsCountDocument,
   FetchBoardsDocument,
 } from "@/commons/graphql/graphql";
 import { Modal } from "antd";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import _ from "lodash";
 import type { Dayjs } from "dayjs";
 
 export default function useBoardList() {
   const router = useRouter();
-  const [page, setPage] = useState(1);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [search, setSearch] = useState("");
+  const searchParams = useSearchParams();
+  const getSearchParams = searchParams.get("search") ?? "";
+  const getPageParamsIsNaN = Number(searchParams.get("page"));
+  const getPageParams =
+    !getPageParamsIsNaN || Number.isNaN(getPageParamsIsNaN)
+      ? 1
+      : getPageParamsIsNaN;
+  const startPage = Math.floor((getPageParams - 1) / 10) * 10 + 1;
+  const [page, setPage] = useState(startPage); // 10 단위 페이지
+  const [currentPage, setCurrentPage] = useState(getPageParams); // 현재 페이지 넘버
+  const [search, setSearch] = useState(getSearchParams);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
@@ -22,7 +30,8 @@ export default function useBoardList() {
 
   const { data, refetch } = useQuery(FetchBoardsDocument, {
     variables: {
-      page: 1,
+      search: getSearchParams,
+      page: getPageParams,
     },
   });
 
@@ -42,7 +51,10 @@ export default function useBoardList() {
         if (!deleteId) return;
         cache.modify({
           fields: {
-            fetchBoards(existingData = [], { readField }) {
+            fetchBoards(
+              existingData: readonly Reference[] = [],
+              { readField },
+            ) {
               return existingData.filter((item) => {
                 return readField("_id", item) !== deleteId;
               });
@@ -61,6 +73,11 @@ export default function useBoardList() {
 
   const { data: count, refetch: refetchCount } = useQuery(
     FetchBoardsCountDocument,
+    {
+      variables: {
+        search: getSearchParams,
+      },
+    },
   );
   const totalCount = count?.fetchBoardsCount ?? 10;
   const lastPage = Math.ceil(totalCount / 10);
@@ -86,9 +103,10 @@ export default function useBoardList() {
   ) => {
     const keyword = event.target.value;
     setSearch(keyword);
+    // 체인지 이벤트 디바운스 연습용 현재는 쓰지않음
     // debounce(keyword);
-    setPage(1);
-    setCurrentPage(1);
+    // setPage(1);
+    // setCurrentPage(1);
   };
 
   const handleSearch = async () => {
@@ -104,6 +122,11 @@ export default function useBoardList() {
       });
       setPage(1);
       setCurrentPage(1);
+      if (search) {
+        paramsSet(search, 1);
+      } else {
+        window.history.pushState(null, "", "?");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -127,25 +150,29 @@ export default function useBoardList() {
 
   const handlePrevBtn = () => {
     if (page === 1) return;
-    setPage(page - 10);
-    setCurrentPage(page - 10);
-    refetch({ page: page - 10, search, ...date });
+    const prevPage = page - 10;
+    setPage(prevPage);
+    setCurrentPage(prevPage);
+    refetch({ page: prevPage, search, ...date });
     refetchCount({
       search,
       startDate,
       endDate,
     });
+    paramsSet(search, prevPage);
   };
   const handleNextBtn = () => {
     if (page + 10 <= lastPage) {
-      setPage(page + 10);
-      setCurrentPage(page + 10);
-      refetch({ page: page + 10, search, ...date });
+      const nextPage = page + 10;
+      setPage(nextPage);
+      setCurrentPage(nextPage);
+      refetch({ page: nextPage, search, ...date });
       refetchCount({
         search,
         startDate,
         endDate,
       });
+      paramsSet(search, nextPage);
     }
   };
 
@@ -156,7 +183,27 @@ export default function useBoardList() {
       startDate,
       endDate,
     });
+
+    paramsSet(search, page);
   };
+
+  const paramsSet = (search: string, page: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (search) {
+      params.set("search", search);
+    } else {
+      params.delete("search");
+    }
+    params.set("page", String(page));
+    window.history.pushState(null, "", `?${params}`);
+  };
+
+  useEffect(() => {
+    const startPage = Math.floor((getPageParams - 1) / 10) * 10 + 1;
+    setPage(startPage);
+    setCurrentPage(getPageParams);
+    setSearch(getSearchParams);
+  }, [getSearchParams, getPageParams]);
 
   return {
     data,

@@ -1,11 +1,7 @@
 import PaginationComponent from "@/components/boards-list/pagination";
 import { IBoardListProps } from "@/components/boards-list/list/types";
 import BoardSearchComponent from "@/components/boards-list/search";
-import {
-  DeleteOutlined,
-  HeartOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import { DeleteOutlined, HeartOutlined, UserOutlined } from "@ant-design/icons";
 
 const hotTalkImages = [
   "/images/product-01.png",
@@ -91,6 +87,7 @@ export default function BoardListComponent({
           handleChangeSearchInput={handleChangeSearchInput}
           handleSearch={handleSearch}
           onRangeChange={onRangeChange}
+          search={search}
         />
         <div className="rounded-3xl bg-white px-12 py-10 shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
           <div className="w-full text-center">

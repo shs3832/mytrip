@@ -1,5 +1,7 @@
+import { BoardsItemSet } from "@/commons/graphql/fragment";
 import { gql } from "@apollo/client";
 export const FETCH_BOARDS = gql`
+  ${BoardsItemSet}
   query fetchBoards(
     $page: Int
     $search: String
@@ -12,10 +14,7 @@ export const FETCH_BOARDS = gql`
       startDate: $startDate
       endDate: $endDate
     ) {
-      _id
-      writer
-      title
-      createdAt
+      ...BoardsItemSet
     }
   }
 `;

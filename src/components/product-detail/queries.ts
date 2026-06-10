@@ -1,6 +1,12 @@
+import {
+  TravelProductTravelSet,
+  TravelProductUserSet,
+} from "@/commons/graphql/fragment";
 import { gql } from "@apollo/client";
 
 export const CREATE_TRAVEL_PRODUCT_QUESTION = gql`
+  ${TravelProductTravelSet}
+  ${TravelProductUserSet}
   mutation createTravelproductQuestion(
     $createTravelproductQuestionInput: CreateTravelproductQuestionInput!
     $travelproductId: ID!
@@ -11,21 +17,21 @@ export const CREATE_TRAVEL_PRODUCT_QUESTION = gql`
     ) {
       _id
       contents
-      travelproduct {
-        _id
-      }
       createdAt
       updatedAt
+      travelproduct {
+        ...TravelProductTravelSet
+      }
       user {
-        _id
-        name
-        email
+        ...TravelProductUserSet
       }
     }
   }
 `;
 
 export const FETCH_TRAVEL_PRODUCT_QUESTIONS = gql`
+  ${TravelProductTravelSet}
+  ${TravelProductUserSet}
   query fetchTravelproductQuestions($page: Int, $travelproductId: ID!) {
     fetchTravelproductQuestions(
       page: $page
@@ -33,15 +39,13 @@ export const FETCH_TRAVEL_PRODUCT_QUESTIONS = gql`
     ) {
       _id
       contents
-      travelproduct {
-        _id
-      }
       createdAt
       updatedAt
+      travelproduct {
+        ...TravelProductTravelSet
+      }
       user {
-        _id
-        name
-        email
+        ...TravelProductUserSet
       }
     }
   }

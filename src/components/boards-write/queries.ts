@@ -1,3 +1,4 @@
+import { BoardAddressSet } from "@/commons/graphql/fragment";
 import { gql } from "@apollo/client";
 
 export const CREATE_POST = gql`
@@ -38,7 +39,11 @@ export const CREATE_POST = gql`
 `;
 
 export const FETCH_BOARD = gql`
-  query fetchBoardWrite($boardId: ID!) {
+  ${BoardAddressSet}
+  query fetchBoardWrite(
+    $boardId: ID!
+    $isIncludeBoardAddress: Boolean = false
+  ) {
     fetchBoard(boardId: $boardId) {
       _id
       writer
@@ -49,12 +54,7 @@ export const FETCH_BOARD = gql`
       dislikeCount
       images
       youtubeUrl
-      boardAddress {
-        _id
-        zipcode
-        address
-        addressDetail
-      }
+      ...BoardAddressSet @include(if: $isIncludeBoardAddress)
     }
   }
 `;

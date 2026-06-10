@@ -1,3 +1,7 @@
+import {
+  TravelProductTravelSet,
+  TravelProductUserSet,
+} from "@/commons/fragments/fragments";
 import { gql } from "@apollo/client";
 export const CREATE_TRAVEL_PRODUCT_QUESTION_ANSWER = gql`
   mutation createTravelproductQuestionAnswer(
@@ -25,6 +29,7 @@ export const CREATE_TRAVEL_PRODUCT_QUESTION_ANSWER = gql`
 `;
 
 export const FETCH_TRAVEL_PRODUCT_QUESTION_ANSWER = gql`
+  ${TravelProductUserSet}
   query fetchTravelproductQuestionAnswersForList(
     $page: Int
     $travelproductQuestionId: ID!
@@ -35,15 +40,10 @@ export const FETCH_TRAVEL_PRODUCT_QUESTION_ANSWER = gql`
     ) {
       _id
       contents
-      travelproductQuestion {
-        _id
-      }
       createdAt
       updatedAt
       user {
-        _id
-        name
-        email
+        ...TravelProductUserSet
       }
     }
   }

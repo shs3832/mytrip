@@ -161,6 +161,16 @@
 - 서버에서 내려준 props와 클라이언트 Apollo cache가 자동 동기화되지 않는다는 점을 확인하고, 좋아요/싫어요 수는 client state로 관리하는 흐름을 학습했습니다.
 - 서버 Apollo Client를 `createServerApolloClient()`로 요청마다 생성하고, `fetchOptions: { cache: "no-store" }`로 서버 GraphQL 요청 최신성을 확인했습니다.
 
+### homework38 샬로우 라우팅, 패러렐 라우팅, GraphQL fragment
+
+- 트립토크 목록의 검색어와 페이지 번호를 URL query string에 반영하며 샬로우 라우팅 흐름을 학습했습니다.
+- `useSearchParams`, `URLSearchParams`, `window.history.pushState`를 이용해 URL을 화면 상태의 원본으로 다루는 방식을 정리했습니다.
+- 페이지네이션에서 URL의 `page`, 현재 선택 페이지, 페이지 버튼 묶음 시작 번호, 마지막 페이지 번호를 구분했습니다.
+- `layout.tsx`, `@modal`, `default.tsx`, `(.)new`를 이용해 보드 작성 페이지를 목록 위 모달로 띄우는 패러렐 라우팅 구조를 구성했습니다.
+- 라우팅으로 열린 모달은 state로 닫기보다 `router.back()`으로 이전 URL로 되돌리는 방식이 자연스럽다는 점을 확인했습니다.
+- GraphQL fragment를 공용 파일로 분리하며 fragment 이름, `on 타입`, 사용 위치, codegen 스캔 경로의 관계를 정리했습니다.
+- `src/commons/graphql/**`는 codegen 출력/제외 경로이므로 수동 fragment 파일은 `src/commons/fragments/`처럼 별도 경로에 두어야 한다는 점을 확인했습니다.
+
 ### accessToken / refreshToken 인증 흐름
 
 - 로그인 성공 후 accessToken을 Zustand에 저장했습니다.
@@ -197,6 +207,7 @@
 - `docs/2026-06-08-morning-study-log.md`
 - `docs/2026-06-08-afternoon-study-log.md`
 - `docs/2026-06-09-study-log.md`
+- `docs/2026-06-10-study-log.md`
 
 ## 현재 목표
 

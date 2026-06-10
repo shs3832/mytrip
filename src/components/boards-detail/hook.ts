@@ -9,6 +9,7 @@ export default function useBoardDetail() {
   const { data } = useQuery(FetchBoardDocument, {
     variables: {
       boardId: String(params.boardId),
+      isIncludeBoardAddress: true,
     },
   });
 
