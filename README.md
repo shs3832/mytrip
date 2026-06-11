@@ -50,6 +50,13 @@
 - `graphql-request`: `restoreAccessToken`처럼 Apollo hook 바깥에서 가벼운 GraphQL 요청을 보낼 때 사용했습니다.
 - `@graphql-codegen/cli`: GraphQL 문서 기반 타입 생성 스크립트에 사용했습니다.
 
+### Testing
+
+- `jest`: 컴포넌트와 API mocking 테스트 실행에 사용했습니다.
+- `@testing-library/react`, `@testing-library/jest-dom`: 렌더링 결과와 사용자 이벤트를 검증하는 데 사용했습니다.
+- `msw`: GraphQL 요청을 mock server로 가로채 성공/실패 응답을 테스트하는 데 사용했습니다.
+- `jest-fixed-jsdom`: MSW와 Jest 테스트 환경의 Web API 호환성을 보완하는 데 사용했습니다.
+
 ### State
 
 - `zustand`: accessToken 전역 상태 관리에 사용했습니다.
@@ -170,6 +177,12 @@
 - 라우팅으로 열린 모달은 state로 닫기보다 `router.back()`으로 이전 URL로 되돌리는 방식이 자연스럽다는 점을 확인했습니다.
 - GraphQL fragment를 공용 파일로 분리하며 fragment 이름, `on 타입`, 사용 위치, codegen 스캔 경로의 관계를 정리했습니다.
 - `src/commons/graphql/**`는 codegen 출력/제외 경로이므로 수동 fragment 파일은 `src/commons/fragments/`처럼 별도 경로에 두어야 한다는 점을 확인했습니다.
+
+### homework39 테스트 코드와 API mocking
+
+- Jest, React Testing Library, MSW를 이용해 상품 등록 mutation의 성공/실패 흐름을 테스트했습니다.
+- Apollo `HttpLink`와 MSW `graphql.link` 주소를 맞춰 mock server가 GraphQL 요청을 가로채는 구조를 확인했습니다.
+- 전체 페이지 테스트가 무거울 때는 테스트 전용 작은 컴포넌트로 핵심 API 흐름부터 검증할 수 있다는 점을 학습했습니다.
 
 ### accessToken / refreshToken 인증 흐름
 
