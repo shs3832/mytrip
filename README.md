@@ -223,6 +223,7 @@
 - `docs/2026-06-10-study-log.md`
 - `docs/2026-06-11-morning-study-log.md`
 - `docs/2026-06-11-afternoon-study-log.md`
+- `docs/2026-06-11-aws-ec2-deploy-log.md`
 
 ## 현재 목표
 
