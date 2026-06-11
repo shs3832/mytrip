@@ -208,6 +208,7 @@
 - `docs/2026-06-08-afternoon-study-log.md`
 - `docs/2026-06-09-study-log.md`
 - `docs/2026-06-10-study-log.md`
+- `docs/2026-06-11-morning-study-log.md`
 
 ## 현재 목표
 
