@@ -1,4 +1,4 @@
-import { BoardAddressSet } from "@/commons/graphql/fragment";
+import { BoardAddressSet } from "@/commons/fragments/fragments";
 import { gql } from "@apollo/client";
 
 export const CREATE_POST = gql`

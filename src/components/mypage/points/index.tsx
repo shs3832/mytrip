@@ -32,7 +32,6 @@ export function MypagePointsComponents({
       <MyPointsUserInfo
         data={data}
         formatNumberWithComma={formatNumberWithComma}
-        activeNav={activeNav}
       />
 
       <div className="mypage-2">

@@ -1,15 +1,7 @@
-import { Dispatch } from "react";
+import { FetchTravelproductQuestionAnswersForListQuery } from "@/commons/graphql/graphql";
 
-export type IReplyQuestionElement = {
-  _id: string;
-  contents: string;
-  createdAt: string;
-  user: {
-    _id: string;
-    name: string;
-    email: string;
-  };
-};
+export type IReplyQuestionElement =
+  FetchTravelproductQuestionAnswersForListQuery["fetchTravelproductQuestionAnswers"][number];
 
 export type IProductDetail = {
   safeContents: string;

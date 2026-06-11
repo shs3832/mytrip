@@ -25,7 +25,6 @@ import type {
   DeleteTravelproductQuestionMutation,
   DeleteTravelproductQuestionMutationVariables,
   FetchTravelproductForDetailQuery,
-  FetchTravelproductForDetailQueryVariables,
   FetchTravelproductQuestionsQuery,
   FetchTravelproductQuestionsQueryVariables,
   FetchUserLoggedInQuery,
@@ -38,7 +37,11 @@ const formatPriceToKRW = (price?: number | null) => {
   return new Intl.NumberFormat("ko-KR").format(price ?? 0);
 };
 
-export function useProductDetailHook({ productData }) {
+export function useProductDetailHook({
+  productData,
+}: {
+  productData: FetchTravelproductForDetailQuery;
+}) {
   const params = useParams();
   const router = useRouter();
   const [safeContents, setSafeContents] = useState("");
@@ -100,7 +103,7 @@ export function useProductDetailHook({ productData }) {
             fields: {
               fetchTravelproductQuestions(existingData = [], { readField }) {
                 // 캐시 항목은 참조값일 수 있으므로 readField로 _id를 읽어 비교한다.
-                return existingData.filter((item) => {
+                return existingData.filter((item: { _id: string }) => {
                   return readField("_id", item) !== deleteId;
                 });
               },
@@ -239,7 +242,7 @@ export function useProductDetailHook({ productData }) {
     try {
       const rsp = await PortOne.requestPayment({
         // 결제 요청 파라미터 입력
-        storeId: process.env.NEXT_PUBLIC_STORE_ID,
+        storeId: process.env.NEXT_PUBLIC_STORE_ID ?? "",
         paymentId: paymentId,
         orderName: "유저 포인트 충전",
         totalAmount: pointOptions,
@@ -354,9 +357,11 @@ export function useProductDetailHook({ productData }) {
 
   useEffect(() => {
     if (!userPicked?.fetchTravelproductsIPicked) return;
-    const isUserPicked = userPicked?.fetchTravelproductsIPicked.some((el) => {
-      return el._id === String(params.productId);
-    });
+    const isUserPicked = userPicked?.fetchTravelproductsIPicked.some(
+      (el: { _id: string }) => {
+        return el._id === String(params.productId);
+      },
+    );
     setPicked(isUserPicked);
   }, [userPicked]);
 

@@ -1,7 +1,7 @@
 import {
   TravelProductTravelSet,
   TravelProductUserSet,
-} from "@/commons/graphql/fragment";
+} from "@/commons/fragments/fragments";
 import { gql } from "@apollo/client";
 
 export const CREATE_TRAVEL_PRODUCT_QUESTION = gql`

@@ -1,3 +1,4 @@
+"use client";
 import { Button, DatePicker, Input } from "antd";
 import {
   CalendarOutlined,

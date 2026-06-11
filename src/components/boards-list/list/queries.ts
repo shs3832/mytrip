@@ -1,4 +1,4 @@
-import { BoardsItemSet } from "@/commons/graphql/fragment";
+import { BoardsItemSet } from "@/commons/fragments/fragments";
 import { gql } from "@apollo/client";
 export const FETCH_BOARDS = gql`
   ${BoardsItemSet}

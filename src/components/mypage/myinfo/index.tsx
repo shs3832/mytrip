@@ -26,8 +26,7 @@ export function MyPointsUserInfo({
       activeNav: "password",
     },
   ];
-  const mypageNav = pathname.split("/").at(-1);
-  // console.log(mypageMenus);
+
   return (
     <div className="border border-gray-300 rounded-lg p-6">
       <div className="mb-4">내 정보</div>
@@ -39,7 +38,7 @@ export function MyPointsUserInfo({
       </div>
       <div className="flex items-center gap-4 mt-4 border-y border-gray-300 py-4">
         <span className="font-bold">
-          {formatNumberWithComma(data?.fetchUserLoggedIn?.userPoint.amount)} P
+          {formatNumberWithComma(data?.fetchUserLoggedIn?.userPoint?.amount)}P
         </span>
       </div>
       <div className="mt-4 flex flex-col gap-2">

@@ -2,6 +2,8 @@ import PaginationComponent from "@/components/boards-list/pagination";
 import { IBoardListProps } from "@/components/boards-list/list/types";
 import BoardSearchComponent from "@/components/boards-list/search";
 import { DeleteOutlined, HeartOutlined, UserOutlined } from "@ant-design/icons";
+import { useFragment } from "@/commons/graphql";
+import { BoardsItemSetFragmentDoc } from "@/commons/graphql/graphql";
 
 const hotTalkImages = [
   "/images/product-01.png",
@@ -19,7 +21,6 @@ export default function BoardListComponent({
   handlePrevBtn,
   lastPage,
   page,
-  setPage,
   currentPage,
   setCurrentPage,
   paginationArray,
@@ -37,12 +38,13 @@ export default function BoardListComponent({
         </h2>
         <div className="grid grid-cols-4 gap-10">
           {data?.fetchBoards?.slice(0, 4).map((el, index) => {
+            const board = useFragment(BoardsItemSetFragmentDoc, el);
             return (
               <article
-                key={`hotTalk_${el._id}`}
+                key={`hotTalk_${board._id}`}
                 className="group flex cursor-pointer gap-4"
                 onClick={() => {
-                  handleViewDetail(el._id);
+                  handleViewDetail(board._id);
                 }}
               >
                 <div className="h-[132px] w-[132px] shrink-0 overflow-hidden rounded-lg bg-gray-100">
@@ -54,13 +56,13 @@ export default function BoardListComponent({
                 </div>
                 <div className="flex min-w-0 flex-1 flex-col">
                   <h3 className="line-clamp-2 text-base font-bold leading-relaxed text-gray-900">
-                    {el.title}
+                    {board.title}
                   </h3>
                   <div className="mt-4 flex items-center gap-2 text-sm text-gray-500">
                     <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-gray-500">
                       <UserOutlined />
                     </span>
-                    <span>{el.writer ?? "익명"}</span>
+                    <span>{board.writer ?? "익명"}</span>
                   </div>
                   <div className="mt-auto flex items-center justify-between text-sm">
                     <span className="flex items-center gap-1 text-red-400">
@@ -68,7 +70,7 @@ export default function BoardListComponent({
                       <span>24</span>
                     </span>
                     <span className="text-gray-500">
-                      {new Date(String(el.createdAt))
+                      {new Date(String(board.createdAt))
                         .toISOString()
                         .slice(0, 10)
                         .replaceAll("-", ".")}
@@ -102,13 +104,14 @@ export default function BoardListComponent({
             </div>
             <div className="space-y-3">
               {data?.fetchBoards?.map((el, index) => {
+                const board = useFragment(BoardsItemSetFragmentDoc, el);
                 return (
                   <div
                     key={`el` + index}
                     className="group flex w-full cursor-pointer items-center rounded-lg border border-gray-100 px-10 py-4 transition-colors hover:bg-gray-50"
                     onClick={(event) => {
                       event.preventDefault();
-                      handleViewDetail(el._id);
+                      handleViewDetail(board._id);
                     }}
                   >
                     <span className="w-[80px] shrink-0 text-left font-light text-gray-400">
@@ -116,7 +119,7 @@ export default function BoardListComponent({
                     </span>
                     <span className="grow truncate text-left font-medium text-gray-900">
                       {search
-                        ? el.title
+                        ? board.title
                             .replaceAll(search, `@##${search}@##`)
                             .split("@##")
                             .map((part, index) => {
@@ -131,13 +134,13 @@ export default function BoardListComponent({
                                 </span>
                               );
                             })
-                        : el.title}
+                        : board.title}
                     </span>
                     <span className="w-[140px] text-gray-600">
-                      {el.writer ?? "익명"}
+                      {board.writer ?? "익명"}
                     </span>
                     <span className="w-[160px] text-gray-400">
-                      {new Date(String(el.createdAt))
+                      {new Date(String(board.createdAt))
                         .toISOString()
                         .slice(0, 10)
                         .replaceAll("-", ".")}
@@ -146,7 +149,7 @@ export default function BoardListComponent({
                       <span
                         onClick={(event) => {
                           event.stopPropagation();
-                          handleDelete(el._id);
+                          handleDelete(board._id);
                         }}
                         className="invisible inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm text-red-400 group-hover:visible"
                       >

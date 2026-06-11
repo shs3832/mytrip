@@ -1,3 +1,4 @@
+"use client";
 import { TagOutlined } from "@ant-design/icons";
 import { Button, DatePicker, Input } from "antd";
 import {

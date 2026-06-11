@@ -54,7 +54,7 @@ export default function ProductDetailQuestionReplyComponent({
               )}
             </div>
             <p className="comment-date text-xs mt-2 text-gray-700">
-              {new Date(el.createdAt).toLocaleDateString()}
+              {new Date(String(el.createdAt)).toLocaleDateString()}
             </p>
           </div>
         </div>

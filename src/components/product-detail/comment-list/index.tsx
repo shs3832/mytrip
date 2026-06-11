@@ -92,24 +92,22 @@ export default function ProductDetailQuestionListComponent({
               )}
             </div>
             <>
-              {reply?.fetchTravelproductQuestionAnswers?.map(
-                (el: IReplyQuestionElement, index: number) => {
-                  return (
-                    <ProductDetailQuestionReplyComponent
-                      el={el}
-                      index={index}
-                      key={el._id}
-                      questionId={questionId}
-                    />
-                  );
-                },
-              )}
+              {reply?.fetchTravelproductQuestionAnswers?.map((el, index) => {
+                return (
+                  <ProductDetailQuestionReplyComponent
+                    el={el}
+                    index={index}
+                    key={el._id}
+                    questionId={questionId}
+                  />
+                );
+              })}
             </>
           </div>
         </div>
         {isWriteReply && (
           <div
-            className={`flex flex-col gap-4 ${reply?.fetchTravelproductQuestionAnswers?.length > 0 && "pl-[48px] mt-4"}`}
+            className={`flex flex-col gap-4 ${(reply?.fetchTravelproductQuestionAnswers?.length ?? 0) > 0 && "pl-[48px] mt-4"}`}
           >
             <TextArea
               placeholder="답변내용을 입력해 주세요"
