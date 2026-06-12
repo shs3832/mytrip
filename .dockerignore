@@ -1,0 +1,25 @@
+# 로컬에서 설치된 의존성은 컨테이너 안으로 복사하지 않는다.
+# 컨테이너 내부에서 npm ci로 새로 설치하는 것이 안전하다.
+node_modules
+
+# 로컬 빌드 결과물은 컨테이너 안으로 복사하지 않는다.
+# Docker 빌드 중 npm run build로 새로 생성한다.
+.next
+
+# Git 기록은 이미지 실행에 필요 없고 용량만 늘린다.
+.git
+
+# Docker 설정 파일은 이미지 내부 실행에 필요 없다.
+Dockerfile*
+docker-compose.yaml
+
+# npm 에러 로그는 빌드 산출물이 아니다.
+npm-debug.log
+
+# 학습 기록용 이미지와 문서는 앱 실행에 필요 없으므로 이미지에서 제외한다.
+screenshots
+docs
+
+# 환경변수 파일은 이미지에 직접 넣지 않는 편이 안전하다.
+# 실제 배포에서는 docker compose env_file 또는 서버 환경변수로 주입한다.
+.env
