@@ -16,7 +16,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
 type Documents = {
     "\n  mutation createUser($createUserInput: CreateUserInput!) {\n    createUser(createUserInput: $createUserInput) {\n      _id\n      email\n      name\n    }\n  }\n": typeof types.CreateUserDocument,
     "\n  fragment BoardAddressSet on Board {\n    boardAddress {\n      _id\n      zipcode\n      address\n      addressDetail\n    }\n  }\n": typeof types.BoardAddressSetFragmentDoc,
-    "\n  fragment BoardsItemSet on Board {\n    _id\n    writer\n    title\n    createdAt\n  }\n": typeof types.BoardsItemSetFragmentDoc,
+    "\n  fragment BoardsItemSet on Board {\n    _id\n    writer\n    title\n    createdAt\n    user {\n      _id\n    }\n  }\n": typeof types.BoardsItemSetFragmentDoc,
     "\n  fragment TravelProductTravelSet on Travelproduct {\n    _id\n  }\n": typeof types.TravelProductTravelSetFragmentDoc,
     "\n  fragment TravelProductUserSet on User {\n    _id\n    name\n    email\n  }\n": typeof types.TravelProductUserSetFragmentDoc,
     "\n  mutation restoreAccessToken {\n    restoreAccessToken {\n      accessToken\n    }\n  }\n": typeof types.RestoreAccessTokenDocument,
@@ -26,7 +26,7 @@ type Documents = {
     "\n  \n  query fetchBoard($boardId: ID!, $isIncludeBoardAddress: Boolean = false) {\n    fetchBoard(boardId: $boardId) {\n      _id\n      writer\n      title\n      contents\n      createdAt\n      likeCount\n      dislikeCount\n      images\n      youtubeUrl\n      ...BoardAddressSet @include(if: $isIncludeBoardAddress)\n    }\n  }\n": typeof types.FetchBoardDocument,
     "\n  mutation likeBoard($boardId: ID!) {\n    likeBoard(boardId: $boardId)\n  }\n": typeof types.LikeBoardDocument,
     "\n  mutation dislikeBoard($boardId: ID!) {\n    dislikeBoard(boardId: $boardId)\n  }\n": typeof types.DislikeBoardDocument,
-    "\n  query fetchBoardLegacyDetail($boardId: ID!) {\n    fetchBoard(boardId: $boardId) {\n      _id\n      writer\n      title\n      contents\n      createdAt\n      likeCount\n      dislikeCount\n      images\n      youtubeUrl\n      boardAddress {\n        _id\n        zipcode\n        address\n        addressDetail\n      }\n    }\n  }\n": typeof types.FetchBoardLegacyDetailDocument,
+    "\n  query fetchBoardsOfTheBest {\n    fetchBoardsOfTheBest {\n      _id\n      writer\n      title\n      contents\n      images\n      likeCount\n      createdAt\n      user {\n        _id\n        name\n      }\n    }\n  }\n": typeof types.FetchBoardsOfTheBestDocument,
     "\n  \n  query fetchBoards(\n    $page: Int\n    $search: String\n    $startDate: DateTime\n    $endDate: DateTime\n  ) {\n    fetchBoards(\n      page: $page\n      search: $search\n      startDate: $startDate\n      endDate: $endDate\n    ) {\n      ...BoardsItemSet\n    }\n  }\n": typeof types.FetchBoardsDocument,
     "\n  mutation deleteBoard($boardId: ID!) {\n    deleteBoard(boardId: $boardId)\n  }\n": typeof types.DeleteBoardDocument,
     "\n  query fetchBoardsCount(\n    $search: String\n    $startDate: DateTime\n    $endDate: DateTime\n  ) {\n    fetchBoardsCount(search: $search, startDate: $startDate, endDate: $endDate)\n  }\n": typeof types.FetchBoardsCountDocument,
@@ -69,7 +69,7 @@ type Documents = {
 const documents: Documents = {
     "\n  mutation createUser($createUserInput: CreateUserInput!) {\n    createUser(createUserInput: $createUserInput) {\n      _id\n      email\n      name\n    }\n  }\n": types.CreateUserDocument,
     "\n  fragment BoardAddressSet on Board {\n    boardAddress {\n      _id\n      zipcode\n      address\n      addressDetail\n    }\n  }\n": types.BoardAddressSetFragmentDoc,
-    "\n  fragment BoardsItemSet on Board {\n    _id\n    writer\n    title\n    createdAt\n  }\n": types.BoardsItemSetFragmentDoc,
+    "\n  fragment BoardsItemSet on Board {\n    _id\n    writer\n    title\n    createdAt\n    user {\n      _id\n    }\n  }\n": types.BoardsItemSetFragmentDoc,
     "\n  fragment TravelProductTravelSet on Travelproduct {\n    _id\n  }\n": types.TravelProductTravelSetFragmentDoc,
     "\n  fragment TravelProductUserSet on User {\n    _id\n    name\n    email\n  }\n": types.TravelProductUserSetFragmentDoc,
     "\n  mutation restoreAccessToken {\n    restoreAccessToken {\n      accessToken\n    }\n  }\n": types.RestoreAccessTokenDocument,
@@ -79,7 +79,7 @@ const documents: Documents = {
     "\n  \n  query fetchBoard($boardId: ID!, $isIncludeBoardAddress: Boolean = false) {\n    fetchBoard(boardId: $boardId) {\n      _id\n      writer\n      title\n      contents\n      createdAt\n      likeCount\n      dislikeCount\n      images\n      youtubeUrl\n      ...BoardAddressSet @include(if: $isIncludeBoardAddress)\n    }\n  }\n": types.FetchBoardDocument,
     "\n  mutation likeBoard($boardId: ID!) {\n    likeBoard(boardId: $boardId)\n  }\n": types.LikeBoardDocument,
     "\n  mutation dislikeBoard($boardId: ID!) {\n    dislikeBoard(boardId: $boardId)\n  }\n": types.DislikeBoardDocument,
-    "\n  query fetchBoardLegacyDetail($boardId: ID!) {\n    fetchBoard(boardId: $boardId) {\n      _id\n      writer\n      title\n      contents\n      createdAt\n      likeCount\n      dislikeCount\n      images\n      youtubeUrl\n      boardAddress {\n        _id\n        zipcode\n        address\n        addressDetail\n      }\n    }\n  }\n": types.FetchBoardLegacyDetailDocument,
+    "\n  query fetchBoardsOfTheBest {\n    fetchBoardsOfTheBest {\n      _id\n      writer\n      title\n      contents\n      images\n      likeCount\n      createdAt\n      user {\n        _id\n        name\n      }\n    }\n  }\n": types.FetchBoardsOfTheBestDocument,
     "\n  \n  query fetchBoards(\n    $page: Int\n    $search: String\n    $startDate: DateTime\n    $endDate: DateTime\n  ) {\n    fetchBoards(\n      page: $page\n      search: $search\n      startDate: $startDate\n      endDate: $endDate\n    ) {\n      ...BoardsItemSet\n    }\n  }\n": types.FetchBoardsDocument,
     "\n  mutation deleteBoard($boardId: ID!) {\n    deleteBoard(boardId: $boardId)\n  }\n": types.DeleteBoardDocument,
     "\n  query fetchBoardsCount(\n    $search: String\n    $startDate: DateTime\n    $endDate: DateTime\n  ) {\n    fetchBoardsCount(search: $search, startDate: $startDate, endDate: $endDate)\n  }\n": types.FetchBoardsCountDocument,
@@ -145,7 +145,7 @@ export function graphql(source: "\n  fragment BoardAddressSet on Board {\n    bo
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment BoardsItemSet on Board {\n    _id\n    writer\n    title\n    createdAt\n  }\n"): (typeof documents)["\n  fragment BoardsItemSet on Board {\n    _id\n    writer\n    title\n    createdAt\n  }\n"];
+export function graphql(source: "\n  fragment BoardsItemSet on Board {\n    _id\n    writer\n    title\n    createdAt\n    user {\n      _id\n    }\n  }\n"): (typeof documents)["\n  fragment BoardsItemSet on Board {\n    _id\n    writer\n    title\n    createdAt\n    user {\n      _id\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -185,7 +185,7 @@ export function graphql(source: "\n  mutation dislikeBoard($boardId: ID!) {\n   
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query fetchBoardLegacyDetail($boardId: ID!) {\n    fetchBoard(boardId: $boardId) {\n      _id\n      writer\n      title\n      contents\n      createdAt\n      likeCount\n      dislikeCount\n      images\n      youtubeUrl\n      boardAddress {\n        _id\n        zipcode\n        address\n        addressDetail\n      }\n    }\n  }\n"): (typeof documents)["\n  query fetchBoardLegacyDetail($boardId: ID!) {\n    fetchBoard(boardId: $boardId) {\n      _id\n      writer\n      title\n      contents\n      createdAt\n      likeCount\n      dislikeCount\n      images\n      youtubeUrl\n      boardAddress {\n        _id\n        zipcode\n        address\n        addressDetail\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query fetchBoardsOfTheBest {\n    fetchBoardsOfTheBest {\n      _id\n      writer\n      title\n      contents\n      images\n      likeCount\n      createdAt\n      user {\n        _id\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  query fetchBoardsOfTheBest {\n    fetchBoardsOfTheBest {\n      _id\n      writer\n      title\n      contents\n      images\n      likeCount\n      createdAt\n      user {\n        _id\n        name\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

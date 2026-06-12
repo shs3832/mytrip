@@ -17,6 +17,9 @@ export const BoardsItemSet = gql`
     writer
     title
     createdAt
+    user {
+      _id
+    }
   }
 `;
 

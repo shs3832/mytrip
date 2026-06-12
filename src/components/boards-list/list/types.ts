@@ -21,4 +21,5 @@ export interface IBoardListProps {
     dates: null | (Dayjs | null)[],
     dateStrings: string[],
   ) => void;
+  listLoading: boolean;
 }

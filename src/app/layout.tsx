@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import ApolloSetting from "@/commons/settings/apollo-setting";
 import LayoutComponent from "@/commons/layout";
+// import { AntdRegistry } from "@ant-design/nextjs-registry";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

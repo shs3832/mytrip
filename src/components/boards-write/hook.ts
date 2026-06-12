@@ -140,7 +140,7 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
             images: imageUrls ? imageUrls.filter(Boolean) : [],
           },
         });
-        router.push(`../boards/${result.data?.createBoard._id}`);
+        router.push(`/mytrip/boards/${result.data?.createBoard._id}`);
       } catch (error) {
         alert("에러가 발생하였습니다. 다시 시도해 주세요.");
       }
@@ -148,7 +148,7 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
   };
 
   const handleCancelEdit = () => {
-    router.push(isEdit ? `../${params.boardId}` : "../boards");
+    router.push(isEdit ? `/mytrip/boards/${params.boardId}` : "/mytrip/boards");
   };
 
   const [imageUrls, setImageUrls] = useState(["", "", ""]);
@@ -249,7 +249,7 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
       Modal.success({
         content: isEdit ? "수정이 완료되었습니다." : "작성이 완료되었습니다.",
         onOk: () => {
-          router.push(`../${params.boardId}`);
+          router.push(`/mytrip/boards/${params.boardId}`);
         },
       });
     } catch (error) {

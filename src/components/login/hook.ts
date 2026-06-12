@@ -12,7 +12,7 @@ export function useLoginHook() {
   const { setAccessToken } = useAccessTokenStore();
 
   const handleSignUp = () => {
-    router.push("/homework27/signup");
+    router.push("/mytrip/signup");
   };
 
   const [userData, setUserData] = useState({
@@ -48,7 +48,7 @@ export function useLoginHook() {
       // localStorage.setItem("token", data.loginUser.accessToken);
       // Login hook
       const redirect = searchParams.get("redirect");
-      router.push(redirect?.startsWith("/") ? redirect : "/homework27/boards");
+      router.push(redirect?.startsWith("/") ? redirect : "/mytrip/boards");
     } catch (error) {
       if (error instanceof ApolloError) {
         const message = error.graphQLErrors[0]?.message;

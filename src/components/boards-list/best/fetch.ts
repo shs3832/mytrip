@@ -1,14 +1,13 @@
-import { createServerApolloClient } from "@/commons/settings/apollo-server";
-import { FETCH_BOARD } from "@/components/boards-detail/detail/queries";
+import { FetchBoardsOfTheBestDocument } from "@/commons/graphql/graphql";
 
-export async function BoardsDetailGetData(id: string) {
+import { createServerApolloClient } from "@/commons/settings/apollo-server";
+
+export async function fetchBoardsOfTheBest() {
   const client = createServerApolloClient();
   const { data } = await client.query({
-    query: FETCH_BOARD,
-    variables: {
-      boardId: id,
-    },
+    query: FetchBoardsOfTheBestDocument,
     fetchPolicy: "no-cache",
   });
+
   return data;
 }

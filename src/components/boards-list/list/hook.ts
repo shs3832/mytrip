@@ -28,20 +28,35 @@ export default function useBoardList() {
 
   const paginationArray = new Array(10).fill(0);
 
-  const { data, refetch } = useQuery(FetchBoardsDocument, {
+  const {
+    data,
+    refetch,
+    loading: listLoading,
+  } = useQuery(FetchBoardsDocument, {
     variables: {
       search: getSearchParams,
       page: getPageParams,
     },
   });
 
-  const handleViewDetail = (id: String) => {
-    router.push(`boards/${id}`);
+  // 현재 api 의 삭제로직은 별도의 검증없이 게시물아이디만으로 삭제되므로
+  // 내가 쓴 게시물만 지우는 기능은 지원하지않음 우선 삭제버튼은 주석처리
+  // get userinfo
+  // const { data: userData } = useQuery(FetchUserLoggedInDocument, {
+  //   context: {
+  //     skipAuthRedirect: true,
+  //   },
+  //   errorPolicy: "ignore",
+  // });
+  // const loggedInUserId = userData?.fetchUserLoggedIn?._id;
+
+  const handleViewDetail = (id: string) => {
+    router.push(`/mytrip/boards/${id}`);
   };
 
   const [delete_board] = useMutation(DeleteBoardDocument);
 
-  const handleDelete = async (id: String) => {
+  const handleDelete = async (id: string) => {
     await delete_board({
       variables: {
         boardId: String(id),
@@ -224,5 +239,6 @@ export default function useBoardList() {
     handleSearch,
     search,
     onRangeChange,
+    listLoading,
   };
 }

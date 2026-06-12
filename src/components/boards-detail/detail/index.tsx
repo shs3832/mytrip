@@ -1,4 +1,4 @@
-import { IBoardDetailProps } from "@/components/boards-detail/types";
+import { IBoardDetailProps } from "@/components/boards-detail/detail/types";
 
 import {
   LikeOutlined,
@@ -9,7 +9,7 @@ import {
 import { Tooltip } from "antd";
 import YouTube from "react-youtube";
 
-export default function BoardListComponent({
+export default function BoardDetailComponent({
   data,
   handleBackToList,
   handleEditPage,

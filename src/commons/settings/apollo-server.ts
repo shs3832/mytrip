@@ -6,7 +6,7 @@ export function createServerApolloClient() {
     link: new HttpLink({
       uri: "https://main-practice.codebootcamp.co.kr/graphql",
       fetchOptions: {
-        cache: "no-store",
+        next: { revalidate: 60 },
       },
     }),
     cache: new InMemoryCache(),

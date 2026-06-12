@@ -46,7 +46,7 @@ export default function SignUpPage() {
   };
 
   const handleGoToLogin = () => {
-    router.push(`/homework25/login`);
+    router.push(`/mytrip/login`);
   };
 
   const handleSubmit = async () => {

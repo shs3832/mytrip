@@ -20,7 +20,7 @@ export default function NavigationComponent() {
       searchParams.toString().length > 0
         ? `${pathName}?${searchParams.toString()}`
         : pathName;
-    router.push(`/homework31/login?redirect=${encodeURIComponent(currentUrl)}`);
+    router.push(`/mytrip/login?redirect=${encodeURIComponent(currentUrl)}`);
   };
   const { accessToken, setAccessToken } = useAccessTokenStore();
   const { isLoaded, setIsLoaded } = useLoadStore();
@@ -28,17 +28,17 @@ export default function NavigationComponent() {
   const menus = [
     {
       label: "트립토크",
-      href: "/homework31/boards",
+      href: "/mytrip/boards",
       activePath: "/boards",
     },
     {
       label: "숙박권구매",
-      href: "/homework31/products",
+      href: "/mytrip/products",
       activePath: "/products",
     },
     {
       label: "마이페이지",
-      href: "/homework31/mypage",
+      href: "/mytrip/mypage",
       activePath: "/mypage",
     },
   ];

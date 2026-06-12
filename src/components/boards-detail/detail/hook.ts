@@ -15,11 +15,11 @@ export default function useBoardDetail({ data }: { data: FetchBoardQuery }) {
   const [dislike_board] = useMutation(DISLIKE_BOARD);
 
   const handleBackToList = () => {
-    router.push("../boards/new");
+    router.push("/mytrip/boards");
   };
 
   const handleEditPage = () => {
-    router.push(`../boards/${params.boardId}/edit`);
+    router.push(`/mytrip/boards/${params.boardId}/edit`);
   };
 
   const getYoutubeID = (value: string) => {

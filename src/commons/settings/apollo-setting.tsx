@@ -14,6 +14,7 @@ const cache = new InMemoryCache();
 
 const errorLink = onError(({ graphQLErrors, operation, forward }) => {
   // 1. 에러를 캐치
+  const skipAuthRedirect = operation.getContext().skipAuthRedirect;
   if (typeof graphQLErrors !== "undefined") {
     for (const err of graphQLErrors) {
       // 1-2. 해당 에러가 토큰만료 에러인지 체크(UNAUTHENTICATED)
@@ -28,8 +29,8 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
             if (!newAccessToken) {
               useAccessTokenStore.setState({ accessToken: "" });
 
-              if (typeof window !== "undefined") {
-                window.location.href = "/homework26/login";
+              if (!skipAuthRedirect && typeof window !== "undefined") {
+                window.location.href = "/mytrip/login";
               }
 
               throw new Error("No access token");
