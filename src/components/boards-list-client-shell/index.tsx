@@ -13,8 +13,8 @@ function BoardListPageContent() {
     handleNextBtn,
     handlePrevBtn,
     lastPage,
-    page,
-    setPage,
+    pageGroupStart,
+    setPageGroupStart,
     currentPage,
     setCurrentPage,
     paginationArray,
@@ -24,6 +24,8 @@ function BoardListPageContent() {
     search,
     onRangeChange,
     listLoading,
+    startDate,
+    endDate,
   } = useBoardList();
 
   return (
@@ -36,8 +38,8 @@ function BoardListPageContent() {
         handleNextBtn={handleNextBtn}
         handlePrevBtn={handlePrevBtn}
         lastPage={lastPage}
-        page={page}
-        setPage={setPage}
+        pageGroupStart={pageGroupStart}
+        setPageGroupStart={setPageGroupStart}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         paginationArray={paginationArray}
@@ -47,6 +49,8 @@ function BoardListPageContent() {
         search={search}
         onRangeChange={onRangeChange}
         listLoading={listLoading}
+        startDate={startDate}
+        endDate={endDate}
       />
     </>
   );

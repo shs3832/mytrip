@@ -6,10 +6,9 @@ export default function PaginationComponent({
   handleNextBtn,
   handlePrevBtn,
   lastPage,
-  page,
+  pageGroupStart,
   paginationArray,
   currentPage,
-  setCurrentPage,
 }: IBoardListPaginationProps) {
   return (
     <>
@@ -17,23 +16,22 @@ export default function PaginationComponent({
         <button
           className="px-2 py-1 disabled:text-gray-300 disabled:cursor-not-allowed"
           onClick={handlePrevBtn}
-          disabled={page === 1}
+          disabled={pageGroupStart === 1}
         >
           <LeftOutlined />
         </button>
         <div className="flex items-center">
           {paginationArray.map((_, index) => {
             return (
-              index + page <= lastPage && (
+              index + pageGroupStart <= lastPage && (
                 <button
                   key={index + "pagination"}
-                  className={`px-2 py-1 ${currentPage === index + page && "text-blue-500"}`}
+                  className={`px-2 py-1 ${currentPage === index + pageGroupStart && "text-blue-500"}`}
                   onClick={() => {
-                    handleGoPage(index + page);
-                    setCurrentPage(index + page);
+                    handleGoPage(index + pageGroupStart);
                   }}
                 >
-                  {page + index}
+                  {pageGroupStart + index}
                 </button>
               )
             );
@@ -42,7 +40,7 @@ export default function PaginationComponent({
         <button
           className="px-2 py-1 disabled:text-gray-300 disabled:cursor-not-allowed"
           onClick={handleNextBtn}
-          disabled={page + 10 > lastPage}
+          disabled={pageGroupStart + 10 > lastPage}
         >
           <RightOutlined />
         </button>

@@ -8,8 +8,8 @@ export interface IBoardListProps {
   handlePrevBtn: () => void;
   lastPage: number;
   handleGoPage: (page: number) => Promise<void>;
-  page: number;
-  setPage: (page: number) => void;
+  pageGroupStart: number;
+  setPageGroupStart: (page: number) => void;
   paginationArray: number[];
   currentPage: number;
   setCurrentPage: (page: number) => void;
@@ -22,4 +22,6 @@ export interface IBoardListProps {
     dateStrings: string[],
   ) => void;
   listLoading: boolean;
+  startDate: Date | null;
+  endDate: Date | null;
 }

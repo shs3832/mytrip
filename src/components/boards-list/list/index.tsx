@@ -9,14 +9,12 @@ import { BoardsItemSetFragmentDoc } from "@/commons/graphql/graphql";
 export default function BoardListComponent({
   data,
   handleViewDetail,
-  handleDelete,
   handleGoPage,
   handleNextBtn,
   handlePrevBtn,
   lastPage,
-  page,
+  pageGroupStart,
   currentPage,
-  setCurrentPage,
   paginationArray,
   totalCount,
   handleChangeSearchInput,
@@ -24,6 +22,8 @@ export default function BoardListComponent({
   search,
   onRangeChange,
   listLoading,
+  startDate,
+  endDate,
 }: IBoardListProps) {
   return (
     <main className="w-full">
@@ -42,6 +42,8 @@ export default function BoardListComponent({
               handleSearch={handleSearch}
               onRangeChange={onRangeChange}
               search={search}
+              startDate={startDate}
+              endDate={endDate}
             />
             <div className="rounded-3xl bg-white px-12 py-10 shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
               <div className="w-full text-center">
@@ -129,10 +131,9 @@ export default function BoardListComponent({
                   handlePrevBtn={handlePrevBtn}
                   lastPage={lastPage}
                   handleGoPage={handleGoPage}
-                  page={page}
+                  pageGroupStart={pageGroupStart}
                   paginationArray={paginationArray}
                   currentPage={currentPage}
-                  setCurrentPage={setCurrentPage}
                 />
               )}
             </div>

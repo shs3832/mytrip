@@ -6,8 +6,7 @@ export type IBoardListPaginationProps = Pick<
   | "handleNextBtn"
   | "handlePrevBtn"
   | "lastPage"
-  | "page"
+  | "pageGroupStart"
   | "paginationArray"
   | "currentPage"
-  | "setCurrentPage"
 >;

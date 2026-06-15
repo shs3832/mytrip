@@ -8,15 +8,23 @@ import {
 import { IBoardListProps } from "@/components/boards-list/list/types";
 // import Link from "next/link";
 import { useRouter } from "next/navigation";
+import dayjs from "dayjs";
 
 export default function BoardSearchComponent({
   handleChangeSearchInput,
   handleSearch,
   onRangeChange,
   search,
+  startDate,
+  endDate,
 }: Pick<
   IBoardListProps,
-  "handleChangeSearchInput" | "handleSearch" | "onRangeChange" | "search"
+  | "handleChangeSearchInput"
+  | "handleSearch"
+  | "onRangeChange"
+  | "search"
+  | "startDate"
+  | "endDate"
 >) {
   const { RangePicker } = DatePicker;
   const router = useRouter();
@@ -32,6 +40,10 @@ export default function BoardSearchComponent({
           placeholder={["YYYY . MM . DD", "YYYY . MM . DD"]}
           suffixIcon={<CalendarOutlined className="text-lg text-gray-500" />}
           onChange={onRangeChange}
+          value={[
+            startDate ? dayjs(startDate) : null,
+            endDate ? dayjs(endDate) : null,
+          ]}
         />
         <Input
           placeholder="제목을 검색해 주세요."
