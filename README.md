@@ -86,11 +86,12 @@ docker compose up --build
 
 ## 앞으로의 개선 방향
 
-현재는 기능 추가보다 보드 목록의 페이지네이션, 검색 흐름, 서버/클라이언트 컴포넌트 경계를 정리하며 포트폴리오형 코드 구조로 다듬고 있습니다.
+현재는 기능 추가보다 보드와 상품 영역의 페이지네이션, 검색, 작성/수정 payload, 서버/클라이언트 컴포넌트 경계를 정리하며 포트폴리오형 코드 구조로 다듬고 있습니다.
 
 ## 기록
 
 - 상세 학습 기록: [`docs/`](./docs)
+- 리팩토링 학습노트: [`docs/2026-06-15-refactor-study-log.md`](./docs/2026-06-15-refactor-study-log.md)
 - EC2 배포 기록: [`docs/2026-06-11-aws-ec2-deploy-log.md`](./docs/2026-06-11-aws-ec2-deploy-log.md)
 - Docker 학습 기록: [`docs/2026-06-12-study-log.md`](./docs/2026-06-12-study-log.md)
 - 이전 README 보관본: [`docs/archive/README-before-portfolio-summary-2026-06-12.md`](./docs/archive/README-before-portfolio-summary-2026-06-12.md)
