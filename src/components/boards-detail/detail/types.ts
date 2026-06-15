@@ -10,4 +10,5 @@ export interface IBoardDetailProps {
   header: React.ReactNode;
   likeCount: number;
   disLikeCount: number;
+  youtubeId: string | null;
 }

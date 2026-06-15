@@ -24,10 +24,10 @@ export default function BoardCommentWrite({
     setIsContentsEmpty,
     setIsPasswordEmpty,
     setIsWriterEmpty,
-    handleWriteComment,
+    handleCreateComment,
     handleRate,
     handleEditCommentCancel,
-    handleCommentEdit,
+    handleUpdateComment,
   } = useBoardCommentWrite({
     setIsCommentEdit,
     el,
@@ -153,7 +153,9 @@ export default function BoardCommentWrite({
             <button
               type="button"
               className="border border-blue-600 rounded-lg py-3 px-4 font-medium text-base text-white bg-blue-600 disabled:bg-gray-200 disabled:border-gray-200"
-              onClick={isCommentEdit ? handleCommentEdit : handleWriteComment}
+              onClick={
+                isCommentEdit ? handleCreateComment : handleUpdateComment
+              }
             >
               {isCommentEdit ? "댓글 수정" : "댓글 등록"}
             </button>

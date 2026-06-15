@@ -13,14 +13,13 @@ export default function BoardDetailComponent({
   data,
   handleBackToList,
   handleEditPage,
-  getYoutubeID,
   handleLike,
   handleDislike,
   header,
   likeCount,
   disLikeCount,
+  youtubeId,
 }: IBoardDetailProps) {
-  const youtubeId = getYoutubeID(data?.fetchBoard.youtubeUrl ?? "");
   return (
     <>
       <h1 className="font-bold text-[24px] leading-8">
@@ -42,22 +41,25 @@ export default function BoardDetailComponent({
             </span>
           </button>
         </div>
+
         <div className="contents-section flex flex-col gap-6">
-          <div className="image-block">
-            {data?.fetchBoard?.images
-              ?.filter(Boolean)
-              .map((url, index) => (
+          {data?.fetchBoard?.images?.map((url, index) => {
+            if (url === "") return;
+            return (
+              <div className="image-block" key={index}>
                 <img
                   key={index}
                   src={`https://storage.googleapis.com/${url}`}
                   className="mb-4"
                 />
-              )) ?? null}
-          </div>
+              </div>
+            );
+          }) ?? null}
+
           <p className="text-block text-base text-black">
             {data?.fetchBoard?.contents}
           </p>
-          {data?.fetchBoard.youtubeUrl && (
+          {youtubeId && (
             <div className="video-block pt-6 pb-6 bg-gray-50">
               <YouTube videoId={youtubeId} />
             </div>

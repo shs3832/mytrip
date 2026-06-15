@@ -25,14 +25,36 @@ export default function useBoardCommentWrite({
   const [isPasswordEmpty, setIsPasswordEmpty] = useState<boolean>(false);
   const [isContentsEmpty, setIsContentsEmpty] = useState<boolean>(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [comment_update] = useMutation(UpdateBoardCommentDocument);
+
+  const isValidateCommentForm = () => {
+    const isContentValid = contents.trim() !== "";
+    const isWriterValid = writer.trim() !== "";
+    const isPasswordValid = password.trim() !== "";
+    return isContentValid && isWriterValid && isPasswordValid;
+  };
+
+  const resetCommentForm = () => {
+    setContents("");
+    setPassword("");
+    setWriter("");
+    setIsSubmitted(false);
+  };
 
   const handleRate = (value: number) => {
     setRating(value);
   };
 
-  const handleWriteComment = async () => {
+  const handleCreateComment = async () => {
     setIsSubmitted(true);
-    if (!isWriterEmpty || !isPasswordEmpty || !isContentsEmpty) return;
+    const isValid = isValidateCommentForm();
+
+    if (!isValid) {
+      Modal.error({
+        content: "작성자, 비밀번호, 내용을 모두입력해주세요",
+      });
+      return;
+    }
     try {
       await comment_write({
         variables: {
@@ -55,16 +77,27 @@ export default function useBoardCommentWrite({
           },
         ],
       });
-      setContents("");
-      setPassword("");
-      setWriter("");
-      setIsSubmitted(false);
-    } catch {}
+      resetCommentForm();
+    } catch (error) {
+      if (error instanceof ApolloError) {
+        const message = error.graphQLErrors[0]?.message;
+        Modal.error({
+          content: message ?? "에러가 발생했습니다.",
+        });
+      }
+    }
   };
 
-  const [comment_update] = useMutation(UpdateBoardCommentDocument);
-  const handleCommentEdit = async () => {
+  const handleUpdateComment = async () => {
     if (el === undefined) return;
+
+    const isValid = isValidateCommentForm();
+    if (!isValid) {
+      Modal.error({
+        content: "작성자, 비밀번호, 내용을 모두입력해주세요",
+      });
+      return;
+    }
 
     try {
       await comment_update({
@@ -120,9 +153,9 @@ export default function useBoardCommentWrite({
     setIsContentsEmpty,
     setIsPasswordEmpty,
     setIsWriterEmpty,
-    handleWriteComment,
+    handleCreateComment,
     handleRate,
-    handleCommentEdit,
+    handleUpdateComment,
     handleEditCommentCancel,
   };
 }

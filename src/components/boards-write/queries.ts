@@ -74,6 +74,11 @@ export const UPDATE_BOARD = gql`
       writer
       title
       contents
+      images
+      createdAt
+      likeCount
+      dislikeCount
+      youtubeUrl
     }
   }
 `;

@@ -48,6 +48,7 @@ export default function useBoardDetail({ data }: { data: FetchBoardQuery }) {
       return null;
     }
   };
+  const youtubeId = getYoutubeID(data?.fetchBoard.youtubeUrl ?? "");
 
   const [likeCount, setLikeCount] = useState(data?.fetchBoard?.likeCount ?? 0);
 
@@ -59,26 +60,6 @@ export default function useBoardDetail({ data }: { data: FetchBoardQuery }) {
         variables: {
           boardId: String(params.boardId),
         },
-
-        // optimisticResponse: {
-        //   likeBoard: (data?.fetchBoard.likeCount ?? 0) + 1,
-        // },
-        // update: (cache, { data }) => {
-        //   cache.modify({
-        //     // 일부 데이터만 수정할 경우 writeQuery 보다 modify가 효과적
-        //     id: cache.identify({
-        //       __typename: "Board",
-        //       _id: String(params.boardId),
-        //     }),
-        //     // __typename, _id 값으로 수정될 객체를 찾음
-        //     fields: {
-        //       likeCount() {
-        //         return data?.likeBoard;
-        //       },
-        //     },
-        //     // 해당 필드에서 likeCount 를 찾아 수정함
-        //   });
-        // },
       });
 
       const nextLikeCount = result.data?.likeBoard;
@@ -111,22 +92,6 @@ export default function useBoardDetail({ data }: { data: FetchBoardQuery }) {
         variables: {
           boardId: String(params.boardId),
         },
-        // optimisticResponse: {
-        //   dislikeBoard: (data?.fetchBoard.dislikeCount ?? 0) + 1,
-        // },
-        // update: (cache, { data }) => {
-        //   cache.modify({
-        //     id: cache.identify({
-        //       __typename: "Board",
-        //       _id: String(params.boardId),
-        //     }),
-        //     fields: {
-        //       dislikeCount() {
-        //         return data?.dislikeBoard;
-        //       },
-        //     },
-        //   });
-        // },
       });
       const nextDislikeCount = result.data?.dislikeBoard;
 
@@ -155,5 +120,6 @@ export default function useBoardDetail({ data }: { data: FetchBoardQuery }) {
     handleDislike,
     likeCount,
     disLikeCount,
+    youtubeId,
   };
 }

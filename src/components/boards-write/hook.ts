@@ -6,8 +6,8 @@ import {
   CreateBoardDocument,
   FetchBoardDocument,
   UpdateBoardDocument,
+  UploadBoardFileDocument,
 } from "@/commons/graphql/graphql";
-import { UPLOAD_FILE } from "@/components/boards-write/queries";
 import { IUpdateBoardInput } from "@/components/boards-write/types";
 import { type Address } from "react-daum-postcode";
 import { Modal } from "antd";
@@ -26,7 +26,7 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
 
   const [create_post] = useMutation(CreateBoardDocument);
   const [update_post] = useMutation(UpdateBoardDocument);
-
+  const [upload_file] = useMutation(UploadBoardFileDocument);
   const [inputStates, setInputStates] = useState({
     writer: "",
     title: "",
@@ -44,6 +44,17 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
   const [zoneCode, setZoneCode] = useState("");
   const [addressDetail, setAddressDetail] = useState("");
   const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [imageUrls, setImageUrls] = useState(["", "", ""]);
+
+  const isChanged =
+    inputStates.title !== data?.fetchBoard?.title ||
+    inputStates.contents !== data?.fetchBoard?.contents ||
+    zoneCode !== (data?.fetchBoard?.boardAddress?.zipcode ?? "") ||
+    addressDetail !== (data?.fetchBoard?.boardAddress?.addressDetail ?? "") ||
+    youtubeUrl !== (data?.fetchBoard?.youtubeUrl ?? "") ||
+    imageUrls.some(
+      (url, index) => url !== (data?.fetchBoard?.images?.[index] ?? ""),
+    );
 
   const handleGetPostCode = () => {
     setIsModalOpen(true);
@@ -128,16 +139,10 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
       inputStates.contents
     ) {
       try {
+        const variables = buildCreateBoardInput();
         const result = await create_post({
           variables: {
-            ...inputStates,
-            boardAddress: {
-              zipcode: zoneCode,
-              address,
-              addressDetail,
-            },
-            youtubeUrl,
-            images: imageUrls ? imageUrls.filter(Boolean) : [],
+            ...variables,
           },
         });
         router.push(`/mytrip/boards/${result.data?.createBoard._id}`);
@@ -147,12 +152,30 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
     }
   };
 
+  const buildBoardAddressInput = () => {
+    return {
+      zipcode: zoneCode,
+      address,
+      addressDetail,
+    };
+  };
+
+  const buildCreateBoardInput = () => {
+    const createAddressInput = buildBoardAddressInput();
+    return {
+      ...inputStates,
+      boardAddress: {
+        ...createAddressInput,
+      },
+      youtubeUrl,
+      images: imageUrls ? imageUrls : [],
+    };
+  };
+
   const handleCancelEdit = () => {
     router.push(isEdit ? `/mytrip/boards/${params.boardId}` : "/mytrip/boards");
   };
 
-  const [imageUrls, setImageUrls] = useState(["", "", ""]);
-  const [upload_file] = useMutation(UPLOAD_FILE);
   const handleFileFileBox = (target: string) => {
     const targetInput = document.getElementById(target) as HTMLInputElement;
     if (!targetInput) return;
@@ -180,7 +203,7 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
 
     setImageUrls((prev) => {
       const image = [...prev];
-      image[index] = data.uploadFile.url;
+      image[index] = data?.uploadFile?.url ?? "";
       return image;
     });
   };
@@ -193,41 +216,46 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
     });
   };
 
-  const updateBoardInput: IUpdateBoardInput = {};
-  const updateBoardAddress: NonNullable<IUpdateBoardInput["boardAddress"]> = {};
-
-  const handleEdit = async () => {
+  const buildUpdateBoardInput = () => {
+    const nextInput: IUpdateBoardInput = {};
+    const nextAddress: IUpdateBoardInput["boardAddress"] = {};
     const isImageChanged = imageUrls.some(
       (url, index) => url !== (data?.fetchBoard?.images?.[index] ?? ""),
     );
 
     if (inputStates.title !== data?.fetchBoard?.title) {
-      updateBoardInput.title = inputStates.title;
+      nextInput.title = inputStates.title;
     }
     if (inputStates.contents !== data?.fetchBoard?.contents) {
-      updateBoardInput.contents = inputStates.contents;
+      nextInput.contents = inputStates.contents;
     }
 
     if (zoneCode !== data?.fetchBoard?.boardAddress?.zipcode) {
-      updateBoardAddress.zipcode = zoneCode;
-      updateBoardAddress.address = address;
+      nextAddress.zipcode = zoneCode;
+      nextAddress.address = address;
     }
 
     if (addressDetail !== data?.fetchBoard?.boardAddress?.addressDetail) {
-      updateBoardAddress.addressDetail = addressDetail;
+      nextAddress.addressDetail = addressDetail;
     }
 
     if (youtubeUrl !== data?.fetchBoard?.youtubeUrl) {
-      updateBoardInput.youtubeUrl = youtubeUrl;
+      nextInput.youtubeUrl = youtubeUrl;
     }
 
     if (isImageChanged) {
-      updateBoardInput.images = imageUrls.filter(Boolean);
+      nextInput.images = imageUrls;
     }
 
-    if (Object.keys(updateBoardAddress).length > 0) {
-      updateBoardInput.boardAddress = updateBoardAddress;
+    if (Object.keys(nextAddress).length > 0) {
+      nextInput.boardAddress = nextAddress;
     }
+
+    return nextInput;
+  };
+
+  const handleEdit = async () => {
+    const updateBoardInput = buildUpdateBoardInput();
 
     const getPassword = prompt(
       "글을 입력할때 입력하셨던 비밀번호를 입력해주세요",
@@ -239,9 +267,7 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
       await update_post({
         variables: {
           boardId: String(params.boardId),
-          updateBoardInput: {
-            ...updateBoardInput,
-          },
+          updateBoardInput,
           password: getPassword,
         },
         refetchQueries: [FetchBoardDocument],
@@ -261,16 +287,6 @@ export const useBoardWrite = ({ isEdit }: { isEdit: Boolean }) => {
       }
     }
   };
-
-  const isChanged =
-    inputStates.title !== data?.fetchBoard?.title ||
-    inputStates.contents !== data?.fetchBoard?.contents ||
-    zoneCode !== (data?.fetchBoard?.boardAddress?.zipcode ?? "") ||
-    addressDetail !== (data?.fetchBoard?.boardAddress?.addressDetail ?? "") ||
-    youtubeUrl !== (data?.fetchBoard?.youtubeUrl ?? "") ||
-    imageUrls.some(
-      (url, index) => url !== (data?.fetchBoard?.images?.[index] ?? ""),
-    );
 
   useEffect(() => {
     if (data?.fetchBoard) {

@@ -1,17 +1,21 @@
 import { Rate } from "antd";
-import { useState } from "react";
+
 import BoardCommentWrite from "@/components/boards-detail/comment-write";
 import { FetchBoardCommentsQuery } from "@/commons/graphql/graphql";
+import useCommentListItem from "./hook";
 
 export default function BoardCommentItem({
   el,
 }: {
   el: FetchBoardCommentsQuery["fetchBoardComments"][number];
 }) {
-  const [isCommentEdit, setIsCommentEdit] = useState(false);
-  const handleCommentEdit = () => {
-    setIsCommentEdit(true);
-  };
+  const {
+    isCommentEdit,
+    setIsCommentEdit,
+    handleCommentEdit,
+    handleCommentDelete,
+  } = useCommentListItem();
+
   return (
     <>
       {isCommentEdit ? (
@@ -55,7 +59,13 @@ export default function BoardCommentItem({
               >
                 수정
               </button>
-              <button>삭제</button>
+              <button
+                onClick={() => {
+                  handleCommentDelete(el._id);
+                }}
+              >
+                삭제
+              </button>
             </div>
           </div>
           <div className="comment-body text-base mt-2 text-gray-800">

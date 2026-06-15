@@ -6,10 +6,9 @@ import {
   FetchBoardsDocument,
 } from "@/commons/graphql/graphql";
 import { Modal } from "antd";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import _ from "lodash";
 import type { Dayjs } from "dayjs";
-import dayjs from "dayjs";
 
 export default function useBoardList() {
   const router = useRouter();
