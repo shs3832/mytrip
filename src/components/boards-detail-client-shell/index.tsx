@@ -21,6 +21,7 @@ export default function BoardDetailClientShell({
     handleDislike,
     likeCount,
     disLikeCount,
+    youtubeId,
   } = useBoardDetail({ data });
 
   return (
@@ -35,6 +36,7 @@ export default function BoardDetailClientShell({
         header={header}
         likeCount={likeCount}
         disLikeCount={disLikeCount}
+        youtubeId={youtubeId}
       />
       <BoardCommentWrite />
 

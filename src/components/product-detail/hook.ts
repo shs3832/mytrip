@@ -187,7 +187,6 @@ export function useProductDetailHook({
     okText: "확인",
     cancelText: "취소",
     onOK: () => {
-      // router.push("/homework30/mypage/points");
       setIsBuyModalOpen(false);
       setIsPointModalOpen(true);
     },

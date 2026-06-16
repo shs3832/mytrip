@@ -14,7 +14,7 @@ export const loginCheck = (Component: any) => (props: any) => {
       Modal.confirm({
         content: "로그인이 필요합니다.",
         onOk: () => {
-          router.push("/homework25/login");
+          router.push("/mytrip/login");
         },
       });
       return;

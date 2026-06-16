@@ -203,9 +203,7 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
       });
 
       Modal.success({ content: "등록이 완료되었습니다." });
-      router.push(
-        `/homework26/products/${result.data?.createTravelproduct._id}`,
-      );
+      router.push(`/mytrip/products/${result.data?.createTravelproduct._id}`);
 
       console.log(result);
     } catch (error) {
@@ -278,9 +276,7 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
       });
 
       Modal.success({ content: "수정이 완료되었습니다." });
-      router.push(
-        `/homework26/products/${result.data?.updateTravelproduct._id}`,
-      );
+      router.push(`/mytrip/products/${result.data?.updateTravelproduct._id}`);
     } catch (error) {
       if (error instanceof Error) {
         console.log(error.message);

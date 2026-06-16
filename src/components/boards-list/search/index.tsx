@@ -67,12 +67,6 @@ export default function BoardSearchComponent({
         >
           트립토크 등록
         </Button>
-        {/* <Link
-        href="/homework38/boards/new"
-        className="ml-auto h-12 rounded-lg bg-blue-500 px-7 text-base font-semibold"
-      >
-        트립토크 등록
-      </Link> */}
       </div>
     </>
   );
