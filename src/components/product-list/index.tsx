@@ -11,6 +11,7 @@ import ProductListClientShell from "./client-shell";
 
 import { FETCH_TRAVEL_PRODUCT_BEST, FETCH_TRAVEL_PRODUCTS } from "./queries";
 import ProductListRecentBanner from "./recent";
+import ProductListPagination from "./pagination";
 
 async function ProductMainListComponent() {
   const client = createServerApolloClient();
@@ -27,8 +28,6 @@ async function ProductMainListComponent() {
     },
   });
 
-  console.log(productItems);
-
   return (
     <>
       <h2 className="font-bold text-2xl">2026 여름의 시작</h2>
@@ -36,6 +35,7 @@ async function ProductMainListComponent() {
       <ProductListCustomBanner />
       <ProductListClientShell productItems={productItems} />
       <ProductListRecentBanner />
+      <ProductListPagination />
     </>
   );
 }
