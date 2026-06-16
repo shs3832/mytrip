@@ -14,7 +14,7 @@ import ProductListRecentBanner from "./recent";
 import ProductListPagination from "./pagination";
 
 async function ProductMainListComponent() {
-  const client = createServerApolloClient();
+  const client = createServerApolloClient("revalidate");
   const { data: bestItem } = await client.query({
     query: FETCH_TRAVEL_PRODUCT_BEST,
   });
