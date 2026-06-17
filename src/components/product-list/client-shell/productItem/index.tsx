@@ -1,5 +1,6 @@
 "use client";
 import { FetchTravelproductsQuery } from "@/commons/graphql/graphql";
+import { useRecentViewStore } from "@/commons/stores/addRecentViewItem";
 import { TagOutlined } from "@ant-design/icons";
 import { UserOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
@@ -12,6 +13,7 @@ export default function ProductListItems({
   const formatNumberWithComma = (value?: number | null) => {
     return new Intl.NumberFormat("ko-KR").format(value ?? 0);
   };
+  const { addRecentViewItem } = useRecentViewStore();
 
   return (
     <>
@@ -22,10 +24,15 @@ export default function ProductListItems({
       )}
       <section className="grid grid-cols-4 gap-x-9 gap-y-10">
         {data?.map((item) => {
+          const getImage = item?.images?.[0];
           return (
             <article
               key={item._id}
               onClick={() => {
+                addRecentViewItem({
+                  id: item._id,
+                  image: getImage ?? "",
+                });
                 router.push(`/mytrip/products/${item._id}`);
               }}
               className="cursor-pointer"

@@ -1,19 +1,12 @@
 "use client";
-import { ComponentType } from "react";
+
+import { IFilter } from "../types";
 
 export default function ProductListFilters({
   handleSetFilter,
   filters,
   selectedFilter,
-}: {
-  handleSetFilter: (value: number) => void;
-  filters: {
-    label: string;
-    value: string;
-    Icon: ComponentType<{ className?: string }>;
-  }[];
-  selectedFilter: string[];
-}) {
+}: IFilter) {
   return (
     <section className="mb-10 flex items-center justify-between">
       {filters?.map((item, index) => {

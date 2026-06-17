@@ -10,8 +10,6 @@ import ProductListCustomBanner from "./custom-banner";
 import ProductListClientShell from "./client-shell";
 
 import { FETCH_TRAVEL_PRODUCT_BEST, FETCH_TRAVEL_PRODUCTS } from "./queries";
-import ProductListRecentBanner from "./recent";
-import ProductListPagination from "./pagination";
 
 async function ProductMainListComponent() {
   const client = createServerApolloClient("revalidate");
@@ -34,8 +32,6 @@ async function ProductMainListComponent() {
       <ProductListBestItems bestItem={bestItem} />
       <ProductListCustomBanner />
       <ProductListClientShell productItems={productItems} />
-      <ProductListRecentBanner />
-      <ProductListPagination />
     </>
   );
 }

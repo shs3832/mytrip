@@ -2,6 +2,7 @@
 import { Button, Input } from "antd";
 
 import { EditOutlined, SearchOutlined } from "@ant-design/icons";
+import { IProductSearch } from "../types";
 export default function ProductListSearch({
   isSoldOut,
   handleTabMenu,
@@ -9,14 +10,7 @@ export default function ProductListSearch({
   handleSearchProducts,
   search,
   setSearch,
-}: {
-  isSoldOut: boolean;
-  handleTabMenu: (state: boolean) => void;
-  handleGoToCreateProduct: () => void;
-  handleSearchProducts: (value: string) => void;
-  search: string;
-  setSearch: (value: string) => void;
-}) {
+}: IProductSearch) {
   return (
     <section className="mt-14">
       <h2 className="mb-8 text-3xl font-bold text-black">
