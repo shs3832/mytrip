@@ -49,10 +49,12 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
   const router = useRouter();
   const [travelProductCreate] = useMutation(CREATE_TRAVEL_PRODUCT);
   const [updateTravelproduct] = useMutation(UPDATE_TRAVEL_PRODUCT);
-  const [address, setAddress] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [lat, setLat] = useState(0);
-  const [lng, setLng] = useState(0);
+  // form 값은 제출 payload용, 별도 state는 화면의 주소/지도 렌더링용으로 사용한다.
+  const [address, setAddress] = useState("");
+  const [lat, setLat] = useState<number | null>(null);
+  const [lng, setLng] = useState<number | null>(null);
+  // imageFiles는 업로드 전 미리보기, 기존 이미지, 새 파일을 함께 관리하는 UI 상태다.
   const [imageFiles, setImageFiles] = useState<ImagePreview[]>([]);
   const [upload_file] = useMutation(UPLOAD_FILE);
 
@@ -84,7 +86,6 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
     setValue("address", fullAddress);
 
     if (!window.kakao?.maps) {
-      console.log("Kakao Maps SDK가 아직 로드되지 않았습니다.");
       return;
     }
 
@@ -122,12 +123,8 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
     targetInput.click();
   }, []);
 
-  // const canUploadImages = useMemo(() => {
-  //   return imageFiles.length < 5;
-  // }, [imageFiles.length]);
-
   const handleFileUpload = useCallback(
-    async (event: React.ChangeEvent<HTMLInputElement>) => {
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       const files = event.target.files;
       if (!files) return;
       if (imageFiles.length + files.length > 5) {
@@ -148,7 +145,8 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
   const handleDeleteImage = useCallback((index: number) => {
     setImageFiles((prev) => {
       const revokeImage = prev[index];
-      if (revokeImage) {
+      if (revokeImage && revokeImage.previewUrl.startsWith("blob:")) {
+        // 새로 만든 미리보기 URL은 삭제 시 해제해서 브라우저 메모리 누수를 줄인다.
         URL.revokeObjectURL(revokeImage.previewUrl);
       }
       return prev.filter((_, i) => {
@@ -157,55 +155,88 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
     });
   }, []);
 
+  const parseTags = (value?: string) => {
+    // 입력창에서는 "호텔, 스파" 같은 문자열로 받고, API payload에서는 string[]로 보낸다.
+    return value
+      ? value
+          .split(",")
+          .map((tags) => tags.trim())
+          .filter(Boolean)
+      : [];
+  };
+
+  const createAddressInput = (data: FormData) => {
+    // 주소 관련 form 값을 GraphQL travelproductAddress 입력 모양으로 묶는다.
+    return {
+      zipcode: data.zipcode,
+      address: data.address,
+      addressDetail: data.addressDetail,
+      lat: data.lat,
+      lng: data.lng,
+    };
+  };
+
+  const createBaseTravelProductInput = (
+    data: FormData,
+    tags: string[],
+    images: string[],
+  ) => {
+    // 등록/수정 mutation에서 공통으로 사용하는 상품 입력 객체를 만든다.
+    // 등록과 수정의 차이는 images에 새 URL만 넣는지, 기존 URL과 새 URL을 합치는지다.
+    return {
+      name: data.name,
+      remarks: data.remarks,
+      contents: data.contents,
+      price: data.price,
+      tags,
+      images,
+      travelproductAddress: createAddressInput(data),
+    };
+  };
+
+  const uploadImages = async (imageFiles: ImagePreview[] = []) => {
+    // 새로 선택한 File 객체들을 업로드하고, API payload에 넣을 URL 문자열 배열만 추출한다.
+    // Promise.all은 여러 이미지 업로드 요청을 동시에 실행하고, 모든 결과가 끝날 때까지 기다린다.
+    const resultImage = await Promise.all(
+      imageFiles.map((image) => {
+        // imageFiles 배열을 순회하면서 각 이미지의 File 객체를 uploadFile API에 전달한다.
+        return upload_file({
+          variables: {
+            file: image.file,
+          },
+        });
+      }),
+    );
+
+    // 업로드 결과 배열에서 uploadFile.url만 뽑고,
+    // undefined/null/빈 문자열 같은 값은 제거해서 string[]만 남긴다.
+    const imageUrls = resultImage
+      .map((result) => {
+        return result.data?.uploadFile.url;
+      })
+      .filter((url): url is string => Boolean(url));
+    return imageUrls;
+  };
+
   const onSubmit = async (data: FormData) => {
     try {
-      const resultImage = await Promise.all(
-        imageFiles.map((image) => {
-          return upload_file({
-            variables: {
-              file: image.file,
-            },
-          });
-        }),
-      );
+      // 등록은 모든 이미지가 새 파일이므로 imageFiles 전체를 업로드한다.
+      const imageUrls = await uploadImages(imageFiles);
 
-      const imageUrls = resultImage
-        .map((result) => {
-          return result.data?.uploadFile.url;
-        })
-        .filter((url): url is string => Boolean(url));
-
-      const tags = data.tags
-        ? data.tags
-            .split(",")
-            .map((tags) => tags.trim())
-            .filter(Boolean)
-        : [];
+      const tags = parseTags(data.tags);
 
       const result = await travelProductCreate({
         variables: {
-          createTravelproductInput: {
-            name: data.name,
-            remarks: data.remarks,
-            contents: data.contents,
-            price: data.price,
-            tags: tags,
-            images: imageUrls,
-            travelproductAddress: {
-              zipcode: data.zipcode,
-              address: data.address,
-              addressDetail: data.addressDetail,
-              lat: data.lat,
-              lng: data.lng,
-            },
-          },
+          createTravelproductInput: createBaseTravelProductInput(
+            data,
+            tags,
+            imageUrls,
+          ),
         },
       });
 
       Modal.success({ content: "등록이 완료되었습니다." });
       router.push(`/mytrip/products/${result.data?.createTravelproduct._id}`);
-
-      console.log(result);
     } catch (error) {
       if (error instanceof Error) {
         console.log(error.message);
@@ -216,61 +247,32 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
 
   const onEdit = async (data: FormData) => {
     try {
-      // 기존 이미지 분리
+      // 수정은 기존 서버 이미지와 새로 선택한 이미지를 나누어 처리한다.
+      // 기존 이미지는 다시 업로드하지 않고 uploadedUrl만 최종 payload에 유지한다.
       const existingImageUrls = imageFiles
-        .filter((image) => image.isExisting) // isExisting이 true인경우만 걸러냄
+        .filter((image) => image.isExisting)
         .map((image) => {
-          return image.uploadedUrl; // uploadedUrl값만 배열로 추출
-        })
-        .filter((url): url is string => Boolean(url)); // null, "", undefined 제거
-
-      const newImages = imageFiles.filter((image) => !image.isExisting);
-      // isExisting값이 false인 것만 추출 (새로 올린 이미지)
-
-      const uploadResults = await Promise.all(
-        // 이미지를 올린 순서대로 api호출
-        newImages.map((image) => {
-          // newImages 배열을 순회
-          return upload_file({
-            variables: {
-              file: image.file, // 새로올린 파일중 File Object를 업로드 api로 전달
-            },
-          });
-        }),
-      );
-      const newImageUrls = uploadResults
-        .map((result) => {
-          return result.data?.uploadFile.url;
+          return image.uploadedUrl;
         })
         .filter((url): url is string => Boolean(url));
-      // 업로드 후 결과값을 추출 map으로 url을 배열로 만들고 null, "", undefined 제거
 
-      const finalImageUrls = [...existingImageUrls, ...newImageUrls];
-      // 기존 파일, 신규파일을 합침
+      // 새 이미지만 업로드 대상이다. 기존 서버 이미지는 File 객체가 없기 때문이다.
+      const newImages = imageFiles.filter((image) => !image.isExisting);
 
-      const tags = data.tags
-        ? data.tags
-            .split(",")
-            .map((tags) => tags.trim())
-            .filter(Boolean)
-        : [];
+      const imageUrls = await uploadImages(newImages);
+
+      // 최종 수정 payload에는 유지할 기존 URL과 새로 업로드한 URL을 함께 넣는다.
+      const finalImageUrls = [...existingImageUrls, ...imageUrls];
+
+      const tags = parseTags(data.tags);
+
       const result = await updateTravelproduct({
         variables: {
-          updateTravelproductInput: {
-            name: data.name,
-            remarks: data.remarks,
-            contents: data.contents,
-            price: data.price,
-            tags: tags,
-            images: finalImageUrls, // 합친 파일을 업데이트
-            travelproductAddress: {
-              zipcode: data.zipcode,
-              address: data.address,
-              addressDetail: data.addressDetail,
-              lat: data.lat,
-              lng: data.lng,
-            },
-          },
+          updateTravelproductInput: createBaseTravelProductInput(
+            data,
+            tags,
+            finalImageUrls,
+          ),
           travelproductId: String(params.productId),
         },
       });
@@ -280,7 +282,6 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
     } catch (error) {
       if (error instanceof Error) {
         console.log(error.message);
-      } else {
       }
     }
   };
@@ -288,6 +289,7 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
   useEffect(() => {
     if (!isEdit || !data?.fetchTravelproduct) return;
     if (isEdit) {
+      // 수정페이지 진입시 기존값을 읽어 아래와같이 세팅해준다
       setValue("name", data?.fetchTravelproduct.name);
       setValue("remarks", data?.fetchTravelproduct.remarks);
       setValue("contents", data?.fetchTravelproduct.contents);
@@ -307,6 +309,8 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
       );
       setValue("lat", data?.fetchTravelproduct.travelproductAddress.lat);
       setValue("lng", data?.fetchTravelproduct.travelproductAddress.lng);
+
+      // 수정페이지에서 이미지 표시를 위해 아래와같이 정리
       const getImages = data?.fetchTravelproduct.images.map((file: string) => {
         return {
           // file,
@@ -317,6 +321,7 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
         };
       });
       setImageFiles(getImages);
+      // 카카오 지도를 그려주기위해 아래와같이 정리
       setAddress(data?.fetchTravelproduct.travelproductAddress.address ?? "");
       setLng(data?.fetchTravelproduct.travelproductAddress.lng);
       setLat(data?.fetchTravelproduct.travelproductAddress.lat);
@@ -325,8 +330,11 @@ export default function useProductWrite({ isEdit }: { isEdit: boolean }) {
 
   useEffect(() => {
     if (!address) return;
-    if (!lat || !lng) return;
-    if (!window.kakao?.maps) return;
+    if (lat === null || lng === null) return;
+    if (!window.kakao?.maps) {
+      setIsModalOpen(false);
+      return;
+    }
 
     window.kakao.maps.load(() => {
       const container = document.getElementById("map");

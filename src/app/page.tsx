@@ -1,5 +1,5 @@
-import BoardListPage from "./mytrip/boards/page";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return <BoardListPage />;
+  redirect("/mytrip/boards");
 }
