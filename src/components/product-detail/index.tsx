@@ -1,5 +1,6 @@
 import {
   DeleteOutlined,
+  EditOutlined,
   LinkOutlined,
   PushpinFilled,
   PushpinOutlined,
@@ -40,6 +41,10 @@ export function ProductDetailView({
   setPointOptions,
   picked,
   summary,
+  firstImageUrl,
+  hasImage,
+  hasLocation,
+  pinned_loading,
 }: IProductDetail) {
   return (
     <>
@@ -60,26 +65,31 @@ export function ProductDetailView({
           {data?.fetchTravelproduct?.name}
         </div>
         <div className="ml-auto flex items-center gap-2">
-          <button className="flex items-center w-6 h-6 text-gray-800 text-sm">
-            <DeleteOutlined />
-          </button>
+          {isMine && (
+            <>
+              <button className="flex items-center w-6 h-6 text-gray-800 text-sm">
+                <DeleteOutlined />
+              </button>
+              <button className="flex items-center w-6 h-6 text-gray-800 text-sm">
+                <EditOutlined />
+              </button>
+            </>
+          )}
+
           <button className="flex items-center w-6 h-6 text-gray-800 text-sm">
             <LinkOutlined />
           </button>
           <button
             className="flex items-center w-6 h-6 text-gray-800 text-sm"
             onClick={handlePinned}
+            disabled={pinned_loading}
           >
             {picked ? <PushpinFilled /> : <PushpinOutlined />}
           </button>
-          <div
-            // onClick={handlePinned}
-            className="flex items-center py-1 px-2 text-white shadow-md text-sm bg-black bg-opacity-40 rounded-lg cursor-pointer"
-          >
+          <div className="flex items-center py-1 px-2 text-white shadow-md text-sm bg-black bg-opacity-40 rounded-lg cursor-pointer">
             <TagOutlined />
             <span className="ml-1">
-              0{/* {data?.fetchTravelproduct?.pickedCount ?? 0} */}
-              {/* 이숫자는 뭔지 파악필요 */}
+              {data?.fetchTravelproduct?.tags?.length ?? 0}
             </span>
           </div>
         </div>
@@ -89,13 +99,10 @@ export function ProductDetailView({
         <div className="flex w-full flex-col">
           <div className="flex items-start gap-6">
             <div className="rounded-lg overflow-hidden w-[511px] h-[400px] relative flex-grow border border-gray-300">
-              {data ? (
+              {hasImage ? (
                 <div className="w-full h-full bg-gray-200  rounded-lg flex items-center justify-center">
                   <img
-                    src={
-                      currentImage ||
-                      `https://storage.googleapis.com/${data.fetchTravelproduct.images[0]}`
-                    }
+                    src={currentImage || firstImageUrl}
                     alt="Product Image"
                     className="w-full h-full object-cover"
                   />
@@ -148,7 +155,16 @@ export function ProductDetailView({
 
           <div className="border-t border-gray-300 mt-10 pt-10">
             <h2 className="mb-5 font-bold text-2xl">상세 위치</h2>
-            <div id="map" className="border rounded-lg w-full h-[280px]"></div>
+            {hasLocation ? (
+              <div
+                id="map"
+                className="border rounded-lg w-full h-[280px]"
+              ></div>
+            ) : (
+              <div className="border rounded-lg w-full h-[280px]">
+                위치 정보를 불러오지 못했습니다.
+              </div>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-6 ">
@@ -165,14 +181,16 @@ export function ProductDetailView({
                   상세 설명에 숙박권 사용기한을 꼭 확인해 주세요.
                 </li>
               </ul>
-              <Button
-                type="primary"
-                size="large"
-                className="mt-4 w-full"
-                onClick={handleBuyConfirm}
-              >
-                구매하기
-              </Button>
+              {!isMine && (
+                <Button
+                  type="primary"
+                  size="large"
+                  className="mt-4 w-full"
+                  onClick={handleBuyConfirm}
+                >
+                  구매하기
+                </Button>
+              )}
             </div>
             <div className="bg-gray-100 rounded-lg p-6 mt-4">
               <strong>판매자</strong>

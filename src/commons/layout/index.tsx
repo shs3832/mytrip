@@ -5,6 +5,17 @@ import { useLayoutComponent } from "@/commons/layout/hook";
 import Script from "next/script";
 import ProductListBannerComponent from "./product-banner";
 import { Suspense } from "react";
+import { useKaKaoLoadStore } from "../stores/kakaoMapLoad";
+const bannerImages = [
+  "/images/banner-image-01.png",
+  "/images/banner-image-02.png",
+  "/images/banner-image-03.png",
+];
+const productBannerImages = [
+  "/images/banner-image-03.png",
+  "/images/banner-image-02.png",
+  "/images/banner-image-01.png",
+];
 export default function LayoutComponent({
   children,
 }: {
@@ -12,21 +23,16 @@ export default function LayoutComponent({
 }) {
   const { isHideBanner, isHideNavigation, isProductBanner } =
     useLayoutComponent();
-  const bannerImages = [
-    "/images/banner-image-01.png",
-    "/images/banner-image-02.png",
-    "/images/banner-image-03.png",
-  ];
-  const productBannerImages = [
-    "/images/banner-image-03.png",
-    "/images/banner-image-02.png",
-    "/images/banner-image-01.png",
-  ];
+
+  const { setIsLoaded } = useKaKaoLoadStore();
   return (
     <>
       <Script
         src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}&libraries=services&autoload=false`}
         strategy="afterInteractive"
+        onLoad={() => {
+          setIsLoaded();
+        }}
       />
       {!isHideNavigation && (
         <Suspense fallback={null}>

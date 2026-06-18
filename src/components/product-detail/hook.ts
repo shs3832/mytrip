@@ -1,8 +1,8 @@
 import { ApolloError, useMutation, useQuery } from "@apollo/client";
 import { Modal } from "antd";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import DOMPurify from "dompurify";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import * as PortOne from "@portone/browser-sdk/v2";
 
 import {
@@ -32,28 +32,68 @@ import type {
   ToggleTravelproductPickMutation,
   ToggleTravelproductPickMutationVariables,
 } from "@/commons/graphql/graphql";
+import { useKaKaoLoadStore } from "@/commons/stores/kakaoMapLoad";
 
 const formatPriceToKRW = (price?: number | null) => {
   return new Intl.NumberFormat("ko-KR").format(price ?? 0);
 };
+
+const options = [
+  {
+    value: 1000,
+    label: "1,000원",
+  },
+  {
+    value: 3000,
+    label: "3,000원",
+  },
+  {
+    value: 5000,
+    label: "5,000원",
+  },
+  {
+    value: 10000,
+    label: "10,000원",
+  },
+  {
+    value: 30000,
+    label: "30,000원",
+  },
+  {
+    value: 50000,
+    label: "50,000원",
+  },
+];
 
 export function useProductDetailHook({
   productData,
 }: {
   productData: FetchTravelproductForDetailQuery;
 }) {
+  const product = productData?.fetchTravelproduct;
+  const addressInfo = product?.travelproductAddress;
   const params = useParams();
-  const router = useRouter();
-  const [safeContents, setSafeContents] = useState("");
-  const [zipCode, setZipCode] = useState("");
-  const [address, setAddress] = useState("");
-  const [addressDetail, setAddressDetail] = useState("");
-  const [lat, setLat] = useState(0);
-  const [lng, setLng] = useState(0);
+
   const [currentImage, setCurrentImage] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [picked, setPicked] = useState(false);
+  const { isLoaded } = useKaKaoLoadStore();
 
+  const address = addressInfo?.address ?? "";
+  const lat = addressInfo?.lat ?? null;
+  const lng = addressInfo?.lng ?? null;
+  const [safeContents, setSafeContents] = useState("");
+
+  const firstImage = product?.images?.[0] ?? "";
+  const firstImageUrl = firstImage
+    ? `https://storage.googleapis.com/${firstImage}`
+    : "";
+  const mainImage = currentImage || firstImage;
+  const hasImage = mainImage !== "";
+  const hasLocation = address !== "" && lat !== null && lng !== null;
+  // const safeContents = useMemo(() => {
+  //   return DOMPurify.sanitize(product?.contents ?? "");
+  // }, [product?.contents]);
   const { data: questionData } = useQuery<
     FetchTravelproductQuestionsQuery,
     FetchTravelproductQuestionsQueryVariables
@@ -72,7 +112,7 @@ export function useProductDetailHook({
       page: 1,
     },
   });
-  const [product_pinned] = useMutation<
+  const [product_pinned, { loading: pinned_loading }] = useMutation<
     ToggleTravelproductPickMutation,
     ToggleTravelproductPickMutationVariables
   >(TOGGLE_TRAVEL_PRODUCT_PICK);
@@ -110,15 +150,6 @@ export function useProductDetailHook({
             },
           });
         },
-        // refetchQueries: [
-        //   {
-        //     query: FETCH_TRAVEL_PRODUCT_QUESTIONS,
-        //     variables: {
-        //       travelproductId: String(params.productId),
-        //       page: 1,
-        //     },
-        //   },
-        // ],
       });
       Modal.success({
         content: "문의가 삭제되었습니다.",
@@ -129,6 +160,7 @@ export function useProductDetailHook({
     }
   };
   const handlePinned = async () => {
+    if (pinned_loading) return;
     try {
       await product_pinned({
         variables: {
@@ -156,16 +188,6 @@ export function useProductDetailHook({
             },
           });
         },
-
-        // refetchQueries: [
-        //   {
-        //     query: FETCH_TRAVEL_PRODUCTS_PICKED,
-        //     variables: {
-        //       search: "",
-        //       page: 1,
-        //     },
-        //   },
-        // ],
       });
     } catch (error) {
       console.error("스크랩 삭제 실패:", error);
@@ -209,34 +231,12 @@ export function useProductDetailHook({
     CREATE_POINT_TRANSACTION_OF_BUYING_AND_SELLING,
   );
 
-  const options = [
-    {
-      value: 1000,
-      label: "1,000원",
-    },
-    {
-      value: 3000,
-      label: "3,000원",
-    },
-    {
-      value: 5000,
-      label: "5,000원",
-    },
-    {
-      value: 10000,
-      label: "10,000원",
-    },
-    {
-      value: 30000,
-      label: "30,000원",
-    },
-    {
-      value: 50000,
-      label: "50,000원",
-    },
-  ];
   const [pointOptions, setPointOptions] = useState(0);
   const handleAddPoints = async () => {
+    if (pointOptions === 0) {
+      Modal.error({ content: "충전할 금액을 선택해 주세요." });
+      return;
+    }
     const paymentId = `payment_${crypto.randomUUID()}`;
     try {
       const rsp = await PortOne.requestPayment({
@@ -250,7 +250,7 @@ export function useProductDetailHook({
         payMethod: "EASY_PAY",
       });
 
-      if (rsp?.code === "FAILURE_TYPE_PG") {
+      if (rsp?.code) {
         Modal.error({ content: rsp.message });
         return;
       }
@@ -319,22 +319,9 @@ export function useProductDetailHook({
   };
 
   useEffect(() => {
-    const product = productData?.fetchTravelproduct;
-    const addressInfo = product?.travelproductAddress;
-
-    if (!product) return;
-
-    setSafeContents(DOMPurify.sanitize(product.contents ?? ""));
-    setZipCode(addressInfo?.zipcode ?? "");
-    setAddress(addressInfo?.address ?? "");
-    setAddressDetail(addressInfo?.addressDetail ?? "");
-    setLat(addressInfo?.lat ?? 0);
-    setLng(addressInfo?.lng ?? 0);
-  }, [productData]);
-
-  useEffect(() => {
+    if (!isLoaded) return;
     if (!address) return;
-    if (!lat || !lng) return;
+    if (lat === null || lng === null) return;
     if (!window.kakao?.maps) return;
 
     window.kakao.maps.load(() => {
@@ -352,7 +339,7 @@ export function useProductDetailHook({
       });
       marker.setMap(map);
     });
-  }, [address, lat, lng]);
+  }, [isLoaded, address, lat, lng]);
 
   useEffect(() => {
     if (!userPicked?.fetchTravelproductsIPicked) return;
@@ -363,6 +350,10 @@ export function useProductDetailHook({
     );
     setPicked(isUserPicked);
   }, [userPicked]);
+
+  useEffect(() => {
+    setSafeContents(DOMPurify.sanitize(product?.contents ?? ""));
+  }, [product?.contents]);
 
   return {
     safeContents,
@@ -386,5 +377,9 @@ export function useProductDetailHook({
     options,
     setPointOptions,
     picked,
+    firstImageUrl,
+    hasImage,
+    hasLocation,
+    pinned_loading,
   };
 }

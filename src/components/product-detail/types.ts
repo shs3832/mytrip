@@ -47,4 +47,8 @@ export type IProductDetail = {
   setPointOptions: React.Dispatch<React.SetStateAction<number>>;
   picked: boolean;
   summary?: React.ReactNode;
+  firstImageUrl: string;
+  hasImage: boolean;
+  hasLocation: boolean;
+  pinned_loading: boolean;
 };
