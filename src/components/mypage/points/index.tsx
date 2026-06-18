@@ -25,7 +25,7 @@ export function MypagePointsComponents({
 }: IMypagePointsComponents) {
   return (
     <>
-      <div className="py-10">
+      <div className="pb-10">
         <h1 className="text-[28px] text-black font-bold">마이 페이지</h1>
       </div>
 

@@ -47,3 +47,15 @@ export interface IMypagePointsComponents {
     "_id" | "createdAt" | "travelproduct" | "status" | "balance"
   >[];
 }
+
+export interface IMypagePasswordComponents {
+  formatNumberWithComma: (value?: number | null) => string;
+  handleClickShow: (index: number) => void;
+  activeNav: boolean;
+  activeIndex: number;
+  menus: {
+    label: number;
+    value: string;
+  }[];
+  data: FetchUserLoggedInQuery | undefined;
+}
