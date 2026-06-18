@@ -85,6 +85,7 @@ export function useProductDetailHook({
   const [safeContents, setSafeContents] = useState("");
 
   const firstImage = product?.images?.[0] ?? "";
+  console.log(currentImage);
   const firstImageUrl = firstImage
     ? `https://storage.googleapis.com/${firstImage}`
     : "";

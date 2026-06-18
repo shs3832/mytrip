@@ -127,9 +127,10 @@ export function ProductDetailView({
                 >
                   {data?.fetchTravelproduct?.images?.map(
                     (el: string, index: number) => {
+                      if (el === "") return;
                       return (
                         <SwiperSlide
-                          key={el}
+                          key={`el_${index}`}
                           className={`relative w-full h-full rounded-lg overflow-hidden border border-gray-300 cursor-pointer ${index !== currentIndex ? "opacity-50" : ""}`}
                           onClick={() => {
                             setCurrentIndex(index);
