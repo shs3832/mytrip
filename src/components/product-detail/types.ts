@@ -11,9 +11,9 @@ export type IProductDetail = {
   currentImage: string;
   currentIndex: number;
   isMine: boolean;
-  isReplyWriter: boolean;
+  isReplyWriter?: boolean;
   data: any;
-  userData: FetchUserLoggedInQuery;
+  userData?: FetchUserLoggedInQuery;
   questionData: any;
   handleDeleteQuestion: (id: string) => void;
   handlePinned: () => void;

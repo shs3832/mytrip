@@ -17,6 +17,7 @@ function ProductDetailAuthenticatedShell({
     currentImage,
     currentIndex,
     isMine,
+
     questionData,
     handleDeleteQuestion,
     handlePinned,
