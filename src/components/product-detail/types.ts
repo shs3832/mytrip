@@ -1,4 +1,7 @@
-import { FetchTravelproductQuestionAnswersForListQuery } from "@/commons/graphql/graphql";
+import {
+  FetchTravelproductQuestionAnswersForListQuery,
+  FetchUserLoggedInQuery,
+} from "@/commons/graphql/graphql";
 
 export type IReplyQuestionElement =
   FetchTravelproductQuestionAnswersForListQuery["fetchTravelproductQuestionAnswers"][number];
@@ -8,7 +11,9 @@ export type IProductDetail = {
   currentImage: string;
   currentIndex: number;
   isMine: boolean;
+  isReplyWriter: boolean;
   data: any;
+  userData: FetchUserLoggedInQuery;
   questionData: any;
   handleDeleteQuestion: (id: string) => void;
   handlePinned: () => void;

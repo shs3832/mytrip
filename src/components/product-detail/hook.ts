@@ -123,9 +123,12 @@ export function useProductDetailHook({
   // const [product_buy] = useMutation(
   //   CREATE_POINT_TRANSACTION_OF_BUYING_AND_SELLING,
   // );
+
+  // 상품 판매자, 즉 나 자신을 판별
   const isMine =
     productData?.fetchTravelproduct?.seller?._id ===
     userData?.fetchUserLoggedIn?._id;
+
   const handleDeleteQuestion = async (id: string) => {
     // 문의 삭제 버튼 클릭 시 실행되는 함수
     try {
@@ -361,6 +364,7 @@ export function useProductDetailHook({
     currentIndex,
     isMine,
     questionData,
+    userData,
     handleDeleteQuestion,
     handlePinned,
     handlePurchase,

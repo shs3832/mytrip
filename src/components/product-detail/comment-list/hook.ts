@@ -11,7 +11,7 @@ import {
   FetchTravelproductQuestionAnswersForListQueryVariables,
 } from "@/commons/graphql/graphql";
 
-export function useProductDetail({ questionId }: { questionId: string }) {
+export function useProductQuestionItem({ questionId }: { questionId: string }) {
   const [isEditQuestion, setIsEditQuestion] = useState(false);
   const [isWriteReply, setIsWriteReply] = useState(false);
   const [replyContents, setReplyContents] = useState("");

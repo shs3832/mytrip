@@ -1,16 +1,16 @@
-import { EnterOutlined, UserOutlined } from "@ant-design/icons";
+import { UserOutlined } from "@ant-design/icons";
 import ProductDetailQuestionReplyComponent from "../comment-reply";
 import ProductDetailQuestionWriteComponent from "../comment-write";
 import { Input, Button } from "antd";
 
-import { useProductDetail } from "./hook";
-import { IReplyQuestionElement } from "../types";
+import { useProductQuestionItem } from "./hook";
 
 const { TextArea } = Input;
 export default function ProductDetailQuestionListComponent({
   question,
   handleDeleteQuestion,
   isMine,
+  isReplyWriter,
 }: {
   question: {
     _id: string;
@@ -20,6 +20,7 @@ export default function ProductDetailQuestionListComponent({
   };
   handleDeleteQuestion: (id: string) => void;
   isMine: boolean;
+  isReplyWriter: boolean;
 }) {
   const questionId = question._id;
   const {
@@ -33,7 +34,7 @@ export default function ProductDetailQuestionListComponent({
     handleWriteReply,
     handleReplyCancel,
     reply,
-  } = useProductDetail({ questionId });
+  } = useProductQuestionItem({ questionId });
   return (
     <>
       <div
@@ -51,18 +52,20 @@ export default function ProductDetailQuestionListComponent({
                   {question.user.name}
                 </span>
               </div>
-              <div className="comment-btns ml-auto flex items-center gap-2">
-                <button
-                  onClick={() => {
-                    handleEditQuestion();
-                  }}
-                >
-                  수정
-                </button>
-                <button onClick={() => handleDeleteQuestion(question._id)}>
-                  삭제
-                </button>
-              </div>
+              {isReplyWriter && (
+                <div className="comment-btns ml-auto flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      handleEditQuestion();
+                    }}
+                  >
+                    수정
+                  </button>
+                  <button onClick={() => handleDeleteQuestion(question._id)}>
+                    삭제
+                  </button>
+                </div>
+              )}
             </div>
             <div className="comment-body text-base mt-2 text-gray-800">
               {isEditQuestion ? (
@@ -99,6 +102,7 @@ export default function ProductDetailQuestionListComponent({
                     index={index}
                     key={el._id}
                     questionId={questionId}
+                    isMine={isMine}
                   />
                 );
               })}

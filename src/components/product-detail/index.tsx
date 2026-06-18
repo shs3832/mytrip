@@ -18,12 +18,14 @@ import ProductDetailQuestionListComponent from "@/components/product-detail/comm
 import { IProductDetail } from "./types";
 import { ProductDetailModalComponent } from "@/components/modal/product";
 import { PointModalComponent } from "@/components/modal/point";
+import { useAccessTokenStore } from "@/commons/stores/accessToken";
 export function ProductDetailView({
   safeContents,
   currentImage,
   currentIndex,
   isMine,
   data,
+  userData,
   questionData,
   handleDeleteQuestion,
   handlePinned,
@@ -46,6 +48,7 @@ export function ProductDetailView({
   hasLocation,
   pinned_loading,
 }: IProductDetail) {
+  const { accessToken } = useAccessTokenStore();
   return (
     <>
       <ProductDetailModalComponent
@@ -206,32 +209,39 @@ export function ProductDetailView({
           </div>
         </div>
       </div>
-      <div className="mt-10">
-        <h2 className="mb-5 text-base">문의하기</h2>
+      {accessToken && (
+        <div className="mt-10">
+          <h2 className="mb-5 text-base">문의하기</h2>
 
-        {questionData?.fetchTravelproductQuestions?.length === 0 && (
-          <div className="mt-10 w-full h-24 rounded-lg flex items-center justify-center">
-            <span className="text-gray-500">등록된 문의가 없습니다.</span>
-          </div>
-        )}
+          {questionData?.fetchTravelproductQuestions?.length === 0 && (
+            <div className="mt-10 w-full h-24 rounded-lg flex items-center justify-center">
+              <span className="text-gray-500">등록된 문의가 없습니다.</span>
+            </div>
+          )}
 
-        {questionData?.fetchTravelproductQuestions?.map(
-          (question: {
-            _id: string;
-            contents: string;
-            createdAt: string;
-            user: { name: string };
-          }) => (
-            <ProductDetailQuestionListComponent
-              key={question._id}
-              question={question}
-              handleDeleteQuestion={handleDeleteQuestion}
-              isMine={isMine}
-            />
-          ),
-        )}
-        <ProductDetailQuestionWriteComponent isEdit={false} />
-      </div>
+          {questionData?.fetchTravelproductQuestions?.map(
+            (question: {
+              _id: string;
+              contents: string;
+              createdAt: string;
+              user: { name: string; _id: string };
+            }) => {
+              const isReplyWriter =
+                userData?.fetchUserLoggedIn?._id === question?.user._id;
+              return (
+                <ProductDetailQuestionListComponent
+                  key={question._id}
+                  question={question}
+                  handleDeleteQuestion={handleDeleteQuestion}
+                  isMine={isMine}
+                  isReplyWriter={isReplyWriter}
+                />
+              );
+            },
+          )}
+          <ProductDetailQuestionWriteComponent isEdit={false} />
+        </div>
+      )}
     </>
   );
 }

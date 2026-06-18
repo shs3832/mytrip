@@ -7,10 +7,12 @@ export default function ProductDetailQuestionReplyComponent({
   el,
   index,
   questionId,
+  isMine,
 }: {
   el: IReplyQuestionElement;
   index: number;
   questionId: string;
+  isMine: boolean;
 }) {
   const { isReplyEdit, setIsReplyEdit, handleEditReply, handleDeleteReply } =
     useProductCommentReply({ id: el._id, questionId });
@@ -30,16 +32,18 @@ export default function ProductDetailQuestionReplyComponent({
                   {el.user.name}
                 </span>
               </div>
-              <div className="comment-btns ml-auto flex items-center gap-2">
-                <button onClick={handleEditReply}>수정</button>
-                <button
-                  onClick={() => {
-                    handleDeleteReply(el._id);
-                  }}
-                >
-                  삭제
-                </button>
-              </div>
+              {isMine && (
+                <div className="comment-btns ml-auto flex items-center gap-2">
+                  <button onClick={handleEditReply}>수정</button>
+                  <button
+                    onClick={() => {
+                      handleDeleteReply(el._id);
+                    }}
+                  >
+                    삭제
+                  </button>
+                </div>
+              )}
             </div>
             <div className="comment-body text-base mt-2 text-gray-800">
               {isReplyEdit ? (
