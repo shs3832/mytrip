@@ -1,16 +1,17 @@
-import { Input, Button, Modal } from "antd";
+import { Input, Button } from "antd";
 import { MyPointsUserInfo } from "../myinfo";
 import { IMypagePasswordComponents } from "../types";
+
 export function MypageChangePasswordComponents({
-  data,
   formatNumberWithComma,
+  handleChangePassword,
+  setNewPassword,
+  setCheckPassword,
+  data,
+  stateCheckInput,
+  newPassword,
+  checkPassword,
 }: IMypagePasswordComponents) {
-  const handlePasswordChange = () => {
-    Modal.success({
-      title: "비밀번호 변경 완료",
-      content: "비밀번호를 변경 되었습니다",
-    });
-  };
   return (
     <>
       <div className="pb-10">
@@ -29,21 +30,33 @@ export function MypageChangePasswordComponents({
             <span className="flex items-center gap-1">
               새 비밀번호 <small className="text-red-500 self-start">*</small>
             </span>
-            <Input.Password placeholder="새 비밀번호" />
+            <Input.Password
+              placeholder="새 비밀번호"
+              onChange={(e) => {
+                setNewPassword(e.target.value);
+              }}
+              value={newPassword}
+            />
           </div>
           <div>
             <span className="flex items-center gap-1">
               새 비밀번호 확인
               <small className="text-red-500 self-start">*</small>
             </span>
-            <Input.Password placeholder="새 비밀번호 확인" />
+            <Input.Password
+              placeholder="새 비밀번호 확인"
+              onChange={(e) => {
+                setCheckPassword(e.target.value);
+              }}
+              value={checkPassword}
+            />
           </div>
           <Button
             type="primary"
             size="large"
             className="w-auto ml-auto"
-            onClick={handlePasswordChange}
-            disabled
+            onClick={handleChangePassword}
+            disabled={!stateCheckInput}
           >
             비밀번호 변경
           </Button>

@@ -5,22 +5,25 @@ import { useMypagePasswords } from "@/components/mypage/password/hook";
 export default function MyPage() {
   const {
     formatNumberWithComma,
-    activeNav,
-    activeIndex,
-    handleClickShow,
-    menus,
-
+    handleChangePassword,
+    setNewPassword,
+    setCheckPassword,
     data,
+    stateCheckInput,
+    newPassword,
+    checkPassword,
   } = useMypagePasswords();
   return (
     <>
       <MypageChangePasswordComponents
         formatNumberWithComma={formatNumberWithComma}
-        activeNav={activeNav}
-        activeIndex={activeIndex}
-        handleClickShow={handleClickShow}
-        menus={menus}
+        handleChangePassword={handleChangePassword}
         data={data}
+        setNewPassword={setNewPassword}
+        setCheckPassword={setCheckPassword}
+        stateCheckInput={stateCheckInput}
+        newPassword={newPassword}
+        checkPassword={checkPassword}
       />
     </>
   );

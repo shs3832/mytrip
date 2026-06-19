@@ -33,7 +33,7 @@ export function MyPointsChargeComponents({
                       {new Date(el.createdAt).toLocaleDateString("ko-KR")}
                     </span>
                     <span className={`px-6 py-3 grow text-left font-medium`}>
-                      {el.impUid}
+                      {el.impUid ?? ""}
                     </span>
                     <span className="px-6 py-3 w-1/6">
                       {formatNumberWithComma(el.amount)}

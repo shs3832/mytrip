@@ -1,5 +1,5 @@
 import InfiniteScroll from "react-infinite-scroll-component";
-import { IMypageBookmarkProps } from "../types";
+import { IMypageBookmarkProps } from "../../types";
 export function MypageBookMark({
   bookMark,
   formatNumberWithComma,

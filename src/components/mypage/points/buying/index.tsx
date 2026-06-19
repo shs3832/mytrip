@@ -38,7 +38,7 @@ export function MyPointsBuyingComponents({
                       {new Date(el.createdAt).toLocaleDateString("ko-KR")}
                     </span>
                     <span className={`px-6 py-3 grow`}>
-                      {el.travelproduct.name}
+                      {el.travelproduct?.name ?? "상품정보없음"}
                     </span>
                     <span
                       className={`px-6 py-3 w-1/6 

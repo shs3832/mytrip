@@ -1,48 +1,58 @@
+import { useMutation, useQuery } from "@apollo/client";
+import { Modal } from "antd";
 import { useState } from "react";
-import { useQuery } from "@apollo/client";
-import { usePathname } from "next/navigation";
-import { MYPAGE_FETCH_USER_LOGGED_IN } from "./queries";
-const menus = [
-  {
-    label: 0,
-    value: "전체",
-  },
-  {
-    label: 1,
-    value: "충전내역",
-  },
-  {
-    label: 2,
-    value: "구매내역",
-  },
-  {
-    label: 3,
-    value: "판매내역",
-  },
-];
+import {
+  MYPAGE_CHANGE_PASSWORD,
+  MYPAGE_FETCH_USER_LOGGED_IN,
+} from "../queries";
+
 export function useMypagePasswords() {
-  const pathname = usePathname();
-
   const { data } = useQuery(MYPAGE_FETCH_USER_LOGGED_IN);
-
-  const [activeIndex, setActiveIndex] = useState(0);
-  const mypageNav = "/password";
-  const handleClickShow = (index: number) => {
-    setActiveIndex(index);
-  };
-
+  const [change_password] = useMutation(MYPAGE_CHANGE_PASSWORD);
+  const [newPassword, setNewPassword] = useState("");
+  const [checkPassword, setCheckPassword] = useState("");
   const formatNumberWithComma = (value?: number | null) => {
     return new Intl.NumberFormat("ko-KR").format(value ?? 0);
   };
-  const activeNav = pathname.includes(mypageNav);
 
+  const stateCheckInput =
+    newPassword.trim() !== "" && checkPassword.trim() !== "";
+
+  const handleChangePassword = async () => {
+    if (!stateCheckInput) return;
+    if (newPassword.trim() !== checkPassword.trim()) {
+      Modal.error({
+        content: "입력하신 비밀번호가 다릅니다 다시 확인해주세요.",
+      });
+      return;
+    }
+    try {
+      await change_password({
+        variables: {
+          password: checkPassword.trim(),
+        },
+      });
+      Modal.success({
+        title: "비밀번호 변경 완료",
+        content: "비밀번호가 변경 되었습니다",
+      });
+      setNewPassword("");
+      setCheckPassword("");
+    } catch (error) {
+      console.log(error);
+      Modal.error({
+        content: "비밀번호 변경에 실패했습니다.",
+      });
+    }
+  };
   return {
     formatNumberWithComma,
-    activeNav,
-    activeIndex,
-    handleClickShow,
-    menus,
-
+    newPassword,
+    checkPassword,
+    setNewPassword,
+    setCheckPassword,
+    handleChangePassword,
     data,
+    stateCheckInput,
   };
 }

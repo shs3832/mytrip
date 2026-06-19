@@ -19,6 +19,9 @@ export default function MyPage() {
     tableDataChargePoints,
     tableDataBuyingPoints,
     tableDataSellingPoints,
+    searchKeyWord,
+    setSearchKeyWord,
+    handleMypageSearch,
   } = useMypagePoints();
   return (
     <>
@@ -38,6 +41,9 @@ export default function MyPage() {
         tableDataChargePoints={tableDataChargePoints}
         tableDataBuyingPoints={tableDataBuyingPoints}
         tableDataSellingPoints={tableDataSellingPoints}
+        searchKeyWord={searchKeyWord}
+        setSearchKeyWord={setSearchKeyWord}
+        handleMypageSearch={handleMypageSearch}
       />
     </>
   );

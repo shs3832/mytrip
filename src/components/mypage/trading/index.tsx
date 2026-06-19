@@ -4,6 +4,7 @@ import { MyPointsTabMenuComponents } from "../tab-menu";
 import { useMypageTradingHook } from "./hook";
 import { MypageBookMark } from "./bookmark";
 import { MypageTrading } from "./trading";
+import MypageSearchComponents from "../search";
 
 export function MypageTradingComponents({
   formatNumberWithComma,
@@ -22,6 +23,9 @@ export function MypageTradingComponents({
     activeIndex,
     handleClickShow,
     handleDeleteProduct,
+    searchKeyWord,
+    setSearchKeyWord,
+    handleMypageSearch,
   } = useMypageTradingHook();
   return (
     <>
@@ -38,6 +42,12 @@ export function MypageTradingComponents({
         menus={menus}
         activeIndex={activeIndex}
         handleClickShow={handleClickShow}
+      />
+
+      <MypageSearchComponents
+        searchKeyWord={searchKeyWord}
+        setSearchKeyWord={setSearchKeyWord}
+        handleMypageSearch={handleMypageSearch}
       />
 
       {activeIndex === 0 && (

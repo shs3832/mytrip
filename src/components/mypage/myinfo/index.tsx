@@ -1,23 +1,7 @@
 import { RightOutlined, UserOutlined } from "@ant-design/icons";
 import { IMypagePointsComponents } from "../types";
 import { usePathname, useRouter } from "next/navigation";
-const mypageMenus = [
-  {
-    title: "거래내역 & 북마크",
-    path: "/mytrip/mypage/trading",
-    activeNav: "trading",
-  },
-  {
-    title: "포인트 사용 내역",
-    path: "/mytrip/mypage/points",
-    activeNav: "points",
-  },
-  {
-    title: "비밀번호 변경",
-    path: "/mytrip/mypage/password",
-    activeNav: "password",
-  },
-];
+import { mypageMenus } from "../constants";
 export function MyPointsUserInfo({
   data,
   formatNumberWithComma,

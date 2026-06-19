@@ -7,71 +7,61 @@ import {
   MYPAGE_FETCH_POINT_TRANSACTIONS_OF_LOADING,
   MYPAGE_FETCH_POINT_TRANSACTIONS_OF_BUYING,
   MYPAGE_FETCH_POINT_TRANSACTIONS_OF_SELLING,
-} from "./queries";
+} from "../queries";
+import { menus } from "../constants";
 export function useMypagePoints() {
   const pathname = usePathname();
-  const menus = [
-    {
-      label: 0,
-      value: "전체",
-    },
-    {
-      label: 1,
-      value: "충전내역",
-    },
-    {
-      label: 2,
-      value: "구매내역",
-    },
-    {
-      label: 3,
-      value: "판매내역",
-    },
-  ];
+  const [searchKeyWord, setSearchKeyWord] = useState("");
+
   const { data } = useQuery(MYPAGE_FETCH_USER_LOGGED_IN);
-  const { data: dataPoints, loading: pointAllLoading } = useQuery(
-    MYPAGE_FETCH_POINT_TRANSACTIONS,
-    {
-      variables: {
-        search: "",
-        page: 1,
-      },
+  const {
+    data: dataPoints,
+    loading: pointAllLoading,
+    refetch: refetchDataPoints,
+  } = useQuery(MYPAGE_FETCH_POINT_TRANSACTIONS, {
+    variables: {
+      search: "",
+      page: 1,
     },
-  );
-  const { data: dataPointsOfLoading, loading: pointChargeLoading } = useQuery(
-    MYPAGE_FETCH_POINT_TRANSACTIONS_OF_LOADING,
-    {
-      variables: {
-        search: "",
-        page: 1,
-      },
+  });
+  const {
+    data: dataPointsOfLoading,
+    loading: pointChargeLoading,
+    refetch: refetchDataPointsOfLoading,
+  } = useQuery(MYPAGE_FETCH_POINT_TRANSACTIONS_OF_LOADING, {
+    variables: {
+      search: "",
+      page: 1,
     },
-  );
+  });
 
-  const { data: dataPointsOfBuying, loading: pointBuyingLoading } = useQuery(
-    MYPAGE_FETCH_POINT_TRANSACTIONS_OF_BUYING,
-    {
-      variables: {
-        search: "",
-        page: 1,
-      },
+  const {
+    data: dataPointsOfBuying,
+    loading: pointBuyingLoading,
+    refetch: refetchDataPointsOfBuying,
+  } = useQuery(MYPAGE_FETCH_POINT_TRANSACTIONS_OF_BUYING, {
+    variables: {
+      search: "",
+      page: 1,
     },
-  );
+  });
 
-  const { data: dataPointsOfSelling, loading: pointSellingLoading } = useQuery(
-    MYPAGE_FETCH_POINT_TRANSACTIONS_OF_SELLING,
-    {
-      variables: {
-        search: "",
-        page: 1,
-      },
+  const {
+    data: dataPointsOfSelling,
+    loading: pointSellingLoading,
+    refetch: refetchDataPointsOfSelling,
+  } = useQuery(MYPAGE_FETCH_POINT_TRANSACTIONS_OF_SELLING, {
+    variables: {
+      search: "",
+      page: 1,
     },
-  );
+  });
 
   const [activeIndex, setActiveIndex] = useState(0);
   const mypageNav = "/points";
   const handleClickShow = (index: number) => {
     setActiveIndex(index);
+    setSearchKeyWord("");
   };
 
   const formatNumberWithComma = (value?: number | null) => {
@@ -84,6 +74,14 @@ export function useMypagePoints() {
     if (status === "판매") return "text-red-500";
     if (status === "구매") return "text-blue-500";
     return "text-gray-900";
+  };
+
+  const handleMypageSearch = async () => {
+    const searchData = {
+      search: searchKeyWord.trim(),
+      page: 1,
+    };
+    await refetchDataPoints(searchData);
   };
 
   const tableDataPoints = dataPoints?.fetchPointTransactions ?? [];
@@ -110,5 +108,8 @@ export function useMypagePoints() {
     tableDataChargePoints,
     tableDataBuyingPoints,
     tableDataSellingPoints,
+    searchKeyWord,
+    setSearchKeyWord,
+    handleMypageSearch,
   };
 }

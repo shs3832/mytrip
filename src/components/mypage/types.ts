@@ -46,16 +46,48 @@ export interface IMypagePointsComponents {
     IMypagePoints,
     "_id" | "createdAt" | "travelproduct" | "status" | "balance"
   >[];
+  searchKeyWord: string;
+  setSearchKeyWord: React.Dispatch<React.SetStateAction<string>>;
+  handleMypageSearch: () => Promise<void>;
 }
 
 export interface IMypagePasswordComponents {
   formatNumberWithComma: (value?: number | null) => string;
-  handleClickShow: (index: number) => void;
-  activeNav: boolean;
-  activeIndex: number;
-  menus: {
-    label: number;
-    value: string;
-  }[];
   data: FetchUserLoggedInQuery | undefined;
+  setNewPassword: React.Dispatch<React.SetStateAction<string>>;
+  setCheckPassword: React.Dispatch<React.SetStateAction<string>>;
+  handleChangePassword: () => Promise<void>;
+  stateCheckInput: boolean;
+  checkPassword: string;
+  newPassword: string;
+}
+
+export interface IMypageProducts {
+  _id: string;
+  name: string;
+  price: number;
+  createdAt: string;
+  soldAt: string | null;
+  buyer: {
+    _id: string;
+    name: string;
+  };
+  seller: {
+    _id: string;
+    name: string;
+  };
+}
+
+export interface IMypageTradingProps {
+  fetchTravelproductsISold: IMypageProducts[];
+}
+
+export interface IMypageBookmarkProps {
+  fetchTravelproductsIPicked: IMypageProducts[];
+}
+
+export interface ISearchComponentProps {
+  searchKeyWord: string;
+  setSearchKeyWord: React.Dispatch<React.SetStateAction<string>>;
+  handleMypageSearch: () => Promise<void>;
 }

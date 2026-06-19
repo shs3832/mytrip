@@ -5,6 +5,7 @@ import { MyPointsSellingComponents } from "./selling";
 import { MyPointsTabMenuComponents } from "../tab-menu";
 import { MyPointsTotalComponents } from "./total";
 import { IMypagePointsComponents } from "../types";
+import MypageSearchComponents from "../search";
 
 export function MypagePointsComponents({
   formatNumberWithComma,
@@ -22,6 +23,9 @@ export function MypagePointsComponents({
   tableDataChargePoints,
   tableDataBuyingPoints,
   tableDataSellingPoints,
+  searchKeyWord,
+  setSearchKeyWord,
+  handleMypageSearch,
 }: IMypagePointsComponents) {
   return (
     <>
@@ -42,12 +46,19 @@ export function MypagePointsComponents({
         />
 
         {activeIndex === 0 && (
-          <MyPointsTotalComponents
-            tableDataPoints={tableDataPoints}
-            pointAllLoading={pointAllLoading}
-            formatNumberWithComma={formatNumberWithComma}
-            getStatusColor={getStatusColor}
-          />
+          <>
+            <MypageSearchComponents
+              searchKeyWord={searchKeyWord}
+              setSearchKeyWord={setSearchKeyWord}
+              handleMypageSearch={handleMypageSearch}
+            />
+            <MyPointsTotalComponents
+              tableDataPoints={tableDataPoints}
+              pointAllLoading={pointAllLoading}
+              formatNumberWithComma={formatNumberWithComma}
+              getStatusColor={getStatusColor}
+            />
+          </>
         )}
 
         {activeIndex === 1 && (

@@ -5,18 +5,22 @@ import {
   MYPAGE_FETCH_TRAVEL_PRODUCTS_COUNT_I_SOLD,
   MYPAGE_FETCH_TRAVEL_PRODUCTS_I_PICKED,
   MYPAGE_FETCH_TRAVEL_PRODUCTS_I_SOLD,
-} from "./queries";
+} from "../queries";
 import { useState } from "react";
+import { bookMarkMenus as menus } from "../constants";
 export function useMypageTradingHook() {
-  const { data: buyData, fetchMore } = useQuery(
-    MYPAGE_FETCH_TRAVEL_PRODUCTS_I_SOLD,
-    {
-      variables: {
-        search: "",
-        page: 1,
-      },
+  const [searchKeyWord, setSearchKeyWord] = useState("");
+
+  const {
+    data: buyData,
+    fetchMore,
+    refetch: buyDataRefetch,
+  } = useQuery(MYPAGE_FETCH_TRAVEL_PRODUCTS_I_SOLD, {
+    variables: {
+      search: "",
+      page: 1,
     },
-  );
+  });
   const { data: countData } = useQuery(
     MYPAGE_FETCH_TRAVEL_PRODUCTS_COUNT_I_SOLD,
   );
@@ -25,15 +29,17 @@ export function useMypageTradingHook() {
     MYPAGE_FETCH_TRAVEL_PRODUCTS_COUNT_I_PICKED,
   );
 
-  const { data: bookMark, fetchMore: bookmarkFetchMore } = useQuery(
-    MYPAGE_FETCH_TRAVEL_PRODUCTS_I_PICKED,
-    {
-      variables: {
-        search: "",
-        page: 1,
-      },
+  const {
+    data: bookMark,
+    fetchMore: bookmarkFetchMore,
+    refetch: bookMarkRefetch,
+  } = useQuery(MYPAGE_FETCH_TRAVEL_PRODUCTS_I_PICKED, {
+    variables: {
+      search: "",
+      page: 1,
     },
-  );
+  });
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [delete_product] = useMutation(MYPAGE_DELETE_TRAVEL_PRODUCT);
 
@@ -69,16 +75,34 @@ export function useMypageTradingHook() {
     }
   };
 
-  const tradeHasMore =
-    (buyData?.fetchTravelproductsISold.length ?? 0) < totalTradeCount;
-  const bookmarkHasMore =
-    (bookMark?.fetchTravelproductsIPicked.length ?? 0) < totalBookmarkCount;
+  const handleMypageSearch = async () => {
+    const searchData = {
+      search: searchKeyWord.trim(),
+      page: 1,
+    };
+    if (activeIndex === 0) {
+      await buyDataRefetch(searchData);
+    }
+    if (activeIndex === 1) {
+      await bookMarkRefetch(searchData);
+    }
+  };
+
+  const isSearching = searchKeyWord.trim() !== "";
+
+  const tradeHasMore = isSearching
+    ? false
+    : (buyData?.fetchTravelproductsISold.length ?? 0) < totalTradeCount;
+  const bookmarkHasMore = isSearching
+    ? false
+    : (bookMark?.fetchTravelproductsIPicked.length ?? 0) < totalBookmarkCount;
 
   const onTradeNext = async () => {
     if (buyData === undefined) return;
 
     await fetchMore({
       variables: {
+        search: searchKeyWord,
         page: Math.ceil(buyData?.fetchTravelproductsISold.length / 10) + 1,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
@@ -102,6 +126,7 @@ export function useMypageTradingHook() {
 
     await bookmarkFetchMore({
       variables: {
+        search: searchKeyWord,
         page: Math.ceil(bookMark?.fetchTravelproductsIPicked.length / 10) + 1,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
@@ -120,19 +145,9 @@ export function useMypageTradingHook() {
     });
   };
 
-  const menus = [
-    {
-      label: 0,
-      value: "거래내역",
-    },
-    {
-      label: 1,
-      value: "북마크",
-    },
-  ];
-
   const handleClickShow = (index: number) => {
     setActiveIndex(index);
+    setSearchKeyWord("");
   };
 
   return {
@@ -148,5 +163,8 @@ export function useMypageTradingHook() {
     activeIndex,
     handleClickShow,
     handleDeleteProduct,
+    searchKeyWord,
+    setSearchKeyWord,
+    handleMypageSearch,
   };
 }
